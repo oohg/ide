@@ -1,0 +1,1540 @@
+/*
+ * $Id$
+ */
+
+/* Use this format for the entry headers:
+ * YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Name or Username and/or <your_email@address>
+ * For example:
+ * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
+ */
+
+2017-10-14 18:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ChangeLog.txt
+     ; Extracted from old oohg's file.
+
+2017-10-14 00:46 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * core/ide/*.*
+     ; Files moved from core repository.
+
+2017-09-13 19:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Statubar's items is displayed with wrong font after resetting
+       font to default values.
+     + Support for ON KEY, BKGNDCOLOR, DATEFORMAT and TIMEFORMAT clauses.
+   * ide/prgs/mgide.prg
+     * The items of the statusbar of method myInputWindow are now
+       more customizable.
+
+2017-08-25 16:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/sample/cvc.fmg
+   * ide/sample/form_prefer.fmg
+   * ide/sample/fp.fmg
+   * ide/sample/newform.fmg
+   * ide/sample/qwerty.fmg
+   * ide/sample/tbarsamp.fmg
+     * Updated copyright info.
+
+2017-08-25 16:02 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/fontclrs.fmg
+   * ide/fmgs/form_prefer.fmg
+   * ide/fmgs/mymenued.fmg
+   * ide/fmgs/mytbsel.fmg
+   * ide/fmgs/mytoolbared.fmg
+   * ide/fmgs/orderf.fmg
+   * ide/fmgs/tabprop.fmg
+     * Updated copyright info.
+
+2017-08-25 15:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/dbucvc.prg
+   * ide/prgs/formedit.prg
+   * ide/prgs/menued.prg
+   * ide/prgs/mgide.prg
+   * ide/prgs/toolbed.prg
+     * Updated copyright info.
+
+2017-08-22 21:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + ListBox properties COLWIDTH, MULTITAB, TABSWIDTH and DRAGITEMS.
+     * Some format.
+
+2017-08-11 20:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + MULTICOLUMN property.
+     ! Listbox is not showing items.
+
+2017-07-20 21:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     + library hb_zebra.a
+
+2016-12-16 22:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + OOHGDRAW and WINDRAW clauses.
+       THEMED and NOTHEME are still recognized.
+
+2016-10-25 18:37 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.rc
+     + ANIGIF related resource.
+   * ide/fmgs/orderf.fmg
+     * Some methods were renamed.
+   + ide/imgs/gif.ico
+     * Image for ANIGIF control in "Controls" panel.
+   * ide/formedit.prg
+     * Some methods were renamed.
+     + Support for ANIGIF.
+
+2016-10-19 22:52 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * Format.
+   * ide/fmgs/mytoolbared.fmg
+     ! Some controls are not entirely visible.
+
+2016-10-17 18:55 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE when the value property of a newly added label is changed.
+
+2016-10-16 22:54 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/compile.bat
+     ! Path to xharbour compiler.
+
+2016-10-10 22:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Form's PARENT and BACKIMAGE clauses.
+
+2016-10-10 12:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for VCENTERALIGN clause.
+
+2016-10-01 20:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.rc
+     * Resources renamed to IDE_something.
+     - Unused resources.
+     * Format.
+   * ide/fmgs/fontclrs.fmg
+   * ide/fmgs/mymenued.fmg
+     * Some control's names.
+   * ide/fmgs/form_prefer.fmg
+     + Support for hidding the tooltip of the Project Tree.
+     * Some control's names.
+   + ide/fmgs/mytbsel.fmg
+     + Support for more than one toolbar.
+   * ide/fmgs/mytoolbared.fmg
+     * Some control's names.
+     * Control's layout.
+     * Some control's action clauses.
+   - ide/imgs/bebox.bmp
+   - ide/imgs/bprinter.bmp
+   - ide/imgs/br_ok.bmp
+   - ide/imgs/bus.bmp
+   * ide/imgs/cp_settings.bmp
+   + ide/imgs/debug.bmp
+   - ide/imgs/demo.Bmp
+   - ide/imgs/find.bmp
+   - ide/imgs/intermove.bmp
+   - ide/imgs/menu.bmp
+   + ide/imgs/menubrowse.bmp
+   + ide/imgs/menuclose.bmp
+   + ide/imgs/menuedit.bmp
+   + ide/imgs/menunew.bmp
+   + ide/imgs/menupack.bmp
+   + ide/imgs/menurecall.bmp
+   + ide/imgs/menustru.bmp
+   + ide/imgs/menuzap.bmp
+   * ide/imgs/mod.bmp
+   + ide/imgs/oide.bmp
+   + ide/imgs/oohg16.bmp
+   - ide/imgs/remov.bmp
+   - ide/imgs/status.bmp
+   - ide/imgs/tbbuild.bmp
+   - ide/imgs/tbbuild2.bmp
+   - ide/imgs/tbfind.bmp
+   - ide/imgs/tbmod.bmp
+   - ide/imgs/tbmod1.bmp
+   - ide/imgs/tbmod2.bmp
+   - ide/imgs/tbnew.bmp
+   - ide/imgs/tbprint.bmp
+   - ide/imgs/tbqbrow.bmp
+   - ide/imgs/tbremove.bmp
+   - ide/imgs/tbrun.bmp
+   - ide/imgs/teven.bmp
+   - ide/imgs/tfoco.bmp
+   - ide/imgs/tframe.bmp
+   - ide/imgs/torder.bmp
+   - ide/imgs/tprop.bmp
+   - ide/imgs/tstat.bmp
+   - ide/imgs/wd.bmp
+   * ide/prgs/dbucvc.prg
+     ! Menu icons restored.
+     ! Edit function restored.
+     - Message on exit.
+     - Some comments.
+   * ide/prgs/formedit.prg
+     * Some comments and messages.
+     * Control inspector is now resizable.
+     + Support for DEFINE TOOLBAR/BUTTON/END TOOLBAR clauses.
+     ! Points were drawn over toolbars.
+     ! Caption and Picture clauses of BUTTON controls.
+     + Support for tooltips defined using OOP syntax on AnimateBox,
+       Image and Label controls.
+     ! Value clause of LABEL and TEXTBOX controls.
+     ! InputMask clause of TEXTBOX controls.
+     ! Tab order is not preserved when a control is modified.
+   * ide/prgs/menued.prg
+     * Use DATA var instead of PARAMETER var in Method Edit.
+   * ide/prgs/mgide.prg
+     % Code readability.
+     + Support for editing ch, prg, rc and rpt files from command line.
+     * Menu icons restored.
+     + Check for unsaved files and forms before exit.
+     * Default INI file is re-read when creating a new project.
+     * Default INI file is no longer updated on form's close.
+     * Text displayed when F1 key is pressed.
+     * Some comments and messages.
+     + New INI parameter to hide the tooltip of the Project Tree.
+   * ide/prgs/toolbed.prg
+     * Toolbar loading process redesigned so it reads
+       DEFINE TOOLBAR/BUTTON/END TOOLBAR clauses directly from
+       the fmg file instead of using and auxiliary file.
+   * ide/sample/Main2.prg
+     * Removed unneeded code.
+   * ide/mgide.rc
+     - Unused images.
+
+2016-06-01 21:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE on FORMAT NIL clause.
+
+2016-05-31 21:51 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/build.bat
+     + Logic to handle HB30 and HB32 in the same instalation.
+       Use 'BUILD.BAT' HB32 for incremental compilation with HB32
+       Use 'BUILD.BAT' HB30 for incremental compilation with HB30
+       Use 'BUILD.BAT' /C HB32 for full compilation with HB32
+       Use 'BUILD.BAT' /C HB30 for full compilation with HB30
+       /C swith is recommended to avoid mixing version.
+
+2016-05-31 19:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     + Logic to read/save 'FMG Syntax' option from/to INI file.
+     * 'Snap to Grid' option is now save to INI file without decimals.
+
+2016-05-31 19:29 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/form_prefer.fmg
+     * Format.
+     * 'Snap to Grid' moved to 'Other' tab.
+     + 'FMG Syntax' options (when operational will allow to
+       choose the output syntax: Standard/Alternative).
+   * ide/prgs/formedit.prg
+     ! Typo.
+     + TODO: add support for alternative syntax in METHOD MakeControls
+       of CLASS TFormEditor.
+     + Logic to handle 'FMG Syntax' option.
+   * ide/prgs/mgide.prg
+     ! Typo.
+     * Format.
+     + DATA nSyntax to CLASS THMI.
+     + Logic to show/get 'FMG Syntax' option in Preferences.
+   * ide/prgs/dbucvc.prg
+   * ide/prgs/menued.prg
+   * ide/prgs/toolbed.prg
+     ! Typo.
+
+2016-05-29 11:33 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + COLUMNVALID clause to Grid, Browse and Xbrowse.
+     + COLUMNWHEN clause to Grid controls.
+
+2016-05-22 20:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/fontclrs.fmg
+   * ide/fmgs/form_prefer.fmg
+   * ide/fmgs/mymenued.fmg
+   * ide/fmgs/mytoolbared.fmg
+   * ide/fmgs/orderf.fmg
+   * ide/fmgs/tabprop.fmg
+   * ide/prgs/dbucvc.prg
+   * ide/prgs/formedit.prg
+   * ide/prgs/menued.prg
+   * ide/prgs/mgide.prg
+   * ide/prgs/toolbed.prg
+   * ide/sample/cvc.fmg
+   * ide/sample/form_prefer.fmg
+   * ide/sample/fp.fmg
+   * ide/sample/newform.fmg
+   * ide/sample/qwerty.fmg
+   * ide/sample/tbarsamp.fmg
+     * Updated copyright info.
+
+2016-05-19 21:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * Some titles in statusbar's properties window.
+
+2016-04-12 21:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * Single quotes were substituted by double quotes to improve readability
+       and facilitate searches.
+     + Some defines to improve readability of complex strings.
+     * Some variable names to improve code readability.
+     - Some comments.
+     ! Some typos.
+     * Some format.
+     - Unneeded code.
+     ! Focus problems with FRAME controls.
+     + IDE can now load controls defined using alternative syntax (except
+       MENU, NODE, SPLITBOX, HOTKEY, INTERNAL and TOOLBAR).
+     + Design form's position is now relative to controls' seleccion window.
+     * The setting of the design window's properties was moved from method
+       Open to method LoadForm.
+     + Support for numeric colors.
+     ! Some potential problems derived from the case of control's name.
+     ! Response of some controls to click, rclick and dblclick events.
+     ! RTE in method DrawOutline because lNoRefresh parameters is not logical.
+     ! Manual Move/Size does not set the focus correctly in some cases.
+     ! Manual Move/Size does not honor CLIENTAREA clause.
+     ! Manual Move/Size of FORM when there are no controls in it.
+     + Some DATAs to CLASS TFormEditor: aFormData , aOnEditCellEnd,
+       aOnInsert, aOnRClick, aOnRowRefresh, aOnScrEndTrack, aOnScrLineLU,
+       aOnScrLineRD, aOnScrLT, aOnScrPageLU, aOnScrPageRD, aOnScrRB,
+       aOnScrThumb and aOnScrTrack.
+     + Some METHODs to CLASS TFormEditor: CheckStringData,
+       PreProcessDefineWindow, ReadCtrlName, ReadFormLogicalData,
+       ReadFormPosition and ReadFormStringData.
+     - METHODs ReadFormCol and ReadFormRow.
+     * METHOD CrtlIsOfType renamed to CtrlIsOfType.
+     * BUTTON's backcolor is not longer forced to form's backcolor.
+     + MonthCalendar's new clauses.
+     * Action and Action2 moved to Events from Properties for TEXT controls.
+     * METHOD PrintBrief now show all events.
+     ; All controls must be defined between DEFINE WINDOW/END WINDOW.
+       Everything defined before the first DEFINE WINDOW of after the
+       first END WINDOW in the fmg file is ignored.
+     ; Only the first DEFINE WINDOW clause is processed, others are
+       ignored.
+     ; The first meaningfull line must start with DEFINE WINDOW TEMPLATE
+       or with DEFINE WINDOW <identifier>.
+
+2016-04-12 19:04 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     ! RTE at  _myInputWindowOk and _myInputWindowCancel functions.
+       ACTION codeblocks of STATUSITEM controls must return logical.
+     * Format.
+
+ 2015-11-07 19:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/compile.bat
+     + Bos Taurus graphic library by Claudio Soto.
+     * Folder for xHarbour to "xhbcc".
+
+2015-09-01 18:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE when adding a new CHECKBOX control.
+
+2015-08-20 21:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     + THMI:myInputWindow() checks for changes before canceling edition.
+
+2015-08-15 10:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Changes in form's size are not detected when made by mouse.
+
+2015-08-01 18:17 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for NOTHEME clause.
+   * ide/prgs/mgide.prg
+     ! Additional libs support.
+     + msimg32 library.
+
+2015-06-08 21:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Support for DEFAULTVALUES clause.
+
+2015-06-08 20:51 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for new clauses.
+
+2015-05-20 19:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for new clauses:
+       ON RCLICK and CHANGEBEFOREEDIT clauses to Grid's syntax.
+       ON RCLICK, CHANGEBEFOREEDIT, CHECKBOXES, ON CHECKCHANGE and
+       ON REFRESHROW clauses to Browse's syntax.
+       ON RCLICK, CHECKBOXES, ON CHECKCHANGE and ON REFRESHROW clauses to
+       XBrowse's syntax.
+       CHECKBOXES, ON CHECKCHANGE and ON REFRESHROW clauses.
+
+2015-05-06 01:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/compile.bat
+     + Message OK/ERROR at end of process.
+
+2015-05-02 11:49 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for SILENT, ENABLEALTA, DISABLEALTA, NOSHOWALWAYS,
+       NONEUNSELS and IGNORENONE clauses in Browse and Grid controls.
+     + Support for SILENT, ENABLEALTA, DISABLEALTA and NOSHOWALWAYS
+       in XBrowse controls.
+
+2015-03-18 20:57 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/compile.bat
+     * Folder for xHarbour to "xhbcc".
+
+2015-03-18 17:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     ! RTE at methods GoLine, LookChanges, PosXY and NextSearch
+       of THMI class.
+
+2015-03-17 22:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/compile.bat
+     * To compile the IDE using xHarbour and BCC.
+   + ide/prgs/mgide.prg
+     ! Compilation under xHarbour.
+     + (x)Harbour and C Compiler versions to About window.
+
+2015-03-14 00:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     + Some Harbour flags.
+     * Some flags commented out.
+   * ide/fmgs/tabprop.fmg
+     ! TABPAGE's images are not changed after editing them.
+   * ide/prgs/mgide.prg
+     - Unused STATIC FUNCTION DatabaseView2.
+
+2015-03-11 21:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/txts/Agregar even-prop.txt
+     * Notes on how to update the IDE.
+
+2015-03-08 23:46 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/fontclrs.fmg
+   * ide/fmgs/form_prefer.fmg
+   * ide/fmgs/mymenued.fmg
+   * ide/fmgs/mytoolbared.fmg
+   * ide/fmgs/orderf.fmg
+   * ide/fmgs/tabprop.fmg
+   * ide/prgs/dbucvc.prg
+   * ide/prgs/formedit.prg
+   * ide/prgs/menued.prg
+   * ide/prgs/mgide.prg
+   * ide/prgs/toolbed.prg
+     * Copyright updated.
+
+2015-03-07 20:40 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE when inserting new RadioGroup.
+
+2015-03-07 20:21 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Browse's NoModalEdit and NavigateByCell clauses.
+
+2015-03-07 15:52 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + RadioGroup's LeftJustify and ReadOnly clauses.
+     + RadioGroup's Width to Manual Move/Size option.
+
+2015-02-28 22:17 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/tabprop.fmg
+   * ide/prgs/formedit.prg
+     + TAB's DELAYMSGS clause.
+
+2015-02-16 01:00 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE when saving new form with empty statusbar.
+     ! Blank line in GRID.
+     * Line's max length.
+
+2015-01-14 18:47 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Default fonttype is not immediately applied to control after
+       closing the dialog.
+     ! Control's order in TAB is changed after adding a new control.
+     ! Control's in TAB are not painted after adding a new control.
+     ! Trailing and leading spaces are being removed from TOOLTIP and
+       CAPTION values of several controls.
+     ! FONTNAME and FONTSIZE oop clauses not always honored.
+     - No longer used CHideControl().
+     + Parameter lNoTrim to StrToStr().
+   * ide/prgs/toolbed.prg
+     ! Trailing and leading spaces are being removed from TOOLTIP and
+       CAPTION values of TOOLBAR controls.
+
+2014-12-04 20:13 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! COMBOBOX's ITEMS clause.
+
+2014-11-26 19:30 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! GRID's DELETE clause.
+
+2014-10-14 20:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Support for BOUNDTEXT clause.
+
+2014-10-06 22:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Missing GRID's CHECKBOXES property and ONCHECKCHANGE,
+       ACTION and ONAPPEND events.
+     ! FORM's GRIPPERTEXT property.
+     ! TREE's ONDROP events.
+
+2014-10-02 19:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! RTE when accessing Events option.
+
+2014-10-01 22:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! TAB control is created with zero width.
+     ! RTE when creating new HYPERLINK control.
+     ! Control inspector looses it's context menu after deleting
+       a SPINNER control.
+     * Windows initial positions.
+   * ide/prgs/mgide.prg
+     * Save/Load editor's windows positions from HMI.INI file.
+
+2014-09-30 22:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! GRIPPERTEXT clause in DEFINE WINDOW.
+     ! Mouse move/size of RADIOGROUP control.
+
+2014-09-30 17:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+   * ide/prgs/mgide.prg
+     ! RTE when loading COMBO control.
+     ! TEXTBOX width and height not loaded properly.
+     * Some changes to reduce repainting.
+
+2014-09-29 22:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/fontclrs.fmg
+   * ide/prgs/formedit.prg
+     ! Control's font and color change.
+     + "Font Type reset to default" option.
+     + Method RecrateControl.
+     ! Controls inside TAB repainted at wrong place.
+     * Comments.
+     - Unneeded functions HB_GetDC and HB_ReleaseDC.
+     ! RadioGroup's click selection.
+   * ide/prgs/mgide.prg
+     ! Controls in myInputWindow overlap statusbar.
+
+2014-09-28 23:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/tabprop.fmg
+     * All function names changed to English.
+   * ide/prgs/formedit.prg
+     * Displayed controls are recreated after modifying a property.
+     ! The context menu of some controls is not working.
+     * All function names changed to English.
+     ! Controls are always placed outside tabs.
+     ! Not all tab pages are shown in "Control's TabStop Order" window.
+     ! Error message displayed when editing tab's properties.
+     ! Page's images names not save/loaded properly.
+     ! RTE when creating a new tab control.
+     ! Not all controls in tab pages are saved.
+     ! Wrong value property of IPADDRESS control.
+     ! HORIZONTAL clause in RADIOGROUP control.
+     ! VALUE clause in IPADDRESS control.
+     ! Default values of property FOCUSEDPOS.
+   * ide/prgs/mgide.prg
+     + myTProgressBar class.
+   * include/i_button.ch
+     ! CHECKBUTTON command is not working properly.
+
+2014-09-25 23:09 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * All methods names changed to English.
+     * All comments changed to English.
+     ! CLIENTAREA clause in designed form.
+     + T*O*D*O notes.
+     ! Just added control is not outlined.
+     ! The context menu of some controls is not working.
+     ! Picture controls are not saved properly.
+     ! Frame is not selected if it's the first clicked control after
+       loading the fmg.
+     ! RTE when adding a control after a HOTKEYBOX was added.
+     ! RTE when clicking on form after deleting a control.
+   * ide/prgs/mgide.prg
+     - DECLARE WINDOW sentences.
+     + T*O*D*O notes.
+
+2014-09-24 23:59 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/orderf.fmg
+     * Name of dymamic controls and called methods.
+     * Design.
+   * ide/fmgs/tabprop.fmg
+     + Validation to avoid duplicated control's name.
+   * ide/prgs/formedit.prg
+     ! RTE when 2 controls in the loaded form have the same name.
+     % Access to controls.
+     * Some methods and vars renamed.
+     ! Deletion of tabpage.
+     ! Keyboard size commands.
+     ! Control move and size using the mouse.
+     * Do not draw points over toolbar if one exists.
+     ! RTE when changing form's properties.
+     ! Some form's events are not saved.
+     ! CLIENTAREA clause in designed form.
+     - METHOD LeaDatoStatus.
+     ! Keywords inside properties' values are detected as clauses.
+     ! Return focus to designed form after save.
+   * ide/prgs/menued.prg
+     * Set focus on designed form after exit.
+   * ide/prgs/toolbed.prg
+     ! Empty button tooltip.
+     * Set focus on designed form after exit.
+
+2014-09-22 23:52 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   - ide/fmgs/tabevent.fmg
+   * ide/fmgs/tabprop.fmg
+     * MODAL clause.
+   * ide/prgs/formedit.prg
+     % Method Events_Click.
+     - Method TabEvents().
+     ! RTE when saving form with 2 TAB controls.
+     * Validation of TAB pages' properties.
+     ! Empty TAB page is not saved.
+     + Support for SCROLLBAR controls.
+
+2014-09-21 23:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     + Compile switch -es2
+   * ide/mgide.rc
+     + Bitmaps for new controls.
+   + ide/imgs/activex.bmp
+   + ide/imgs/atext.bmp
+   + ide/imgs/checklist.bmp
+   + ide/imgs/hkb.bmp
+   + ide/imgs/meter.bmp
+   + ide/imgs/picture.bmp
+   + ide/imgs/scrollbar.bmp
+   + ide/imgs/timep.bmp
+   + ide/imgs/xbrowse.bmp
+   * ide/prgs/formedit.prg
+     + Context and Notify menus of the designed form are simulated
+       through new options in the context menu of the IDE.
+     + Support for ACTIVEX, CHECKLIST, HOTKEYBOX, PICTURE and
+      PROGRESSMETER controls.
+     + Copy control to context menu.
+   * ide/prgs/menued.prg
+     ! An empty menu is created in the design form when no
+       menu is defined.
+     + Context and Notify menus creation.
+
+2014-09-19 18:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * References to tabeven.fmg changed by tabevent.fmg
+
+2014-09-19 18:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/tabevent.fmg
+     Note: it's tabeven.fmg, revision 1.5, renamed.
+
+2014-09-19 18:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/tabevent.fmg
+     Note: it's tabeven.fmg, revision 1.4, renamed.
+
+2014-09-19 18:08 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/tabevent.fmg
+     Note: it's tabeven.fmg, revision 1.3, renamed.
+
+2014-09-19 18:06 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/tabevent.fmg
+     Note: it's tabeven.fmg, revision 1.2, renamed.
+
+2014-09-19 18:04 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/tabevent.fmg
+     Note: it's tabeven.fmg, revision 1.1, renamed.
+
+2014-09-19 18:02 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   - ide/fmgs/tabeven.fmg
+     Note: wrong CVS Id.
+
+2014-09-19 17:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * References to intfonco.fmg changed by fontclrs.fmg
+
+2014-09-19 17:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.6, renamed.
+
+2014-09-19 17:49 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.5, renamed.
+
+2014-09-19 17:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.4, renamed.
+
+2014-09-19 17:46 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.3, renamed.
+
+2014-09-19 17:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.2, renamed.
+
+2014-09-19 17:40 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/fontclrs.fmg
+     Note: it's intfonco.fmg, revision 1.1, renamed.
+
+2014-09-19 17:34 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   - ide/fmgs/intfonco.fmg
+     Note: still wrong CVS Id.
+
+2014-09-19 17:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/fmgs/intfonco.fmg
+     Revision number 1.1
+
+2014-09-19 17:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   - ide/fmgs/intfonco.fmg
+     Note: only way to correct wrong CVS Id.
+
+2014-09-19 17:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/menued.prg
+     ! Wrong spacing in DROPDOWN MENU structure.
+     + Support for missing properties in DROPDOWN and MAIN menus.
+   * ide/prgs/toolbed.prg
+     ! Data from first item not loaded at startup.
+   * ide/fmgs/mytoolbared.fmg
+     * Text values are alltrimed before asigning them to DATAs.
+   * ide/prgs/mgide.prg
+   * ide/prgs/formedit.prg
+     * Use HB_MemoWrit to get rid of EOF char.
+
+2014-09-18 23:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/intfonco.fmg
+   * ide/fmgs/tabeven.fmg
+     ! Wrong CVS Id.
+
+2014-09-18 23:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/mymenued.fmg
+     ! RTE in TMyMenuEditor:Edit().
+     ! Data from first item not loaded at startup.
+     ! Items are missing.
+     + Support for missing properties.
+   * ide/fmgs/mytoolbared.fmg
+     ! RTE in TMyToolBarEditor:Edit().
+   * ide/fmgs/tabeven.fmg
+     + BACKCOLOR clause to DEFINE WINDOW.
+   * ide/prgs/mgide.prg
+     ! RTE in THMI:Preferences().
+   * ide/prgs/toolbed.prg
+     + Support for missing property.
+   * ide/prgs/formedit.prg
+     * Do not force backcolor on CHECKBOX control.
+     ! RTE when editing form's font.
+     ! RTE when editing control's font.
+   * ide/prgs/menued.prg
+     ! Item's list is not being updated.
+     + Support for creating a dropdown menu on the fly.
+     + Support for showing menu properties in the designed form.
+     + Support for missing properties.
+     ! Spacing in fmg output.
+     - Unused lev field.
+
+2014-09-17 22:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/toolbed.prg
+     - Unneeded code.
+     * Toolbar control is shown using the defined properties.
+
+2014-09-16 21:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/mytoolbared.fmg
+     + Support for missing properties.
+   * ide/prgs/dbucvc.prg
+     * Format.
+   * ide/prgs/formedit.prg
+     * Format.
+     ! RTE in CHECKBOX with THREESTATE clause.
+     * Do not force backcolor on FRAME and CHECKBOX.
+     * Use combo instead of textbox for editing CHECKBOX's value.
+   * ide/prgs/menued.prg
+     * Format.
+   * ide/prgs/mgide.prg
+     * Format.
+   * ide/prgs/toolbed.prg
+     + Support for missing properties.
+
+2014-09-15 01:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     * Updated.
+   - ide/fmgs/tboptions.fmg
+   * ide/fmgs/form_prefer.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/intfonco.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/mymenued.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/mytoolbared.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/orderf.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/tabeven.fmg
+     * Changed to IDE's format.
+   * ide/fmgs/tabprop.fmg
+     * Changed to IDE's format.
+   * ide/prgs/dbucvc.prg
+     + Copyright and licence notice.
+     * Compiler warnings fixed when using -w3 switch.
+   * ide/prgs/formedit.prg
+     + Copyright and licence notice.
+     * Compiler warnings fixed when using -w3 switch.
+     * TForm1 class renamed to TFormEditor.
+     * Horizontal (Form_Main) and vertical (cvcControls) "toolbars"
+       moved from THMI class.
+     * TFormEditor class no longer uses public variables. This enables
+       the (no yet implemented) simultaneous edition of 2 or more forms.
+     + More info to "Print Brief" option.
+       Thanks to Ricardo Sassy for this contribution.
+     + Support for XBROWSE and TIMEPICKER controls.
+     * Format.
+   - ide/prgs/intfocop.prg
+   * ide/prgs/menued.prg
+     + Copyright and licence notice.
+     * TmyMenuEd class renamed to TMyMenuEditor.
+     * TMyMenuEditor class no longer uses public variables nor fixed
+       workareas nor fixed filenames.
+     * Some methods added, others renamed.
+     * Compiler warnings fixed when using -w3 switch.
+     * Format.
+   * ide/prgs/mgide.prg
+     + Copyright and licence notice.
+     * TmyMenuEd class renamed to TMyMenuEditor.
+     * TMyMenuEditor class no longer uses public variables nor fixed
+       workareas nor fixed filenames.
+     * Some methods added, others renamed.
+     * Horizontal (Form_Main) and vertical (cvcControls) "toolbars"
+       moved to TFormEditor class.
+     * Compiler warnings fixed when using -w3 switch.
+     * Format.
+   - ide/prgs/moside.prg
+   - ide/prgs/orden.prg
+   - ide/prgs/propeven.prg
+   - ide/prgs/repoedit.prg
+   - ide/prgs/saveform.prg
+   * ide/prgs/toolbed.prg
+     + Copyright and licence notice.
+     * Tmytoolbared class renamed to TMyToolBarEditor.
+     * TMyToolBarEditor class no longer uses public variables nor fixed
+       workareas nor fixed filenames.
+     * Some methods added, others renamed.
+     * Compiler warnings fixed when using -w3 switch.
+     * Format.
+
+2014-08-13 20:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + "Print Brief" option to context menu.
+       Thanks to Ricardo Sassy for this contribution.
+     ! Duplicate add to properties arrays.
+     * Method IniArray: some references to myForm: replaced by ::
+
+2014-07-22 17:19 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     - Unneeded message box.
+
+2014-07-22 17:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     ! HMI.INI is saved in/readed from the wrong folder.
+
+2014-07-21 22:08 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/form_prefer.fmg
+     * Restored missing Id.
+
+2014-07-21 21:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/dbucvc.prg
+     * Public variables made static.
+   * ide/prgs/propeven.prg
+     ! RTE when trying to change ANIMATEBOX properties.
+     * Tab properties form now allows exiting with ESC and X button.
+   * ide/prgs/moside.prg
+     * The number of pixels that a control is moved/sized by keyboard
+       move option is now configurable (see THMI:nPxMove).
+       Thanks to Ricardo Sassy for this contribution.
+     * The number of pixels that a control is sized by keyboard size
+       option is now configurable (see THMI:nPxSize).
+   * ide/prgs/formedit.prg
+     + "Global Vert Gap Change" option (see THMI:nStdVertGap).
+       Thanks to Ricardo Sassy for this contribution.
+   * ide/prgs/mgide.prg
+     * Comments.
+     - Publics exedir, rtl, mgideFolder, pmgFolder, csyscolor and cvccvar.
+     * Format.
+     + VAR lCloseOnFormExit to THMI.
+     + VAR nPxMove to THMI, it's loaded/saved from HMI.INI
+     + VAR nPxSize to THMI, it's loaded/saved from HMI.INI
+     + VAR nStdVertGap to THMI, it's loaded/saved from HMI.INI
+     * VAR _ncaretpos renamed to nCaretPos.
+     * VAR cHelpFolder renamed to cIDE_Folder.
+     * Parameter processing. Now ::cFile holds received data.
+     + Methods ReadINI and SaveINI.
+     * While loading, the IDE will first read HMI.INI from it's startup
+       folder (an empty one is created there if it doesn't exist).
+       This file sets default values for all projects.
+       When a project is opened, the IDE will try to read HMI.INI from
+       the project's folder (an empty one is created there if it doesn't
+       exist). This file sets default values for his project only.
+       When a form is opened directly, the IDE will try to read HMI.INI
+       from the current folder. This file sets default values for this
+       form only.
+     * Project folder is no longer readed from HMI.INI, instead it's
+       deduced from parameter or assumed it's the current folder.
+     * Preference window shows path to HMI.INI
+     - Function OpenAuxi.
+     + Method OpenAuxi.
+     * Some variables names that were equal to VARs names.
+   * ide/fmgs/form_prefer.fmg
+     + New controls for nStdVertGap, nPxMove and nPxSize.
+
+2014-07-20 09:34 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Global move/resize is not applied to the selected controls.
+
+2014-07-18 22:45 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + Parameter lNoRefresh to functions Dibuja and Dibuja1.
+     * "Control inspector" window is aligned with "Controls" window.
+     % Function SelectControl to avoid double erase/paint.
+     * Function MisPuntos to exclude statusbar area.
+     * Format.
+   * ide/prgs/moside.prg
+     % Functions ManualMoSI, KMueve and SizeControl: deleted unneeded
+       call to RefreshControlInspector.
+     % Function MoveControl, to avoid double erase/paint.
+     * Message in function DeleteControl.
+     * Function ManualMoSI, to avoid assigning negative values.
+     - Commented code.
+   * ide/prgs/mgide.prg
+     * "Controls" window position is now relative to main form.
+
+2014-07-18 13:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! "Control inspector" shows no rows when form has no controls.
+     * Redraw is disabled while "Control inspector" is updated.
+     * Redraw is disabled while processing global move/resize.
+
+2014-07-18 12:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! New control created with method CopyControl has wrong name.
+     * "Control inspector" position changed to not overlap form.
+     * "Control inspector" shows controls types in a new column.
+     * Help text in "Control inspector" window.
+     - Comments.
+
+2014-07-17 23:56 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * Use an array to hold control's counters instead on individual vars.
+     + Methods CopyControl and CreateControl.
+     * Method AddControl.
+     ! "Control inspector" is not refreshed after global changes.
+     * "Control inspector" selected row changes when a control is
+       selected in the form.
+     * The control selected in the form changes when the selected row
+       in the "Control inspector" changes.
+     * When more than on row is selected in the "Control inspector"
+       no control is selected in the form.
+     + Global align/resize options in the context menu.
+       Thanks to Ricardo Sassy for this contribution.
+     ! RTE because method Cerrar is not defined.
+     ! RTE in function pCheckBox.
+     % Function ProcesaControl.
+     * Format.
+     * Comments.
+
+2014-07-16 23:59 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/form_prefer.fmg
+     + New controls for labels and textboxs default height.
+     * Format.
+   * ide/prgs/toolbed.prg
+     + Method Close.
+   * ide/prgs/saveform.prg
+     + Function StrToStr to convert strings vars to quoted strings
+       constants for writing them into the .fmg file.
+     ; Now string constants (e.g. values, tooltips, caption) can
+       include ' and ". The only restriction is that the strings
+       must not include chars ' and " and ( [ or ] ).
+   * ide/prgs/propeven.prg
+     + Update of "Control Inspector" grid when the properties of a
+       control are modified.
+   * ide/prgs/moside.prg
+     * Format.
+     - Comments.
+     + Update of "Control Inspector" grid when the position or
+       dimensiones of a control are modified, and when a control
+       is deleted.
+     * Function chiffram renamed to CheckIfIsFrame.
+   * ide/prgs/mgide.prg
+     + DATAs nTextBoxHeight and nLabelHeight to THMI class.
+     + The default height of LABEL and TEXTBOX controls can be
+       configurated via Preferences menu. Values are saved to INI.
+       Use 0 to default to OOHG's default values (24).
+       Thanks to Ricardo Sassy for this contribution.
+     + Functions Minim() and Maxim() to minimize and restore forms.
+     - Function RefreFo.
+     * Messages.
+     * Var names to avoid conflict with T*O*D*O notes.
+     * Method ExitForm uses TFORM1:ReleaseForms instead of realeasing
+       the forms manually.
+     * Functions Sale, _myInputWindowOk and _myInputWindowCancel made
+       statics.
+   * ide/prgs/formedit.prg
+     * Comments.
+     * Format.
+     + Methods MinimizeForms, ReleaseForms and RestoreForms.
+     ! Wrong initialitation of TRANSPARENT property.
+       Thanks to Ricardo Sassy for this fix.
+     % Method IniArray.
+     * Function myaDel no longer uses macros.
+     * Call to function chiffram changed by CheckIfIsFrame.
+     * Tooltips.
+     * Function muestrasino() renamed to RefreshControlInspector().
+     ! Height of "Control Inspector" grid is wrong under XP.
+     ! "Control Inspector" grid looses focus after editing.
+     * Some references to myForm: by ::
+     * Use method tMyToolb:Cerrar() instead of just closing the workarea.
+     * Default to 'F' instead of '' in all calls to method LeaDatoLogic.
+     * Method LeaDatoLogic validates default value.
+     * Controls that represent LABEL, RADIOGROUP, ANIMATEBOX, IMAGE and
+       CHECKBOX controls, are created with TRANSPARENT clause if the
+       controls definitions in the .fmg contain this clause.
+     % Function ProcessContainers().
+     - Functions Minim() and Maxim().
+     * Function SetHeightForWholeRows now receives the available height
+       and returns the height needed to show only whole rows.
+
+2014-07-14 18:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/intfocop.prg
+     ! RTE when changing form's font size.
+     ; Thanks to Ricardo Sassy for this fix.
+   * ide/prgs/formedit.prg
+     * Format.
+     ! NOSIZE clause in DEFINE WINDOW was read as (font) SIZE.
+       Functions LeaXXXXXX() now search for key words and names
+       surrounded by spaces.
+     + Comments.
+     * Control inspector now shows only whole rows.
+     * Method Clean no longer deletes ' and ".
+     % Some code.
+   * ide/prgs/saveform.prg
+     + Comments.
+     ! Default VALUE clause when saving an HYPERLINK control.
+
+2014-07-12 12:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     * Value for TRANSPARENT property defaults to .T.
+     + DblClick on the selected control shows the properties window.
+     ! TRANSPARENT property is wrongly loaded.
+     ; Thanks to Ricardo Sassy for this contribution.
+
+2014-07-10 22:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/propeven.prg
+     ! RTE when creating a FRAME control.
+     ; Thanks to Ricardo Sassy for this fix.
+
+2014-07-10 22:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/formedit.prg
+     ! RTE when creating a new control.
+
+2014-07-10 22:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/propeven.prg
+     ! RTE when creating a FRAME control.
+     ; Thanks to Ricardo Sassy for this fix.
+
+2014-07-09 18:40 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/intfocop.prg
+     ! Form's fontcolor not setted.
+   * ide/prgs/saveform.prg
+   * ide/prgs/formedit.prg
+   * ide/prgs/propeven.prg
+   * ide/prgs/order.prg
+     + ACTION, ACTION2 and IMAGE clauses to TEXTBOX control.
+     ; Thanks to Ricardo Sassy for this contribution.
+   * ide/prgs/formedit.prg
+     ! Missing caption in newly created BUTTON control.
+
+2014-07-08 00:02 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     + DATA cFFontColor.
+     * DATA cFFontName inital value.
+     * DATA nFFontSize inital value.
+     - METHOD FillControlAux.
+     - Comments.
+     - Unused code.
+     * New forms are created using the preferred font/size/color
+       or OOHG's default.
+     * Control inspector message.
+     ! Error loading toolbar.
+     + FONTCOLOR clause recognition when loading DEFINE WINDOW.
+   * ide/fmgs/form_prefer.fmg
+     + Default font for newly created forms to Preferences/Other.
+     - Unneeded code.
+   * ide/prgs/mgide.prg
+     * Format.
+     + Default font for newly created forms to Preferences/Other.
+     - PUBLIC whlp.
+     + DATA cFormDefFontName INIT 'MS Sans Serif'.
+     + DATA nFormDefFontSize INIT 10.
+     + DATA cFormDefFontColor INIT '{0, 0, 0}'.
+     + New DATAs to INI file.
+     + Default font for newly created forms to Preferences/Other.
+     + Functions GetPreferredFont and ResetPreferredFont.
+   * ide/prgs/intfocop.prg
+     + TO*DO.
+   * ide/prgs/saveform.prg
+     * Do not force form's size to 10 if it's NIL.
+     + Save FONTCOLOR clause for forms.
+
+2014-07-06 22:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     - Comments.
+     * Format.
+     * New control backcolor and fontcolor default to NIL.
+       If the color is not changed, the control will be saved to the
+       FMG without BACKCOLOR and FONTCOLOR clauses. This way the
+       control can default to form's colors.
+     * New control fontname defaults to "" and fontsize defaults to
+       0. If they're not changed, the control  will be saved to the
+       FMG without FONT and SIZE clauses. This way the control can
+       default to form's fontname and fontsize.
+     * The label representing IPADDRESS control is now created without
+       FONT and SIZE clauses. This way the label defaults to form's
+       fontname and fontsize.
+     * New forms are created without FONT and SIZE clauses. This way
+       they default to OOHG's values ("Arial" and 9).
+     * Width of Control Inspector form.
+
+2014-07-06 17:10 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     ! Display "   .   .   .   " when IPADDRESS's value clause is
+       not present.
+
+2014-07-06 16:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/saveform.prg
+     ! Value of IPADDRESS not saved properly to FMG.
+   * ide/prgs/formedit.prg
+     ! Display 127.000.000.0001 instead of value of IPADDRESS control.
+
+2014-07-06 12:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/saveform.prg
+     * Get rid of double spaces at EOL in saved FMG.
+     * Get rid of extra line between controls in saved FMG.
+     ! Value of IPADDRESS not saved properly to FMG.
+     ! NIL colors are saved to FMG.
+   * ide/prgs/intfocop.prg
+     * Format.
+   * ide/prgs/formedit.prg
+     * Format.
+     * Control's fontname and fontsize do not default to form's.
+     * All colors default to 'NIL'.
+     * Do not force colors to form's.
+
+2014-07-05 15:45 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     - Duplicated define.
+
+2014-07-04 19:33 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/formedit.prg
+     - Duplicated define.
+     + Comments.
+
+2014-07-04 17:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/mgide.prg
+     - Comments.
+     * Format.
+   * ide/prgs/orden.prg
+     ! Missing swap of recently added properties.
+   * ide/prgs/formedit.prg
+     ! Missing resize of aBorder array.
+     ; Thanks to Gustavo C. Asborno for his help.
+     + Unneeded method End of class TForm1.
+     - Comments.
+     * Format.
+     * Method Open of TForm1 to handle lines without a space at the end.
+     * Method LeaDato_oop of TForm1 to return default value if an
+       = char is not present in the line.
+     * Method LeaDatoStatus of TForm1 to return default value if the
+       property value is not present.
+     * Method LeaDatoStatus of TForm1 to check if ";" is at the line's end.
+     * Method LeaDato of TForm1 to return default value if the
+       property value is not present.
+     * Method LeaDatoStatu of TForm1 to check if ";" is at the line's end.
+     * Some functions p(Control): default unused properties to control's
+       defaulta values.
+     * Some functions p(Control): read more properties from preferred
+       syntax. Support for reading semi-oop syntax was preserved.
+     + Properties to IMAGE and LABEL.
+     * Use Eof() instead of RecCount().
+   * ide/prgs/saveform.prg
+     * Indentation of generated FMG.
+     * Avoid ";" at the last line of a control.
+     * Use Eof() instead of RecCount().
+     * Comments.
+     * Format.
+     + Detail of missing clauses for BUTTON, CHECKBOX, TREE, LIST, COMBO,
+       CHECKBUTTON, GRID, BROWSE, IMAGE, TIMER, ANIMATEBOX, DATEPICKER,
+       TEXT, EDIT, RICHEDIT, IPADDRESS, HYPERLINK, .
+     + Clauses FontColor, Bold, Italic, Underline, Strikeout,
+       BackColor, Invisible and Disabled to TREE.
+     + Clauses ToolTip, Invisible and Disabled to ANIMATEBOX.
+     + Clauses FontColor, Bold, Italic, Underline, Strikeout,
+       BackColor, Invisible and Disabled to IPADDRESS control.
+     + Clauses FontColor, Bold, Italic, Underline, Strikeout,
+       BackColor, Invisible and Disabled to HYPERLINK control.
+
+2014-06-25 23:13 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide/txts/changelog.txt
+     * Updated.
+   * ide/prgs/formedit.prg
+   * ide/prgs/propeven.prg
+   * ide/prgs/saveform.prg
+     + Support for Label's BORDER clause.
+     + Support for Grid's ON ENTER clause.
+     + Support for ON MAXIMIZE and ON MINIMIZE form's clauses.
+     ; Thanks to Gustavo C. Asborno for his code.
+
+2014-06-25 17:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/toolbed.prg
+     * Handling of SET DELETED.
+     * Messages.
+   * ide/prgs/orden.prg
+     * Format.
+   * ide/prgs/menued.prg
+     * Format.
+     - Inkey() call.
+   * ide/prgs/dbucvc.prg
+     * Messages.
+     * Handling of SET DELETED and SET INTERACTIVECLOSE.
+     - Unused code.
+     * Format.
+   * ide/prgs/mgide.prg
+     - Unneeded sets.
+     * Format.
+     + Missing SET INTERACTIVECLOSE OFF.
+     - Comments.
+     * Handling of SET DELETED.
+   * ide/prgs/propeven.prg
+   * ide/prgs/saveform.prg
+   + ide/fmgs/tabprop.fmg
+     + Support for OBJ property.
+     ; Thanks to Gustavo C. Asborno for his code.
+     * Format.
+     * FMG cleanup.
+
+2014-06-24 21:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/moside.prg
+     + Ctrl+Left to reduce control's widht.
+     + Ctrl+Right to increase control's widht.
+     + Ctrl+Up to reduce control's height.
+     + Ctrl+Down to increase control's height.
+     ; Thanks to David Field for his code.
+     * Message.
+   * ide/prgs/formedit.prg
+     * Message.
+     * Format.
+
+2014-06-24 14:40 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/prgs/menued.prg
+     ! DEFINE instead of DECLARE.
+   * ide/fmgs/orderf.fmg
+     ! Last change reverted.
+   * ide/prgs/mgide.prg
+     * Some format.
+
+2014-06-19 15:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/form_prefer.fmg
+     * Use :: instead of myIde:
+   * ide/fmgs/intfonco.fmg
+     + myIde in call to function sdefcol.
+   * ide/fmgs/mymenued.fmg
+     * Use ::cfBackcolor instead of myIde:asystemcolor.
+     * Use :: instead of TMyMenu::
+   * ide/fmgs/mytoolbared.fmg
+     * Use ::Backcolor instead of myIde:asystemcolor.
+   * ide/fmgs/orderf.fmg
+     * Use :: instead of myIde:
+   * ide/prgs/dbucvc.prg
+     + myIde parameter to function DatabaseView1.
+   * ide/prgs/formedit.prg
+     * Format.
+     * Comments.
+     + DATA myIde to CLASS TForm1.
+     + myIde parameter to method vd.
+     * Use ::cfbackcolor instead of myform:cfbackcolor.
+     * Use :: instead of myform:
+     * Use ::myIde instead of myIde in all methods of TForm1.
+     + myIde parameter to functions ms, ppiccheckbutt, panimatebox,
+       pbrowse, pbutton, pcheckbox, pcheckbtn, pcombobox, pdatepicker,
+       peditbox, pframe, pgrid, phyplink, pimage, pipaddress, plabel,
+       plistbox, pmonthcal, ppicbutt, pplayer, pprogressbar, ptimer,
+       pradiogroup, prichedit, pslider, pspinner, ptextbox, ptree,
+       ProcessContainers, ProcessContainersfill and HELP_F1.
+     - Dummy procedure pulse.
+     * CursorMove call substituted by ooHG's CursorHand.
+     * CursorSize call substituted by ooHG's CursorSizeNESE.
+     % Function DebugT.
+     - C_SETFOCUS, INTERACTIVESIZE, INTERACTIVEMOVE, LOADCURSOR2,
+       CURSORHAND, CURSORSIZE and CURSORMOVE.
+   * ide/prgs/intfocop.prg
+     + myIde parameter to functions intfoco, intfoco1 and sdefcol.
+     - Commented code.
+     * Format.
+     * References to form_1 now use object.
+   * ide/prgs/menued.prg
+     + DATA cfBackcolor to CLASS TmyMenuEd.
+     * Use :: instead of tmymenu:
+     * Use myMenuEd. instead of myMenuEd: to avoid using a private var.
+   * ide/prgs/mgide.prg
+     * Some format.
+     * Message titles.
+     * Translated non-english messages.
+     - PUBLICs cDrive and editbcvc.
+     * Global SETs moved to CLASS THMI.
+     + DATA cHelpFolder to CLASS THMI.
+     - CONSTRUCTOR clause from method NewIde of THMI.
+     - Unused methods End and SetAsMain of THMI.
+     * cHelpDir substituted by ::cHelpFolder.
+     * Use :: instead of myide:
+     - Commented code.
+     - Function ayuhelp.
+     * Function BorraObj.
+     + myIde parameter to functions CompileOptions, openauxi, databaseview2
+     * Copyright notice.
+     + Added support for multiple RC files in methods BldMinGW,
+       xBldMinGW, BuildBCC, xBuildBCC, XBldPellC, BldPellC
+     + Building synchronized with standard bats.
+     ! Compilation with compile.bat
+     + Rename and move of exe file.
+     - Function GETEXEFILENAME.
+     + Function ZAPDIRECTORY.
+   * ide/prgs/moside.prg
+     + myIde parameter to functions kmove, kmueve, MoveControl and
+       manualmosi.
+   * ide/prgs/orden.prg
+     + myIde parameter to function OrderControl.
+   * ide/prgs/propeven.prg
+     + myIde parameter to functions Properties_Click, Events_Click,
+       FrmProperties, FrmEvents, StatPropEvents and TabProp.
+   * ide/prgs/repoedit.prg
+     + myIde parameter to functions Repo_Edit, LeaDatoR, LeaDatoLogicR.
+     * Format.
+     * Message titles.
+     * Unused functions commented out.
+   * ide/prgs/saveform.prg
+     * Copyright notice.
+   * ide/prgs/toolbed.prg
+     + DATA BackColor to CLASS Tmytoolbared.
+     * Use myToolbarEd. instead of myToolbarEd: to avoid using a
+       private var.
+     * Use :: instead of tmytoolb:
+     + tMyToolb parameter to function tbparsea.
+
+2014-05-22 19:06 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     - Unneeded files.
+     * Include flag.
+
+2014-04-22 21:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     ! Temporary log file is not deleted.
+     * Delete auxiliary files builded for compilation.
+     * Temporary files moved to project's folder.
+     * Some comments deleted.
+     * Some messages.
+     * Method BldMinGW.
+     * Method SaveProject.
+     - Flag -mno-cygwin.
+     * Title of some msginfo windows.
+     * Default libraries at link time.
+     * Default compiler from BCC to MinGW.
+     * Format.
+       TODO: add a switch to avoid deleting temporary files.
+       TODO: localize messages.
+
+2014-04-16 22:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     ! Exe runs in "Build Project" option.
+
+2014-04-16 21:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/fmgs/mymenued.fmg
+     ! Harbour warning.
+   * ide/mgide.prg
+     ! Build type "compile.bat" is not working.
+     ! Warning when compile.bat is not in the current folder.
+
+2014-04-14 21:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/build.bat
+     + Default path.
+     + Comments.
+     * Use ./buildapp.bat to compile.
+   - ide/build2.bat
+   * ide/mgide.hbp
+     * Comments.
+     - Redundant options.
+   * ide/mgide.rc
+     - Redundant inclusion of oohg resources.
+   - ide/imgs/tollbarbuilder.bmp
+   + ide/imgs/toolbarbuilder.bmp
+
+2014-04-13 21:14 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + ide
+   + ide/build.bat
+   + ide/build2.bat
+   + ide/mgide.hbp
+   + ide/mgide.rc
+   + ide/fmgs
+   + ide/fmgs/form_prefer.fmg
+   + ide/fmgs/intfonco.fmg
+   + ide/fmgs/mymenued.fmg
+   + ide/fmgs/mytoolbared.fmg
+   + ide/fmgs/orderf.fmg
+   + ide/fmgs/tabeven.fmg
+   + ide/fmgs/tabprop.fmg
+   + ide/fmgs/tboptions.fmg
+   + ide/imgs
+   + ide/imgs/animatebox.bmp
+   + ide/imgs/bebox.bmp
+   + ide/imgs/bprinter.bmp
+   + ide/imgs/br_ok.bmp
+   + ide/imgs/browse.bmp
+   + ide/imgs/build.bmp
+   + ide/imgs/build_run.bmp
+   + ide/imgs/bus.bmp
+   + ide/imgs/button.bmp
+   + ide/imgs/checkbox.bmp
+   + ide/imgs/checkbutton.bmp
+   + ide/imgs/cl_fl.bmp
+   + ide/imgs/combobox.bmp
+   + ide/imgs/contextmenubuilder.bmp
+   + ide/imgs/controlorder.bmp
+   + ide/imgs/cp_settings.bmp
+   + ide/imgs/cvcbmp.bmp
+   + ide/imgs/data_manager.bmp
+   + ide/imgs/datepicker.bmp
+   + ide/imgs/delete.bmp
+   + ide/imgs/deletecontrol.bmp
+   + ide/imgs/demo.bmp
+   + ide/imgs/doc.bmp
+   + ide/imgs/doc_fl.bmp
+   + ide/imgs/dropdownmenubuilder.bmp
+   + ide/imgs/edit.ico
+   + ide/imgs/editbox.bmp
+   + ide/imgs/event.bmp
+   + ide/imgs/exit.bmp
+   + ide/imgs/find.bmp
+   + ide/imgs/fontcolor.bmp
+   + ide/imgs/frame.bmp
+   + ide/imgs/go.bmp
+   + ide/imgs/grid.bmp
+   + ide/imgs/hmi.jpg
+   + ide/imgs/hmiq.jpg
+   + ide/imgs/hyplink.bmp
+   + ide/imgs/image.bmp
+   + ide/imgs/imagebutton.bmp
+   + ide/imgs/imagecheckbutton.bmp
+   + ide/imgs/intermove.bmp
+   + ide/imgs/intermove2.bmp
+   + ide/imgs/ipaddr.bmp
+   + ide/imgs/label.bmp
+   + ide/imgs/left.bmp
+   + ide/imgs/listbox.bmp
+   + ide/imgs/mainmenubuilder.bmp
+   + ide/imgs/manualsize.bmp
+   + ide/imgs/menu.bmp
+   + ide/imgs/mod.bmp
+   + ide/imgs/monthcal.bmp
+   + ide/imgs/move.bmp
+   + ide/imgs/new.bmp
+   + ide/imgs/new_project.bmp
+   + ide/imgs/next.bmp
+   + ide/imgs/notifymenubuilder.bmp
+   + ide/imgs/oohgjpg.jpg
+   + ide/imgs/op_fl.bmp
+   + ide/imgs/open.bmp
+   + ide/imgs/open_project.bmp
+   + ide/imgs/player.bmp
+   + ide/imgs/print.bmp
+   + ide/imgs/progressbar.bmp
+   + ide/imgs/properties.bmp
+   + ide/imgs/radiogroup.bmp
+   + ide/imgs/remov.bmp
+   + ide/imgs/richedit.bmp
+   + ide/imgs/run.bmp
+   + ide/imgs/save.bmp
+   + ide/imgs/saveas.bmp
+   + ide/imgs/search.bmp
+   + ide/imgs/select.bmp
+   + ide/imgs/slider.bmp
+   + ide/imgs/spinner.bmp
+   + ide/imgs/stat.bmp
+   + ide/imgs/status.bmp
+   + ide/imgs/statusbarbuilder.bmp
+   + ide/imgs/tab.bmp
+   + ide/imgs/tbarb.bmp
+   + ide/imgs/tbbuild.bmp
+   + ide/imgs/tbbuild2.bmp
+   + ide/imgs/tbfind.bmp
+   + ide/imgs/tbmod.bmp
+   + ide/imgs/tbmod1.bmp
+   + ide/imgs/tbmod2.bmp
+   + ide/imgs/tbnew.bmp
+   + ide/imgs/tbprint.bmp
+   + ide/imgs/tbqbrow.bmp
+   + ide/imgs/tbremove.bmp
+   + ide/imgs/tbrun.bmp
+   + ide/imgs/teven.bmp
+   + ide/imgs/textbox.bmp
+   + ide/imgs/tfoco.bmp
+   + ide/imgs/tframe.bmp
+   + ide/imgs/timer.bmp
+   + ide/imgs/tollbarbuilder.bmp
+   + ide/imgs/torder.bmp
+   + ide/imgs/tprop.bmp
+   + ide/imgs/tree.bmp
+   + ide/imgs/tstat.bmp
+   + ide/imgs/vd.ico
+   + ide/imgs/wd.bmp
+   + ide/prgs
+   + ide/prgs/dbucvc.prg
+   + ide/prgs/formedit.prg
+   + ide/prgs/intfocop.prg
+   + ide/prgs/menued.prg
+   + ide/prgs/mgide.prg
+   + ide/prgs/moside.prg
+   + ide/prgs/orden.prg
+   + ide/prgs/propeven.prg
+   + ide/prgs/repoedit.prg
+   + ide/prgs/saveform.prg
+   + ide/prgs/toolbed.prg
+   + ide/sample
+   + ide/sample/brmake.ini
+   + ide/sample/check.bmp
+   + ide/sample/ciro.hpj
+   + ide/sample/ciro.pmg
+   + ide/sample/ciro.prg
+   + ide/sample/ciro.rc
+   + ide/sample/cvc.fmg
+   + ide/sample/demo.bmp
+   + ide/sample/dtoolbar.dbf
+   + ide/sample/form_prefer.fmg
+   + ide/sample/fp.fmg
+   + ide/sample/fp.mnm
+   + ide/sample/fp.mnn
+   + ide/sample/hmi.ini
+   + ide/sample/hola.dbf
+   + ide/sample/imagebut.bmp
+   + ide/sample/imagecbu.bmp
+   + ide/sample/info.bmp
+   + ide/sample/main.mpm
+   + ide/sample/main.prg
+   + ide/sample/main2.prg
+   + ide/sample/menues.dbf
+   + ide/sample/newch.ch
+   + ide/sample/newform.fmg
+   + ide/sample/newrc.rc
+   + ide/sample/p1.prg
+   + ide/sample/p2.prg
+   + ide/sample/po.prg
+   + ide/sample/prgspi.prg
+   + ide/sample/qwerty.fmg
+   + ide/sample/repdemo.rpt
+   + ide/sample/sample.mid
+   + ide/sample/tbarsamp.fmg
+   + ide/sample/tbarsamp.tbr
+   + ide/sample/test.dbf
+   + ide/sample/test.dbt
+   + ide/txts
+   + ide/txts/changelog.txt
+   + ide/txts/contrib.txt
+   + ide/txts/donation.txt
+   + ide/txts/overview.txt
+   + ide/txts/tips.txt
+   + ide/txts/whatsnew.txt
