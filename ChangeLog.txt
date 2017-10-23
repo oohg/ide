@@ -8,9 +8,14 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-23 17:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide/mgide.hbp
+     - Unneeded flags.
+     + Reference to oohg.hbc
+
 2017-10-15 21:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + core/.gitattributes
-   + core/.gitignore
+   + ide/.gitattributes
+   + ide/.gitignore
 
 2017-10-14 18:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    + ChangeLog.txt

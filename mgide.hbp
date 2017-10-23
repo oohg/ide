@@ -1,5 +1,5 @@
 #
-# $Id: mgide.hbp,v 1.6 2015-03-14 03:32:22 fyurisich Exp $
+# $Id: mgide.hbp $
 #
 
 # name of output file
@@ -13,20 +13,17 @@
 -es2
 
 # other harbour´s flags
--n -q0 -ko
+-n -q0
+
+# uncomment this lines to get detailed build info
+#-trace
+#-info
+
+#libs
+${HG_ROOT}\oohg.hbc
 
 # path to fmg files
 -ifmgs
-
-# linker flags
-#-trace
-#-info
--ldflag=-L${HG_ROOT}\lib
-
-#libs
--loohg
--lhbprinter
--lminiprint
 
 # files to compile and link
 prgs\mgide.prg
