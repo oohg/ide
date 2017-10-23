@@ -1,6 +1,6 @@
 @echo off
 rem
-rem $Id: build.bat,v 1.3 2016-06-01 00:50:37 fyurisich Exp $
+rem $Id: build.bat $
 rem
 cls
 

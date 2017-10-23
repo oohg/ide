@@ -15,7 +15,7 @@
 # other harbour´s flags
 -n -q0
 
-# uncomment this lines to get detailed build info
+# uncomment the following lines to get detailed build info
 #-trace
 #-info
 
