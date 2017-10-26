@@ -26,8 +26,6 @@
 #include "oohg.ch"
 #include "hbclass.ch"
 
-#define CRLF Chr(13) + Chr(10)
-
 CLASS TMyMenuEditor
    DATA cID       INIT ''
    DATA cMnFile   INIT ''

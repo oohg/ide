@@ -27,11 +27,11 @@
 #include "common.ch"
 #include "i_windefs.ch"
 
-#DEFINE CRLF hb_OSNewLine()
-#DEFINE CR Chr(13)
-#DEFINE LF Chr(10)
-#DEFINE HTAB Chr(9)
-#DEFINE APP_FULL_NAME "ooHG IDE Plus" + " v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 )
+#define CR            Chr( 13 )
+#define LF            Chr( 10 )
+#define HTAB          Chr( 9 )
+#define NUL           Chr( 0 )
+#define APP_FULL_NAME "ooHG IDE Plus" + " v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 )
 
 //------------------------------------------------------------------------------
 FUNCTION Main( rtl )
@@ -507,7 +507,7 @@ RETURN NIL
 FUNCTION BorraTemp( cFolder )
 //------------------------------------------------------------------------------
    IF File( cFolder + "\OBJ\nul" )
-      ZapDirectory( cFolder + "\OBJ" + Chr(0) )
+      ZapDirectory( cFolder + "\OBJ" + NUL )
    ENDIF
    FErase( cFolder + '_aux.rc' )
    FErase( cFolder + '_build.bat' )
@@ -3377,8 +3377,8 @@ LOCAL aLine[0], nCount, cItems, sw, i
    sw := 0
    FOR i := 1 TO nCount
       aAdd( aLine, RTrim( MemoLine( cItems, NIL, i ) ) )
-      aLine[i] := StrTran( aLine[i], CHR( 10 ), "" )
-      aLine[i] := StrTran( aLine[i], CHR( 13 ), "" )
+      aLine[i] := StrTran( aLine[i], LF, "" )
+      aLine[i] := StrTran( aLine[i], CR, "" )
       aLine[i] := RTrim( aLine[i] )
 
       DO CASE
@@ -3732,7 +3732,7 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
 
    IF Len( AllTrim( ::cExtEditor ) ) == 0
       cTextEdit := MemoRead( cFile )
-      cTextEdit := StrTran( cTextEdit, Chr( 9 ), Space( 8 ) )
+      cTextEdit := StrTran( cTextEdit, HTAB, Space( 8 ) )
       cOutput := ''
       FOR i := 1 TO MLCount( cTextEdit )
           cOutput := cOutput + RTrim( MemoLine( cTextEdit, 500, i ) ) + CRLF
@@ -3740,7 +3740,7 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
       cTextEdit := RTrim( cOutput )
       DO WHILE .T.
          wq := SubStr( cOutput, Len( cTextEdit ) - 1, 1 )
-         IF wq == Chr(13) .OR. wq = Chr( 10 )
+         IF wq == CR .OR. wq = LF
             cTextEdit := Left( cTextEdit, Len( cTextEdit ) - 1 )
          ELSE
             cTextEdit := Left( cTextEdit, Len( cTextEdit ) - 1 ) + CRLF
@@ -3865,7 +3865,7 @@ LOCAL largo
    ::Form_Wait:hmi_label_101:value:='Reformating ....'
    ::Form_Wait:Show()
 
-   ccontenido:=StrTran(ccontenido,chr(9),space(8))
+   ccontenido:=StrTran(ccontenido,HTAB,space(8))
    largo:=mlcount(ccontenido)
    for i := 1 to largo
        IF i > 0

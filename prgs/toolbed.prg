@@ -26,7 +26,6 @@
 #include "oohg.ch"
 #include "hbclass.ch"
 
-#define CRLF Chr( 13 ) + Chr( 10 )
 #define UpperNIL( cValue ) IIF( Upper( AllTrim( cValue ) ) == 'NIL', 'NIL', cValue )
 #define EDIT_ABORTED .T.
 #define EDIT_SAVED .F.

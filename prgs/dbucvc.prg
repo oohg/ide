@@ -80,7 +80,7 @@ LOCAL lDeleted
          col 60
          width 700
          height 300
-         value "Based upon Rathinagiri's DBU." + hb_OsNewLine() + "Comments are welcome at srgiri@vsnl.com"
+         value "Based upon Rathinagiri's DBU." + CRLF + "Comments are welcome at srgiri@vsnl.com"
       end label
    end window
    _dbu.labeldbu.fontname:="arial"

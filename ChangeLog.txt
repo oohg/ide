@@ -8,26 +8,45 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-25 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\dbucvc.prg
+     * hb_osnewline() replaced by Chr(13)+Chr(10).
+   * ide\menued.prg
+     - Define CRLF.
+   * ide\mgide.prg
+     - Define CRLF.
+     + Define NUL.
+     * Replaced Chr(x) by defined constant.
+   * ide\toolbed.prg
+     - Define CRLF.
+
+
 2017-10-23 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide/build.bat
+   * ide\build.bat
      * Id updated.
-   * ide/compile.bat
+   * ide\compile.bat
      + Switch /H for harbour.
      + Use D__XHARBOUR__ in bcc32 calls.
-   * ide/mgide.hbp
+   * ide\mgide.hbp
      * Comment.
 
 2017-10-15 21:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + ide/.gitattributes
-   + ide/.gitignore
+   + ide\.gitattributes
+   + ide\.gitignore
 
 2017-10-14 18:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    + ChangeLog.txt
      ; Extracted from old oohg's file.
 
 2017-10-14 00:46 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * core/ide/*.*
+   * core\ide\*.*
      ; Files moved from core repository.
+
+2017-10-12 20:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   + core\ide\*.*
+     ; Initial upload to GitHub from SourceForge.
 
 2017-09-13 19:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide/prgs/formedit.prg
