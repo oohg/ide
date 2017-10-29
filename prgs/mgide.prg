@@ -4906,37 +4906,37 @@ RETURN cFValue
 /* select all - ctrl-a */
 HB_FUNC( SEND_SELECTALL )
 {
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
-   keybd_event(VK1_A, MapVirtualKey(VK1_A, 0), 0, 0);
-   keybd_event(VK1_A, MapVirtualKey(VK1_A, 0), KEYEVENTF_KEYUP, 0);
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), 0,               0 );
+   keybd_event( (BYTE) VK1_A,      (BYTE) MapVirtualKey( (UINT) VK1_A,      0), 0,               0 );
+   keybd_event( (BYTE) VK1_A,      (BYTE) MapVirtualKey( (UINT) VK1_A,      0), KEYEVENTF_KEYUP, 0 );
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), KEYEVENTF_KEYUP, 0 );
 }
 
 /* copy - ctrl-c */
 HB_FUNC( SEND_COPY )
 {
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
-   keybd_event(VK1_C, MapVirtualKey(VK1_C, 0), 0, 0);
-   keybd_event(VK1_C, MapVirtualKey(VK1_C, 0), KEYEVENTF_KEYUP, 0);
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), 0,               0 );
+   keybd_event( (BYTE) VK1_C,      (BYTE) MapVirtualKey( (UINT) VK1_C,      0), 0,               0 );
+   keybd_event( (BYTE) VK1_C,      (BYTE) MapVirtualKey( (UINT) VK1_C,      0), KEYEVENTF_KEYUP, 0 );
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), KEYEVENTF_KEYUP, 0 );
 }
 
 /* paste - ctrl-v */
 HB_FUNC( SEND_PASTE )
 {
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
-   keybd_event(VK1_V, MapVirtualKey(VK1_V, 0), 0, 0);
-   keybd_event(VK1_V, MapVirtualKey(VK1_V, 0), KEYEVENTF_KEYUP, 0);
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), 0,               0 );
+   keybd_event( (BYTE) VK1_V,      (BYTE) MapVirtualKey( (UINT) VK1_V,      0), 0,               0 );
+   keybd_event( (BYTE) VK1_V,      (BYTE) MapVirtualKey( (UINT) VK1_V,      0), KEYEVENTF_KEYUP, 0 );
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), KEYEVENTF_KEYUP, 0 );
 }
 
 /* cut - ctrl-x */
 HB_FUNC( SEND_CUT )
 {
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), 0, 0);
-   keybd_event(VK1_X, MapVirtualKey(VK1_X, 0), 0, 0);
-   keybd_event(VK1_X, MapVirtualKey(VK1_X, 0), KEYEVENTF_KEYUP, 0);
-   keybd_event(VK_CONTROL, MapVirtualKey(VK_CONTROL, 0), KEYEVENTF_KEYUP, 0);
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), 0,               0 );
+   keybd_event( (BYTE) VK1_X,      (BYTE) MapVirtualKey( (UINT) VK1_X,      0), 0,               0 );
+   keybd_event( (BYTE) VK1_X,      (BYTE) MapVirtualKey( (UINT) VK1_X,      0), KEYEVENTF_KEYUP, 0 );
+   keybd_event( (BYTE) VK_CONTROL, (BYTE) MapVirtualKey( (UINT) VK_CONTROL, 0), KEYEVENTF_KEYUP, 0 );
 }
 
 HB_FUNC ( ZAPDIRECTORY )

@@ -8,6 +8,27 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-29 19:34 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\.gitignore
+     + Some files.
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\compile.bat
+     + Added some harbour compiler flags.
+     * Improved readability.
+   * ide\formedit.prg
+     + Support for KEYSLIKECLIPPER clause of Grid, XBrowse and
+       Browse controls.
+   * ide\mgide.prg
+     ! Some bcc compiler warnings.
+
+2017-10-26 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\formedit.prg
+     + Support for EDITCELLVALUE clause of Grid, XBrowse and
+       Browse controls.
+
 2017-10-25 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.
@@ -21,7 +42,6 @@
      * Replaced Chr(x) by defined constant.
    * ide\toolbed.prg
      - Define CRLF.
-
 
 2017-10-23 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\build.bat

@@ -56,19 +56,20 @@ cd ..
 rd auxdir /s /q
 
 :COMPILE
+set HG_DEFXHB=
+if /I not "%1"=="/H" set HG_DEFXHB=-D__XHARBOUR__
 echo Harbour: Compiling sources...
-%HG_HRB%\%BIN_HRB%\harbour prgs\mgide prgs\dbucvc prgs\formedit prgs\menued prgs\toolbed -q0 -n -i%HG_HRB%\include;%HG_ROOT%\include;fmgs
+%HG_HRB%\%BIN_HRB%\harbour prgs\mgide    -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
+%HG_HRB%\%BIN_HRB%\harbour prgs\dbucvc   -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
+%HG_HRB%\%BIN_HRB%\harbour prgs\formedit -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
+%HG_HRB%\%BIN_HRB%\harbour prgs\menued   -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
+%HG_HRB%\%BIN_HRB%\harbour prgs\toolbed  -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
 echo BCC32: Compiling...
-if     "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib; -D__XHARBOUR__ mgide.c    > nul
-if not "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib;                mgide.c    > nul
-if     "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib; -D__XHARBOUR__ dbucvc.c   > nul
-if not "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib;                dbucvc.c   > nul
-if     "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib; -D__XHARBOUR__ formedit.c > nul
-if not "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib;                formedit.c > nul
-if     "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib; -D__XHARBOUR__ menued.c   > nul
-if not "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib;                menued.c   > nul
-if     "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib; -D__XHARBOUR__ toolbed.c  > nul
-if not "%C_DEFXHB%"=="TRUE" %HG_BCC%\bin\bcc32 -c -O2 -tW -M -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_BCC%\lib;                toolbed.c  > nul
+%HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% mgide.c    > nul
+%HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% dbucvc.c   > nul
+%HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% formedit.c > nul
+%HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% menued.c   > nul
+%HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% toolbed.c  > nul
 
 :LINK
 echo ILINK32: Linking... oide.exe
@@ -106,6 +107,7 @@ for %%a in (*.map)  do del %%a
 for %%a in (*.obj)  do del %%a
 for %%a in (b32.bc) do del %%a
 for %%a in (*.res)  do del %%a
+set HG_DEFXHB=
 
 :EXIT
 echo.
