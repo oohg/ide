@@ -15,11 +15,15 @@
 # other harbour´s flags
 -n -q0
 
+#alerts on exit
+-beep
+-exitstr
+
 # uncomment the following lines to get detailed build info
 #-trace
 #-info
 
-#libs
+# libs
 ${HG_ROOT}\oohg.hbc
 
 # path to fmg files

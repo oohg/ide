@@ -8,6 +8,11 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\mgide.hbp
+     * Some options.
+
 2017-10-29 19:34 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\.gitignore
      + Some files.
