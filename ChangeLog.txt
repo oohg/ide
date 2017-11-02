@@ -8,6 +8,20 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-10-02 20:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\build.bat
+     ! First parameters is lost.
+   * ide\mgide.hbp
+     * Some options.
+   * ide\compile.bat
+     * Changed some compiler flags.
+     * Changed some messages.
+     + Library.
+     - Unneeded code.
+     * Id.
+
 2017-10-30 22:17 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\build.bat
    * ide\compile.bat

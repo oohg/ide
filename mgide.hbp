@@ -13,11 +13,10 @@
 -es2
 
 # other harbour´s flags
--n -q0
+-n1 -q0
 
 #alerts on exit
 -beep
--exitstr
 
 # uncomment the following lines to get detailed build info
 #-trace
@@ -35,5 +34,7 @@ prgs\dbucvc.prg
 prgs\formedit.prg
 prgs\menued.prg
 prgs\toolbed.prg
+
+# this file must be compiled with build.bat in order to include oohg's resources
 
 #EOF

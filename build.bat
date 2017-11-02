@@ -19,8 +19,8 @@ rem
 
 :PARAMS
 
-   if /I "%1"=="HB30" goto CALL30
-   if /I "%1"=="HB32" goto CALL32
+   if /I "%1"=="HB30" ( shift & goto CALL30 )
+   if /I "%1"=="HB32" ( shift & goto CALL32 )
 
 :NOVERSION
 
@@ -36,21 +36,20 @@ rem
    if not exist %HG_ROOT%\buildapp32.bat goto CALL30
    echo Syntax:
    echo    To build with Harbour 3.0
-   echo       build [/C] HB30
+   echo       build [/C] HB30 [options]
    echo   To build with Harbour 3.2
-   echo       build [/C] HB32
+   echo       build [/C] HB32 [options]
    echo.
    goto END
 
-   rem *** Call Compiler Specific Batch File ***
 :CALL30
 
-   call %HG_ROOT%\buildapp.bat %HG_CLEAN% HB30 mgide %2 %3
+   call %HG_ROOT%\buildapp.bat %HG_CLEAN% HB30 mgide %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL32
 
-   call %HG_ROOT%\buildapp.bat %HG_CLEAN% HB32 mgide %2 %3
+   call %HG_ROOT%\buildapp.bat %HG_CLEAN% HB32 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :END

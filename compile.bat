@@ -1,6 +1,6 @@
 @echo off
 rem
-rem $Id: compile.bat,v 1.5 2016-10-17 01:55:33 fyurisich Exp $
+rem $Id: compile.bat $
 rem
 
 :MAIN
@@ -26,7 +26,7 @@ rem
 
 :ERREXIT1
 
-   echo COMPILE ERROR: IS OIDE.EXE RUNNING ?
+   echo COMPILE ERROR: is OIDE.EXE running ?
    goto EXIT
 
 :CLEAN_PATH
@@ -43,8 +43,6 @@ rem
 
    if exist oide.exe del oide.exe
    if exist oide.exe goto ERREXIT1
-   set C_DEFXHB=TRUE
-   if /I "%1"=="/H" set C_DEFXHB=FALSE
 
 :RESOURCES
 
@@ -73,11 +71,11 @@ rem
    %HG_HRB%\%BIN_HRB%\harbour prgs\menued   -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
    %HG_HRB%\%BIN_HRB%\harbour prgs\toolbed  -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
    echo BCC32: Compiling...
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% mgide.c    > nul
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% dbucvc.c   > nul
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% formedit.c > nul
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% menued.c   > nul
-   %HG_BCC%\bin\bcc32 -c -O2 -tW -tWM -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% toolbed.c  > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% mgide.c    > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% dbucvc.c   > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% formedit.c > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% menued.c   > nul
+   %HG_BCC%\bin\bcc32 -c -O2 -tW -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; %HG_DEFXHB% toolbed.c  > nul
 
 :LINK
 
@@ -87,8 +85,8 @@ rem
    echo oide.exe, + >> b32.bc
    echo oide.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
-   for %%a in ( rtl vm gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
-   for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin pcrepos ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( rtl vm gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb )      do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin pcrepos zlib ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
    if exist %HG_HRB%\%LIB_HRB%\libmisc.lib    echo %HG_HRB%\%LIB_HRB%\libmisc.lib + >> b32.bc
    if exist %HG_HRB%\%LIB_HRB%\hboleaut.lib   echo %HG_HRB%\%LIB_HRB%\hboleaut.lib + >> b32.bc
    if exist %HG_HRB%\%LIB_HRB%\dll.lib        echo %HG_HRB%\%LIB_HRB%\dll.lib + >> b32.bc
