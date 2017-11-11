@@ -6512,7 +6512,7 @@ LOCAL nStart, cCtrlType, j
 RETURN Upper( cCtrlType )
 
 //------------------------------------------------------------------------------
-METHOD ReadOopData( cName, cPropmet, cDefault ) CLASS TFormEditor
+METHOD ReadOopData( cName, cProp, cDefault ) CLASS TFormEditor
 //------------------------------------------------------------------------------
 LOCAL i, zi, zf, cvc, nPos, cValue
 
@@ -6520,7 +6520,7 @@ LOCAL i, zi, zf, cvc, nPos, cValue
    zi := IIF( cvc > 0, ::aSpeed[cvc], 1 )
    zf := IIF( cvc > 0, ::aNumber[cvc], Len( ::aLine ) )
    FOR i := zi TO zf
-      IF At( " " + Upper( ::cFName ) + "." + Upper( cName ) + "." + Upper( cPropmet ), Upper( ::aLine[i] ) ) > 0
+      IF At( " " + Upper( ::cFName ) + "." + Upper( cName ) + "." + Upper( cProp ), Upper( ::aLine[i] ) ) > 0
          nPos := RAt( "=", ::aLine[i] ) + 1
          IF nPos > 1
             cValue := AllTrim( SubStr( ::aLine[i], nPos ) )
@@ -6553,7 +6553,7 @@ LOCAL i, sw := 0, zi, cvc, zf, nPos, cLine
             IF Empty( ::aLine[i] )
                RETURN cDefault
             ENDIF
-            IF ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) ) > 0
+            IF ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) ) > 0 .AND. Empty( Left( ::aLine[i], nPos ) )
                cLine := RTrim( SubStr( ::aLine[i], nPos + Len( cProp ) + 2 ) )
                IF Right( cLine, 1 ) == ";"
                   cLine := RTrim( SubStr( cLine, 1, Len( cLine ) - 1 ) )
@@ -6575,7 +6575,7 @@ RETURN cDefault
 //------------------------------------------------------------------------------
 METHOD CheckStringData( cName, cProp ) CLASS TFormEditor
 //------------------------------------------------------------------------------
-LOCAL i, sw := 0, zi, cvc, zf
+LOCAL i, sw := 0, zi, cvc, zf, nPos
 
    cvc := aScan( ::aControlW, Lower( cName ) )
    zi  := IIF( cvc > 0, ::aSpeed[cvc], 1 )
@@ -6588,7 +6588,7 @@ LOCAL i, sw := 0, zi, cvc, zf
          IF sw == 1
             IF Empty( ::aLine[i] )
                RETURN .F.
-            ELSEIF At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) > 0
+            ELSEIF ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) ) > 0 .AND. Empty( Left( ::aLine[i], nPos ) )
                RETURN .T.
             ENDIF
          ENDIF
@@ -6616,7 +6616,8 @@ LOCAL i, sw := 0, zi, cvc, zf, nPos, cValue
             IF Empty( ::aLine[i] )
                RETURN cDefault
             ENDIF
-            IF ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) ) > 0
+            IF ( ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[i] ) ) ) > 0 .AND. Empty( Left( ::aLine[i], nPos ) ) ) .OR. ;
+               ( ( nPos := At( " " + Upper( cProp ), Upper( ::aLine[i] ) ) ) > 0 .AND. nPos + Len( cProp ) == Len( ::aLine[i] ) )
                // cProp must be the first word of the line
                IF Empty( Left( ::aLine[i], nPos ) )
                   cValue := SubStr( ::aLine[i], nPos + Len( cProp ) + 2 )
@@ -6895,7 +6896,7 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD PreProcessDefineWindow() CLASS TFormEditor
 //------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", j, k, c //, cStr, sw, nl
+LOCAL zi, zf, i, cData := "", j, k, c
 LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "PARENT", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL" }
 LOCAL aTokens1 := { "TITLE", "WIDTH", "HEIGHT", "OBJ", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
 LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECLOSE", "LOSTFOCUS", "MAXIMIZE", "MCLICK", "MDBLCLICK", "MINIMIZE", "MOUSECLICK", "MOUSEDRAG", "MOUSEMOVE", "MOVE", "NOTIFYCLICK", "PAINT", "RCLICK", "RDBLCLICK", "RELEASE", "RESTORE", "SCROLLDOWN", "SCROLLLEFT", "SCROLLRIGHT", "SCROLLUP", "SIZE", "VSCROLLBOX" }
@@ -6907,47 +6908,18 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
       IF Empty( ::aLine[i] )
          EXIT
       ENDIF
-      cData += ::aLine[i]
+      cData += AllTrim( ::aLine[i] ) + " "
    NEXT i
-   // separate keywords and arguments
-   /*
-   sw := .F.
-   nl := 0
-   cStr := ""
-   */
+   cData := RTrim( cData )
+   // convert to tokens
    ::aFormData := hb_ATokens( cData, " ", .T., .F. )
-/*
-   FOR EACH i IN hb_ATokens( cData, " ", .T., .F. )
-      IF sw
-         cStr += ( i + " " )
-         IF Right( i, 1 ) == "}"
-            nl --
-            IF nl == 0
-               sw := .F.
-               aAdd( ::aFormData, cStr )
-               cStr := ""
-            ENDIF
-         ENDIF
-      ELSEIF Left( i, 1 ) == "{"
-         cStr += ( i + " " )
-         sw := .T.
-         nl ++
-      ELSEIF i != NIL .AND. ! Empty( i ) .and. i # ";"
-         IF Right( i, 1 ) == ";"
-            i := SubStr( i, 1, Len( i ) - 1 )
-       ENDIF
-         aAdd( ::aFormData, i )
-      ENDIF
-   NEXT
-*/
-   ASize( ::aFormData, Len( ::aFormData ) + 1 )
-   AIns( ::aFormData, 1 )
-   ::aFormData[1] := ";"
+   // add ; at the end to make parsing easier
    IF ATail( ::aFormData ) # ";"
       AAdd( ::aFormData, ";" )
    ENDIF
-
-   i := 2
+   // this routine locates the window's clauses and concatenates all the
+   // subsequent tokens until the next clause or a semicolon if found
+   i := 1
    DO WHILE i < Len( ::aFormData )
       DO CASE
       CASE ::aFormData[i] == "AT"
@@ -6970,6 +6942,16 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
             ::aFormData[i] := "0,0"
          ELSE
             ::aFormData[i] := c
+         ENDIF
+         i ++
+         FOR k := j - 1 TO i STEP -1
+            ADel( ::aFormData, k )
+            ASize( ::aFormData, Len( ::aFormData ) - 1 )
+         NEXT
+         IF ::aFormData[i] # ";"
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := ";"
          ENDIF
          i ++
       CASE ::aFormData[i] == "VIRTUAL"
@@ -7005,6 +6987,16 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
                j ++
             ENDDO
          ENDIF
+         FOR k := j - 1 TO i STEP -1
+            ADel( ::aFormData, k )
+            ASize( ::aFormData, Len( ::aFormData ) - 1 )
+         NEXT
+         IF ::aFormData[i] # ";"
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := ";"
+         ENDIF
+         i ++
       CASE AScan( aTokens0, ::aFormData[i] ) > 0
          // 'logical' properties
          i ++
@@ -7017,6 +7009,16 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
                   ! AScan( aTokens1, ::aFormData[j] ) > 0
             j ++
          ENDDO
+         FOR k := j - 1 TO i STEP -1
+            ADel( ::aFormData, k )
+            ASize( ::aFormData, Len( ::aFormData ) - 1 )
+         NEXT
+         IF ::aFormData[i] # ";"
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := ";"
+         ENDIF
+         i ++
       CASE AScan( aTokens1, ::aFormData[i] ) > 0
          // properties with 1 parameter
          i ++
@@ -7036,6 +7038,16 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
             ::aFormData[i] := c
             i ++
          ENDIF
+         FOR k := j - 1 TO i STEP -1
+            ADel( ::aFormData, k )
+            ASize( ::aFormData, Len( ::aFormData ) - 1 )
+         NEXT
+         IF ::aFormData[i] # ";"
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := ";"
+         ENDIF
+         i ++
       CASE ::aFormData[i] == "ON"
          // events
          i ++
@@ -7068,19 +7080,21 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
                j ++
             ENDDO
          ENDIF
+         FOR k := j - 1 TO i STEP -1
+            ADel( ::aFormData, k )
+            ASize( ::aFormData, Len( ::aFormData ) - 1 )
+         NEXT
+         IF ::aFormData[i] # ";"
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := ";"
+         ENDIF
+         i ++
+      OTHERWISE
+         ADel( ::aFormData, i )
+         ASize( ::aFormData, Len( ::aFormData ) - 1 )
       ENDCASE
-
-      FOR k := i TO j - 1
-         ADel( ::aFormData, k )
-      NEXT
-      IF ::aFormData[i] # ";"
-         ASize( ::aFormData, Len( ::aFormData ) + 1 )
-         AIns( ::aFormData, i )
-         ::aFormData[i] := ";"
-      ENDIF
-      i ++
    ENDDO
-
 
 RETURN NIL
 
