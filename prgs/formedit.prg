@@ -1267,7 +1267,7 @@ LOCAL aTypes := { "ACTIVEX", "ANIGIF", "ANIMATEBOX", "BROWSE", "BUTTON", "CHECKB
 
    FOR i := 1 TO nContLin
       // The leading space is necessary to properly find words placed at column 1
-      aAdd( ::aLine, ( cLine := ( " " + MemoLine( cFormTxt, 1200, i ) ) ) )
+      aAdd( ::aLine, ( cLine := ( " " + RTrim( MemoLine( cFormTxt, 1200, i ) ) ) ) )
       cLine := Upper( LTrim( cLine ) )
 
       IF ! Empty( cSkip )
@@ -2595,12 +2595,12 @@ LOCAL aCaptions, aWidths, aActions, aIcons, aStyles, aToolTips, aAligns, nCant, 
       aAligns   := IF( Empty( ::cSAlign ), {}, &( ::cSAlign ) )
 
       nCant := Len( aCaptions )
-      aSize( aWidths, nCant )
-      aSize( aActions, nCant )
-      aSize( aIcons, nCant )
-      aSize( aStyles, nCant )
-      aSize( aToolTips, nCant )
-      aSize( aAligns, nCant )
+      ASize( aWidths, nCant )
+      ASize( aActions, nCant )
+      ASize( aIcons, nCant )
+      ASize( aStyles, nCant )
+      ASize( aToolTips, nCant )
+      ASize( aAligns, nCant )
 
       FOR i := 1 TO nCant
          _SetStatusItem( aCaptions[i], aWidths[i], NIL, aToolTips[i], aIcons[i], aStyles[i], aAligns[i] )
@@ -3213,8 +3213,8 @@ RETURN NIL
 //------------------------------------------------------------------------------
 STATIC FUNCTION my_aDel( arreglo, z )
 //------------------------------------------------------------------------------
-   aDel( arreglo, z )
-   aSize( arreglo, Len( arreglo ) - 1 )
+   ADel( arreglo, z )
+   ASize( arreglo, Len( arreglo ) - 1 )
 RETURN NIL
 
 //------------------------------------------------------------------------------
@@ -4330,7 +4330,7 @@ TODO: GripperText, Delay
          aCaptions := &( ::aCaption[i] )
          nCnt      := Len( aCaptions )
          aImages   := &( ::aImage[i] )
-         aSize( aImages, nCnt )
+         ASize( aImages, nCnt )
          FOR j := 1 TO nCnt
             // DEFINE PAGE
             oPage := _BeginTabPage( aCaptions[j], aImages[j] )
@@ -6654,8 +6654,8 @@ LOCAL nLen, i, c2, c1
       c1 := SubStr( cProp, 1, i - 1 )
       c2 := SubStr( cProp, i + 1 )
       nLen := Len( ::aFormData ) - 2
-      FOR i := 1 TO nLen
-         IF Upper( ::aFormData[i] ) == c1
+      FOR i := 2 TO nLen
+         IF Upper( ::aFormData[i] ) == c1 .AND. ::aFormData[i - 1] == ";"
             IF Upper( ::aFormData[i + 1] ) == c2
                RETURN ::aFormData[i + 2]
             ENDIF
@@ -6895,7 +6895,10 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD PreProcessDefineWindow() CLASS TFormEditor
 //------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", cStr, sw, nl
+LOCAL zi, zf, i, cData := "", j, k, c //, cStr, sw, nl
+LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "PARENT", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL" }
+LOCAL aTokens1 := { "TITLE", "WIDTH", "HEIGHT", "OBJ", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
+LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECLOSE", "LOSTFOCUS", "MAXIMIZE", "MCLICK", "MDBLCLICK", "MINIMIZE", "MOUSECLICK", "MOUSEDRAG", "MOUSEMOVE", "MOVE", "NOTIFYCLICK", "PAINT", "RCLICK", "RDBLCLICK", "RELEASE", "RESTORE", "SCROLLDOWN", "SCROLLLEFT", "SCROLLRIGHT", "SCROLLUP", "SIZE", "VSCROLLBOX" }
 
    // concatenate lines
    zi := ::aSpeed[1]
@@ -6907,9 +6910,13 @@ LOCAL zi, zf, i, cData := "", cStr, sw, nl
       cData += ::aLine[i]
    NEXT i
    // separate keywords and arguments
+   /*
    sw := .F.
    nl := 0
    cStr := ""
+   */
+   ::aFormData := hb_ATokens( cData, " ", .T., .F. )
+/*
    FOR EACH i IN hb_ATokens( cData, " ", .T., .F. )
       IF sw
          cStr += ( i + " " )
@@ -6928,10 +6935,153 @@ LOCAL zi, zf, i, cData := "", cStr, sw, nl
       ELSEIF i != NIL .AND. ! Empty( i ) .and. i # ";"
          IF Right( i, 1 ) == ";"
             i := SubStr( i, 1, Len( i ) - 1 )
-         ENDIF
+       ENDIF
          aAdd( ::aFormData, i )
       ENDIF
    NEXT
+*/
+   ASize( ::aFormData, Len( ::aFormData ) + 1 )
+   AIns( ::aFormData, 1 )
+   ::aFormData[1] := ";"
+   IF ATail( ::aFormData ) # ";"
+      AAdd( ::aFormData, ";" )
+   ENDIF
+
+   i := 2
+   DO WHILE i < Len( ::aFormData )
+      DO CASE
+      CASE ::aFormData[i] == "AT"
+         // AT <row>, <col> ;
+         i ++
+         j := i
+         c := " "
+         DO WHILE ::aFormData[j] # ";" .AND. ;
+                  ! ::aFormData[j] == "ON" .AND. ;
+                  ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                  ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                  ! AScan( aTokens1, ::aFormData[j] ) > 0
+            c += ( " " + ::aFormData[j] )
+            j ++
+         ENDDO
+         c := LTrim( c )
+         IF Empty( c )
+            ASize( ::aFormData, Len( ::aFormData ) + 1 )
+            AIns( ::aFormData, i )
+            ::aFormData[i] := "0,0"
+         ELSE
+            ::aFormData[i] := c
+         ENDIF
+         i ++
+      CASE ::aFormData[i] == "VIRTUAL"
+         // VIRTUAL WIDTH <vWidth> ;
+         // VIRTUAL HEIGHT <vHeight> ;
+         i ++
+         IF ::aFormData[i] == "WIDTH" .OR. ::aFormData[i] == "HEIGHT"
+            i ++
+            j := i
+            c := " "
+            DO WHILE ::aFormData[j] # ";" .AND. ;
+                     ! ::aFormData[j] == "ON" .AND. ;
+                     ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                     ! ::aFormData[j] == "AT" .AND. ;
+                     ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                     ! AScan( aTokens1, ::aFormData[j] ) > 0
+               c += ( " " + ::aFormData[j] )
+               j ++
+            ENDDO
+            c := LTrim( c )
+            IF ! Empty( c )
+               ::aFormData[i] := c
+               i ++
+            ENDIF
+         ELSE
+            j := i
+            DO WHILE ::aFormData[j] # ";" .AND. ;
+                     ! ::aFormData[j] == "ON" .AND. ;
+                     ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                     ! ::aFormData[j] == "AT" .AND. ;
+                     ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                     ! AScan( aTokens1, ::aFormData[j] ) > 0
+               j ++
+            ENDDO
+         ENDIF
+      CASE AScan( aTokens0, ::aFormData[i] ) > 0
+         // 'logical' properties
+         i ++
+         j := i
+         DO WHILE ::aFormData[j] # ";" .AND. ;
+                  ! ::aFormData[j] == "ON" .AND. ;
+                  ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                  ! ::aFormData[j] == "AT" .AND. ;
+                  ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                  ! AScan( aTokens1, ::aFormData[j] ) > 0
+            j ++
+         ENDDO
+      CASE AScan( aTokens1, ::aFormData[i] ) > 0
+         // properties with 1 parameter
+         i ++
+         j := i
+         c := " "
+         DO WHILE ::aFormData[j] # ";" .AND. ;
+                  ! ::aFormData[j] == "ON" .AND. ;
+                  ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                  ! ::aFormData[j] == "AT" .AND. ;
+                  ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                  ! AScan( aTokens1, ::aFormData[j] ) > 0
+            c += ( " " + ::aFormData[j] )
+            j ++
+         ENDDO
+         c := LTrim( c )
+         IF ! Empty( c )
+            ::aFormData[i] := c
+            i ++
+         ENDIF
+      CASE ::aFormData[i] == "ON"
+         // events
+         i ++
+         IF AScan( aTokens2, ::aFormData[i] ) > 0
+            i ++
+            j := i
+            c := " "
+            DO WHILE ::aFormData[j] # ";" .AND. ;
+                     ! ::aFormData[j] == "ON" .AND. ;
+                     ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                     ! ::aFormData[j] == "AT" .AND. ;
+                     ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                     ! AScan( aTokens1, ::aFormData[j] ) > 0
+               c += ( " " + ::aFormData[j] )
+               j ++
+            ENDDO
+            c := LTrim( c )
+            IF ! Empty( c )
+               ::aFormData[i] := c
+               i ++
+            ENDIF
+         ELSE
+            j := i
+            DO WHILE ::aFormData[j] # ";" .AND. ;
+                     ! ::aFormData[j] == "ON" .AND. ;
+                     ! ::aFormData[j] == "VIRTUAL" .AND. ;
+                     ! ::aFormData[j] == "AT" .AND. ;
+                     ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
+                     ! AScan( aTokens1, ::aFormData[j] ) > 0
+               j ++
+            ENDDO
+         ENDIF
+      ENDCASE
+
+      FOR k := i TO j - 1
+         ADel( ::aFormData, k )
+      NEXT
+      IF ::aFormData[i] # ";"
+         ASize( ::aFormData, Len( ::aFormData ) + 1 )
+         AIns( ::aFormData, i )
+         ::aFormData[i] := ";"
+      ENDIF
+      i ++
+   ENDDO
+
+
 RETURN NIL
 
 //------------------------------------------------------------------------------
@@ -12045,25 +12195,25 @@ LOCAL aImages, aPageNames, aPageObjs, aPageSubClasses, nCount
 
             IF IsValidArray( caImages )
                aImages := &caImages
-               aSize( aImages, nCount )
+               ASize( aImages, nCount )
             ELSE
                aImages := Array( nCount )
             ENDIF
             IF IsValidArray( caPageNames )
                aPageNames := &caPageNames
-               aSize( aPageNames, nCount )
+               ASize( aPageNames, nCount )
             ELSE
                aPageNames := Array( nCount )
             ENDIF
             IF IsValidArray( caPageObjs )
                aPageObjs := &caPageObjs
-               aSize( aPageObjs, nCount )
+               ASize( aPageObjs, nCount )
             ELSE
                aPageObjs := Array( nCount )
             ENDIF
             IF IsValidArray( caPageSubClasses )
                aPageSubClasses := &caPageSubClasses
-               aSize( aPageSubClasses, nCount )
+               ASize( aPageSubClasses, nCount )
             ELSE
                aPageSubClasses := Array( nCount )
             ENDIF
