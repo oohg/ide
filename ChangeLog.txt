@@ -31,7 +31,7 @@
    * ide\ChangeLog.txt
      * Updated.
    * ide\build.bat
-     ! First parameters is lost.
+     ! First parameter is lost.
    * ide\mgide.hbp
      * Some options.
    * ide\compile.bat
