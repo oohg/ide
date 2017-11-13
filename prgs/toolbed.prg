@@ -1,5 +1,5 @@
 /*
- * $Id: toolbed.prg,v 1.17 2017-08-25 18:20:41 fyurisich Exp $
+ * $Id: toolbed.prg $
  */
 /*
  * ooHG IDE+ form generator
@@ -1068,7 +1068,9 @@ LOCAL cOutput := ''
    IF ! Empty( ::cPicture )
      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'PICTURE ' + StrToStr( ::cPicture )
    ENDIF
-   cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'ACTION ' + AllTrim( ::cAction )
+   IF ! Empty( ::cAction )
+      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'ACTION ' + AllTrim( ::cAction )
+   ENDIF
    IF ::lSeparator
       cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'SEPARATOR '
    ENDIF

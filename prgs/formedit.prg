@@ -1,5 +1,5 @@
 /*
- * $Id: formedit.prg,v 1.77 2017-09-13 22:25:17 fyurisich Exp $
+ * $Id: formedit.prg $
  */
 /*
  * ooHG IDE+ form generator
@@ -1268,7 +1268,7 @@ LOCAL aTypes := { "ACTIVEX", "ANIGIF", "ANIMATEBOX", "BROWSE", "BUTTON", "CHECKB
    FOR i := 1 TO nContLin
       // The leading space is necessary to properly find words placed at column 1
       aAdd( ::aLine, ( cLine := ( " " + RTrim( MemoLine( cFormTxt, 1200, i ) ) ) ) )
-      cLine := Upper( LTrim( cLine ) )
+      cLine := Upper( LTrim( cLine ) ) + " "
 
       IF ! Empty( cSkip )
          IF At( "END " + cSkip, cLine ) == 1

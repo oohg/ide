@@ -1,5 +1,5 @@
 /*
- * $Id: menued.prg,v 1.17 2017-08-25 18:20:41 fyurisich Exp $
+ * $Id: menued.prg $
  */
 /*
  * ooHG IDE+ form generator
@@ -286,7 +286,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD DeleteItem() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->( dbDelete() )
    ( ::cID )->( __dbPack() )
    ::FormEdit:browse_101:Refresh()
@@ -306,6 +305,8 @@ RETURN NIL
 METHOD Edit( oEditor, nType, cButton ) CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
 Local cTitulo := {'Main', 'Context', 'Notify', 'Drop Down'}
+
+   SET BROWSESYNC ON
 
    IF HB_IsObject( oEditor )
       ::oEditor := oEditor
@@ -765,7 +766,6 @@ METHOD InsertItem() CLASS TMyMenuEditor
 LOCAL nRegAux, wauxit, witem, wname, waction, wlevel, wchecked, wenabled
 LOCAL wimage, wobj, wstretch, whilited, wright, wbreakmenu, wsubclass
 
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    nRegAux := ( ::cID )->( RecNo() )
 
    ( ::cID )->( dbAppend() )
@@ -1150,7 +1150,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD ParseItem() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ::nLevel                      := ( ::cID )->level
    ::FormEdit:text_101:Value     := AllTrim( ( ::cID )->item )
    ::FormEdit:text_102:Value     := ( ::cID )->named
@@ -1182,7 +1181,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteAction() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->action := AllTrim( ::FormEdit:edit_101:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1190,7 +1188,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteBreakMenu() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->breakmenu := IIF( ::FormEdit:checkbox_104:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1198,7 +1195,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteCaption() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->item := Space( ::nLevel * 3 ) + AllTrim( ::FormEdit:text_101:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1211,7 +1207,6 @@ METHOD WriteChecked() CLASS TMyMenuEditor
       MsgStop( 'You must first define a name for this item.', 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->checked := IIF( ::FormEdit:checkbox_101:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1224,7 +1219,6 @@ METHOD WriteDisabled() CLASS TMyMenuEditor
       MsgStop( 'You must first define a name for this item.', 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->enabled := IIF( ::FormEdit:checkbox_102:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1232,7 +1226,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteHilited() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->hilited := IIF( ::FormEdit:checkbox_106:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1240,7 +1233,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteImage() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->image := AllTrim( ::FormEdit:text_103:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1248,7 +1240,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteLevel() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->item := Space( ::nLevel * 3 ) + AllTrim( ( ::cID )->item )
    ( ::cID )->level := ::nLevel
    ::FormEdit:browse_101:Refresh()
@@ -1257,7 +1248,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteName() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->named := AllTrim( ::FormEdit:text_102:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1265,7 +1255,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteObj() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->obj := AllTrim( ::FormEdit:text_5:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1273,7 +1262,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteRight() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->right := IIF( ::FormEdit:checkbox_103:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1281,7 +1269,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteSubclass() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->subclass := AllTrim( ::FormEdit:text_6:Value )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
@@ -1294,7 +1281,6 @@ METHOD WriteStretch() CLASS TMyMenuEditor
       MsgStop( 'You must first define an image for this item.', 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->( dbGoTo( ::FormEdit:browse_101:Value ) )
    ( ::cID )->stretch := IIF( ::FormEdit:checkbox_105:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL

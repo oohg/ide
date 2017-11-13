@@ -8,6 +8,23 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-11-13 20:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\fmgs\mymenued.fmg
+     * Id.
+     ! Tooltip placed in the wrong control.
+     ! Focus not restored after changing level.
+   * ide\prgs\formedit.prg
+     * Id.
+     ! Last clauses of controls is lost upon load.
+   * ide\prgs\menued.prg
+     * Id.
+     * Use synchronized browse.
+   * ide\prgs\toolbed.prg
+     * Id.
+     ! Empty ACTION clause.
+
 2017-11-10 21:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.

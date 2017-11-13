@@ -1,5 +1,5 @@
 /*
- * $Id: mymenued.fmg,v 1.11 2017-08-25 19:03:22 fyurisich Exp $
+ * $Id: mymenued.fmg $
  */
 
 * ooHG IDE Plus form generated code
@@ -133,6 +133,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 37, 635 TEXTBOX text_101 ;
       WIDTH 120 ;
       HEIGHT 23 ;
+      TOOLTIP 'For separator add SEPARATOR caption.' ;
       MAXLENGTH 80 ;
       ON CHANGE ::WriteCaption()
 
@@ -144,7 +145,6 @@ DEFINE WINDOW TEMPLATE ;
    @ 70, 635 TEXTBOX text_102 ;
       WIDTH 120 ;
       HEIGHT 23 ;
-      TOOLTIP 'For separator add SEPARATOR caption.' ;
       MAXLENGTH 40 ;
       ON CHANGE ::WriteName()
 
@@ -245,7 +245,7 @@ DEFINE WINDOW TEMPLATE ;
       WIDTH 90 ;
       HEIGHT 28 ;
       CAPTION '<--' ;
-      ACTION {|| IIF( ::nLevel > 0 , ::nLevel -- , NIL ), ::WriteLevel() } ;
+      ACTION {|| IIF( ::nLevel > 0 , ::nLevel -- , NIL ), ::WriteLevel(), ::FormEdit:browse_101:SetFocus() } ;
       FONT 'Arial' ;
       SIZE 10
 
@@ -253,7 +253,7 @@ DEFINE WINDOW TEMPLATE ;
       WIDTH 90 ;
       HEIGHT 28 ;
       CAPTION '-->' ;
-      ACTION {|| ::nLevel ++, ::WriteLevel() } ;
+      ACTION {|| ::nLevel ++, ::WriteLevel(), ::FormEdit:browse_101:SetFocus() } ;
       FONT 'Arial' ;
       SIZE 10
 
