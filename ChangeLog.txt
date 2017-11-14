@@ -8,6 +8,15 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-11-14 19:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\prgs\formedit.prg
+     % Simplified loading of window's properties.
+   * ide\prgs\toolbed.prg
+     ! BUTTONSIZE is wrongly loaded from fmg.
+     ! BUTTON's ACTION is wrongly loaded from fmg.
+
 2017-11-13 20:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.

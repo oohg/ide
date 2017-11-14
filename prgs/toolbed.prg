@@ -596,7 +596,9 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD PreProcessDefine() CLASS TMyToolBar
 //------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", cStr, sw, nl
+LOCAL zi, zf, i, cData := "", j, c, k
+LOCAL aTokens0 := { "BOLD", "ITALIC", "UNDERLINE", "STRIKEOUT", "OWNTOOLTIP", "FLAT", "BOTTOM", "RIGHTTEXT", "BORDER", "VERTICAL", "BREAK", "RTL", "NOTABSTOP" }
+LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "ACTION", "SUBCLASS" }
 
    // Concatenate lines
    IF ( i := aScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
@@ -608,33 +610,66 @@ LOCAL zi, zf, i, cData := "", cStr, sw, nl
          ENDIF
          cData += ::oEditor:aLine[ i ]
       NEXT i
-      // Separate keywords and arguments
-      cStr := ""
-      sw := .F.
-      nl := 0
-      FOR EACH i IN hb_ATokens( cData, " ", .T., .F. )
-         IF sw
-            cStr += ( i + " " )
-            IF Right( i, 1 ) == "}"
-               nl --
-               IF nl == 0
-                  sw := .F.
-                  aAdd( ::aData, cStr )
-                  cStr := ""
-               ENDIF
+      cData := RTrim( cData )
+      // convert to tokens
+      ::aData := hb_ATokens( cData, " ", .T., .F. )
+      // add ; at the end to make parsing easier
+      IF ATail( ::aData ) # ";"
+         AAdd( ::aData, ";" )
+      ENDIF
+      // this routine locates the toolbar's clauses and concatenates all the
+      // subsequent tokens until the next clause or a semicolon if found
+      i := 1
+      DO WHILE i < Len( ::aData )
+         DO CASE
+         CASE AScan( aTokens0, ::aData[i] ) > 0
+            // 'logical' properties
+            i ++
+            j := i
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+               j ++
+            ENDDO
+            FOR k := j - 1 TO i STEP -1
+               ADel( ::aData, k )
+               ASize( ::aData, Len( ::aData ) - 1 )
+            NEXT
+            IF ::aData[i] # ";"
+               ASize( ::aData, Len( ::aData ) + 1 )
+               AIns( ::aData, i )
+               ::aData[i] := ";"
             ENDIF
-         ELSEIF Left( i, 1 ) == "{"
-            cStr += ( i + " " )
-            sw := .T.
-            nl ++
-         ELSEIF i != NIL .AND. ! Empty( i ) .and. i # ";"
-            IF Right( i, 1 ) == ";"
-               i := SubStr( i, 1, Len( i ) - 1 )
+            i ++
+         CASE AScan( aTokens1, ::aData[i] ) > 0
+            // properties with 1 parameter
+            i ++
+            j := i
+            c := " "
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+               c += ( " " + ::aData[j] )
+               j ++
+            ENDDO
+            c := LTrim( c )
+            IF ! Empty( c )
+               ::aData[i] := c
+               i ++
             ENDIF
-            aAdd( ::aData, i )
-         ENDIF
-      NEXT
+            FOR k := j - 1 TO i STEP -1
+               ADel( ::aData, k )
+               ASize( ::aData, Len( ::aData ) - 1 )
+            NEXT
+            IF ::aData[i] # ";"
+               ASize( ::aData, Len( ::aData ) + 1 )
+               AIns( ::aData, i )
+               ::aData[i] := ";"
+            ENDIF
+            i ++
+         OTHERWISE
+            ADel( ::aData, i )
+            ASize( ::aData, Len( ::aData ) - 1 )
+         ENDCASE
+      ENDDO
    ENDIF
+
 RETURN NIL
 
 //------------------------------------------------------------------------------
@@ -1110,7 +1145,9 @@ RETURN Self
 //------------------------------------------------------------------------------
 METHOD PreProcessDefine() CLASS TMyTBBtn
 //------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", cStr, sw, nl
+LOCAL zi, zf, i, cData := "", j, c, k
+LOCAL aTokens0 := { "SEPARATOR", "AUTOSIZE", "DROPDOWN", "WHOLEDROPDOWN", "CHECK", "GROUP" }
+LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK", "SUBCLASS" }
 
    // Concatenate lines
    IF ( i := aScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
@@ -1122,33 +1159,98 @@ LOCAL zi, zf, i, cData := "", cStr, sw, nl
          ENDIF
          cData += ::oEditor:aLine[ i ]
       NEXT i
-      // Separate keywords and arguments
-      cStr := ""
-      sw := .F.
-      nl := 0
-      FOR EACH i IN hb_ATokens( cData, " ", .T., .F. )
-         IF sw
-            cStr += ( i + " " )
-            IF Right( i, 1 ) == "}"
-               nl --
-               IF nl == 0
-                  sw := .F.
-                  aAdd( ::aData, cStr )
-                  cStr := ""
+      cData := RTrim( cData )
+      // convert to tokens
+      ::aData := hb_ATokens( cData, " ", .T., .F. )
+      // add ; at the end to make parsing easier
+      IF ATail( ::aData ) # ";"
+         AAdd( ::aData, ";" )
+      ENDIF
+      // this routine locates the button's clauses and concatenates all the
+      // subsequent tokens until the next clause or a semicolon if found
+      i := 1
+      DO WHILE i < Len( ::aData )
+         DO CASE
+         CASE AScan( aTokens0, ::aData[i] ) > 0
+            // 'logical' properties
+            i ++
+            j := i
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+               j ++
+            ENDDO
+            FOR k := j - 1 TO i STEP -1
+               ADel( ::aData, k )
+               ASize( ::aData, Len( ::aData ) - 1 )
+            NEXT
+            IF ::aData[i] # ";"
+               ASize( ::aData, Len( ::aData ) + 1 )
+               AIns( ::aData, i )
+               ::aData[i] := ";"
+            ENDIF
+            i ++
+         CASE AScan( aTokens1, ::aData[i] ) > 0
+            // properties with 1 parameter
+            i ++
+            j := i
+            c := " "
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+               c += ( " " + ::aData[j] )
+               j ++
+            ENDDO
+            c := LTrim( c )
+            IF ! Empty( c )
+               ::aData[i] := c
+               i ++
+            ENDIF
+            FOR k := j - 1 TO i STEP -1
+               ADel( ::aData, k )
+               ASize( ::aData, Len( ::aData ) - 1 )
+            NEXT
+            IF ::aData[i] # ";"
+               ASize( ::aData, Len( ::aData ) + 1 )
+               AIns( ::aData, i )
+               ::aData[i] := ";"
+            ENDIF
+            i ++
+         CASE ::aData[i] == "ON"
+            // action
+            i ++
+            IF ::aData[i] == "CLICK"
+               i ++
+               j := i
+               c := " "
+               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+                  c += ( " " + ::aData[j] )
+                  j ++
+               ENDDO
+               c := LTrim( c )
+               IF ! Empty( c )
+                  ::aData[i] := c
+                  i ++
                ENDIF
+            ELSE
+               j := i
+               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+                  j ++
+               ENDDO
             ENDIF
-         ELSEIF Left( i, 1 ) == "{"
-            cStr += ( i + " " )
-            sw := .T.
-            nl ++
-         ELSEIF i != NIL .AND. ! Empty( i ) .and. i # ";"
-            IF Right( i, 1 ) == ";"
-               i := SubStr( i, 1, Len( i ) - 1 )
+            FOR k := j - 1 TO i STEP -1
+               ADel( ::aData, k )
+               ASize( ::aData, Len( ::aData ) - 1 )
+            NEXT
+            IF ::aData[i] # ";"
+               ASize( ::aData, Len( ::aData ) + 1 )
+               AIns( ::aData, i )
+               ::aData[i] := ";"
             ENDIF
-            aAdd( ::aData, i )
-         ENDIF
-      NEXT
+            i ++
+         OTHERWISE
+            ADel( ::aData, i )
+            ASize( ::aData, Len( ::aData ) - 1 )
+         ENDCASE
+      ENDDO
    ENDIF
+
 RETURN NIL
 
 //------------------------------------------------------------------------------

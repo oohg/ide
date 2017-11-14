@@ -6898,7 +6898,7 @@ METHOD PreProcessDefineWindow() CLASS TFormEditor
 //------------------------------------------------------------------------------
 LOCAL zi, zf, i, cData := "", j, k, c
 LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "PARENT", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL" }
-LOCAL aTokens1 := { "TITLE", "WIDTH", "HEIGHT", "OBJ", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
+LOCAL aTokens1 := { "AT", "TITLE", "WIDTH", "HEIGHT", "OBJ", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
 LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECLOSE", "LOSTFOCUS", "MAXIMIZE", "MCLICK", "MDBLCLICK", "MINIMIZE", "MOUSECLICK", "MOUSEDRAG", "MOUSEMOVE", "MOVE", "NOTIFYCLICK", "PAINT", "RCLICK", "RDBLCLICK", "RELEASE", "RESTORE", "SCROLLDOWN", "SCROLLLEFT", "SCROLLRIGHT", "SCROLLUP", "SIZE", "VSCROLLBOX" }
 
    // concatenate lines
@@ -6922,38 +6922,6 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
    i := 1
    DO WHILE i < Len( ::aFormData )
       DO CASE
-      CASE ::aFormData[i] == "AT"
-         // AT <row>, <col> ;
-         i ++
-         j := i
-         c := " "
-         DO WHILE ::aFormData[j] # ";" .AND. ;
-                  ! ::aFormData[j] == "ON" .AND. ;
-                  ! ::aFormData[j] == "VIRTUAL" .AND. ;
-                  ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
-                  ! AScan( aTokens1, ::aFormData[j] ) > 0
-            c += ( " " + ::aFormData[j] )
-            j ++
-         ENDDO
-         c := LTrim( c )
-         IF Empty( c )
-            ASize( ::aFormData, Len( ::aFormData ) + 1 )
-            AIns( ::aFormData, i )
-            ::aFormData[i] := "0,0"
-         ELSE
-            ::aFormData[i] := c
-         ENDIF
-         i ++
-         FOR k := j - 1 TO i STEP -1
-            ADel( ::aFormData, k )
-            ASize( ::aFormData, Len( ::aFormData ) - 1 )
-         NEXT
-         IF ::aFormData[i] # ";"
-            ASize( ::aFormData, Len( ::aFormData ) + 1 )
-            AIns( ::aFormData, i )
-            ::aFormData[i] := ";"
-         ENDIF
-         i ++
       CASE ::aFormData[i] == "VIRTUAL"
          // VIRTUAL WIDTH <vWidth> ;
          // VIRTUAL HEIGHT <vHeight> ;
@@ -6965,7 +6933,6 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
             DO WHILE ::aFormData[j] # ";" .AND. ;
                      ! ::aFormData[j] == "ON" .AND. ;
                      ! ::aFormData[j] == "VIRTUAL" .AND. ;
-                     ! ::aFormData[j] == "AT" .AND. ;
                      ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
                      ! AScan( aTokens1, ::aFormData[j] ) > 0
                c += ( " " + ::aFormData[j] )
@@ -6981,7 +6948,6 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
             DO WHILE ::aFormData[j] # ";" .AND. ;
                      ! ::aFormData[j] == "ON" .AND. ;
                      ! ::aFormData[j] == "VIRTUAL" .AND. ;
-                     ! ::aFormData[j] == "AT" .AND. ;
                      ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
                      ! AScan( aTokens1, ::aFormData[j] ) > 0
                j ++
@@ -7004,7 +6970,6 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
          DO WHILE ::aFormData[j] # ";" .AND. ;
                   ! ::aFormData[j] == "ON" .AND. ;
                   ! ::aFormData[j] == "VIRTUAL" .AND. ;
-                  ! ::aFormData[j] == "AT" .AND. ;
                   ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
                   ! AScan( aTokens1, ::aFormData[j] ) > 0
             j ++
@@ -7027,7 +6992,6 @@ LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECL
          DO WHILE ::aFormData[j] # ";" .AND. ;
                   ! ::aFormData[j] == "ON" .AND. ;
                   ! ::aFormData[j] == "VIRTUAL" .AND. ;
-                  ! ::aFormData[j] == "AT" .AND. ;
                   ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
                   ! AScan( aTokens1, ::aFormData[j] ) > 0
             c += ( " " + ::aFormData[j] )
