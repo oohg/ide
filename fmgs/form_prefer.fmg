@@ -1,9 +1,6 @@
 /*
- * $Id: form_prefer.fmg,v 1.13 2017-08-25 19:03:22 fyurisich Exp $
+ * $Id: form_prefer.fmg $
  */
-
-* ooHG IDE Plus form generated code
-* (c) 2003-2017 Ciro Vargas Clemow <cvc@oohg.org>
 
 DEFINE WINDOW TEMPLATE ;
    AT 129, 100 ;

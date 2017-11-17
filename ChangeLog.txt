@@ -8,6 +8,24 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2017-11-17 19:56 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\mgide.rc
+   * ide\fmgs\fontclrs.fmg
+   * ide\fmgs\form_prefer.fmg
+   * ide\fmgs\mytbsel.fmg
+   * ide\fmgs\mytoolbared.fmg
+   * ide\fmgs\orderf.fmg
+   * ide\fmgs\tabprop.fmg
+     * Id.
+   * ide\prgs\dbucvc.fmg
+   * ide\prgs\formedit.prg
+   * ide\prgs\menued.prg
+   * ide\prgs\mgide.prg
+   * ide\prgs\toolbed.prg
+     * Copyright info.
+
 2017-11-15 17:36 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.
