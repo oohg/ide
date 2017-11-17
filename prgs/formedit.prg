@@ -3947,7 +3947,7 @@ LOCAL nWidth := NIL, nHeight := NIL
 
       CASE ::CurrentControl == 28
          // "HYPERLINK"
-         ::aAddress[::nControlW] := "https://sourceforge.net/projects/oohg/"
+         ::aAddress[::nControlW] := "https://oohg.github.io/"
 
       CASE ::CurrentControl == 29
          // "RICHEDIT"
@@ -8920,7 +8920,7 @@ LOCAL lClientEdge, lHScroll, lVScroll, lTrans, lRTL, oCtrl
    nWidth       := Val( ::ReadStringData( cName, 'WIDTH', LTrim( Str( THyperLink():nWidth ) ) ) )
    nHeight      := Val( ::ReadStringData( cName, 'HEIGHT', LTrim( Str( THyperLink():nHeight ) ) ) )
    cValue       := ::Clean( ::ReadStringData( cName, 'VALUE', 'ooHG Home' ) )
-   cAddress     := ::Clean( ::ReadStringData( cName, 'ADDRESS', 'https://sourceforge.net/projects/oohg/' ) )
+   cAddress     := ::Clean( ::ReadStringData( cName, 'ADDRESS', 'https://oohg.github.io/' ) )
    cFontName    := ::Clean( ::ReadStringData( cName, 'FONT', '' ) )
    cFontName    := ::Clean( ::ReadStringData( cName, 'FONTNAME', cFontName ) )
    cFontName    := ::Clean( ::ReadOopData( cName, 'FONTNAME', cFontName ) )
@@ -13780,7 +13780,7 @@ LOCAL cValue
          IF ! Empty( ::aAddress[j] )
             Output += ' ;' + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + 'ADDRESS ' + StrToStr( ::aAddress[j] )
          ELSE
-            Output += ' ;' + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + 'ADDRESS ' + "'https://sourceforge.net/projects/oohg/'"
+            Output += ' ;' + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + 'ADDRESS ' + "'https://oohg.github.io/'"
          ENDIF
          IF ! Empty( ::aFontName[j] )
             Output += ' ;' + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + 'FONT ' + StrToStr( ::aFontName[j] )
