@@ -8,6 +8,15 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-05-01 18:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\prgs\mgide.prg
+     + Key F9 to generate a dump to file, screen or both.
+     ! EXE is built but IDE can't find it.
+     * Auxiliary .prg file is now deleted.
+     * Always use waitrun to execute auxiliary .bat file.
+
 2018-04-30 22:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Changed slash by backslash.

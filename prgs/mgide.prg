@@ -66,17 +66,20 @@
 #include "common.ch"
 #include "i_windefs.ch"
 
-#define CR            Chr( 13 )
-#define LF            Chr( 10 )
-#define HTAB          Chr( 9 )
-#define NUL           Chr( 0 )
-#define APP_FULL_NAME "ooHG IDE Plus" + " v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 )
+#define CR                    Chr( 13 )
+#define LF                    Chr( 10 )
+#define HTAB                  Chr( 9 )
+#define NUL                   Chr( 0 )
+#define APP_FULL_NAME         "ooHG IDE Plus" + " v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 )
+#define DOUBLE_QUOTATION_MARK '"'
+#define DQM( x )              DOUBLE_QUOTATION_MARK + x + DOUBLE_QUOTATION_MARK
 
 //------------------------------------------------------------------------------
 FUNCTION Main( rtl )
 //------------------------------------------------------------------------------
 LOCAL myIde
 
+   SetAppHotKey( VK_F9, 0, { || _OOHG_CallDump("IDE Dump", InputBox( "Enter (F)ile, (S)creen or (B)oth:", 'OOHG IDE+' ) ) } )
    SetAppHotKey( VK_F10, 0, { || _OOHG_CallDump() } )
    SetAppHotKey( VK_F11, 0, { || AutoMsgBox( &( InputBox( "Variable to inspect:", 'OOHG IDE+' ) ) ) } )
 
@@ -1515,7 +1518,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
-         HB_MemoWrit( 'Makefile.Gcc', cOut )
+         HB_MemoWrit( 'makefile.gcc', cOut )
 
          // Build batch to create RC temp file
          cOut := ''
@@ -1530,7 +1533,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
          NEXT i
 
          // Build batch to launch make utility
-         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc 1 > error.lst 2 > &1 3 > &2' + CRLF
+         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
          HB_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -1568,14 +1571,15 @@ METHOD BldMinGW( nOption ) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase( cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -1587,7 +1591,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -1597,8 +1601,8 @@ METHOD BldMinGW( nOption ) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
@@ -1636,7 +1640,7 @@ METHOD RunP() CLASS THMI
    IF File( cExe )
       EXECUTE FILE cExe
    ELSE
-      MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+      MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
    ENDIF
 
    ::Form_Tree:button_09:Enabled := .T.
@@ -1808,7 +1812,7 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
-         HB_MemoWrit( 'Makefile.Gcc', cOut )
+         HB_MemoWrit( 'makefile.gcc', cOut )
 
          // Build batch to create RC temp file
          cOut := ''
@@ -1823,7 +1827,7 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          NEXT i
 
          // Build batch to launch make utility
-         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc 1 > error.lst 2 > &1 3 > &2' + CRLF
+         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
          HB_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -1861,14 +1865,15 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase( cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -1880,7 +1885,7 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -1890,8 +1895,8 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
@@ -2189,14 +2194,15 @@ METHOD BuildBCC( nOption ) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase(  cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -2208,7 +2214,7 @@ METHOD BuildBCC( nOption ) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2218,8 +2224,8 @@ METHOD BuildBCC( nOption ) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
@@ -2519,14 +2525,15 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase( cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -2538,7 +2545,7 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2548,8 +2555,8 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
@@ -2851,14 +2858,15 @@ METHOD XBldPellC( nOption ) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase( cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -2870,7 +2878,7 @@ METHOD XBldPellC( nOption ) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2880,8 +2888,8 @@ METHOD XBldPellC( nOption ) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
@@ -3190,14 +3198,15 @@ METHOD BldPellC(nOption) CLASS THMI
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
-            cOut += "# include '" + aPrgFiles[i] + "'" + CRLF + CRLF
+            cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
          HB_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
-         cDosComm := '/c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + If( nOption == 2, " /d", "" )
+         EXECUTE FILE cDosComm WAIT HIDE
 
+         FErase( cPrgName + '.prg' )
       EndCase
 
       // Check for errors
@@ -3209,7 +3218,7 @@ METHOD BldPellC(nOption) CLASS THMI
          Break
       ELSEIF ! File( cExe )
          ::Form_Wait:Hide()
-         MsgStop( 'EXE is missing.', 'OOHG IDE+' )
+         MsgStop( DQM( cExe ) + " is missing.", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3219,8 +3228,8 @@ METHOD BldPellC(nOption) CLASS THMI
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := '/c move ' + cExe + ' ' + cOut
-         EXECUTE FILE 'CMD.EXE' PARAMETERS cDosComm HIDE
+         cDosComm := 'CMD.EXE /c move ' + cExe
+         EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
             MsgStop( "Can't move or rename EXE file.", 'OOHG IDE+' )
