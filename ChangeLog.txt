@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-05-01 19:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     ! Previous entry.
+
 2018-05-01 18:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.
@@ -183,7 +187,7 @@
    + ide\.gitignore
 
 2017-10-14 18:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   + ChangeLog.txt
+   + ide\ChangeLog.txt
      ; Extracted from old oohg's file.
 
 2017-10-14 00:46 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
