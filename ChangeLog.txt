@@ -8,7 +8,14 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
-2018-07-16 14:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2018-07-16 18:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   * ide\compile.bat
+     % Minor simplification.
+     * Do not hide linker messages.
+
+2018-07-16 18:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.
    - ide\txts

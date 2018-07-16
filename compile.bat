@@ -84,21 +84,16 @@ rem
    echo oide.exe, + >> b32.bc
    echo oide.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
-   for %%a in ( rtl vm gtgui lang codepage macro rdd dbfntx dbfcdx dbffpt common debug pp ct dbfdbt hbsix tip hsx xhb )      do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
-   for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin pcrepos zlib ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
-   if exist "%HG_HRB%\%LIB_HRB%\libmisc.lib"    echo %HG_HRB%\%LIB_HRB%\libmisc.lib + >> b32.bc
-   if exist "%HG_HRB%\%LIB_HRB%\hboleaut.lib"   echo %HG_HRB%\%LIB_HRB%\hboleaut.lib + >> b32.bc
-   if exist "%HG_HRB%\%LIB_HRB%\dll.lib"        echo %HG_HRB%\%LIB_HRB%\dll.lib + >> b32.bc
-   if exist "%HG_HRB%\%LIB_HRB%\socket.lib"     echo %HG_HRB%\%LIB_HRB%\socket.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\socket.lib"    echo %HG_ROOT%\%LIB_GUI%\socket.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\bostaurus.lib" echo %HG_ROOT%\%LIB_GUI%\bostaurus.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\hbprinter.lib" echo %HG_ROOT%\%LIB_GUI%\hbprinter.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\miniprint.lib" echo %HG_ROOT%\%LIB_GUI%\miniprint.lib + >> b32.bc
+   for %%a in ( rtl vm gtgui lang codepage macro rdd dbfdbt dbfntx dbfcdx dbffpt common debug pp ct ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( hbrtl hbvm hblang hbcpage hbmacro hbrdd rddntx rddcdx rddfpt hbcommon hbdebug hbpp hbct hbwin ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( hbsix tip hsx pcrepos libmisc hboleaut dll socket zlib ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   for %%a in ( bostaurus hbprinter miniprint ) do if exist %HG_ROOT%\%LIB_GUI%\%%a.lib echo %HG_ROOT%\%LIB_GUI%\%%a.lib + >> b32.bc
    echo cw32.lib + >> b32.bc
    echo msimg32.lib + >> b32.bc
    echo import32.lib, , + >> b32.bc
    echo oide.res + >> b32.bc
-   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc > nul
+
+   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc
    if exist oide.exe goto OK
    echo Build finished with ERROR !!!
    goto CLEAN
