@@ -8,6 +8,19 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-07-16 14:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\ChangeLog.txt
+     * Updated.
+   - ide\txts
+   - ide\txts\Agregar even-prop.txt
+   - ide\txts\changelog.txt
+   - ide\txts\contrib.txt
+   - ide\txts\donation.txt
+   - ide\txts\overview.txt
+   - ide\txts\tips.txt
+   - ide\txts\whatsnew.txt
+     ; Info was outdated or included in other files.
+
 2018-05-01 19:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      ! Previous entry.
