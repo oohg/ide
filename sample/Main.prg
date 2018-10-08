@@ -24,11 +24,11 @@ Return nil
 *-------------------------
 function toolbar()
 *-------------------------
-/*
+
 load window tbarsamp
 center window tbarsamp
 activate window tbarsamp
-*/
+
 return nil
 
 
@@ -56,4 +56,4 @@ function cierra()
 *-------------------------
 close data
 return nil
-
+

@@ -1,5 +1,10 @@
 #include 'oohg.ch'
 
+#ifndef __XHARBOUR__
+   ANNOUNCE HB_GTSYS
+   REQUEST HB_GT_GUI_DEFAULT
+#endif
+
 *--------------------------
 Function Main()
 *-------------------------
