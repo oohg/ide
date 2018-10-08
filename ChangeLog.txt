@@ -8,6 +8,29 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2018-10-08 18:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     * Updated constant.
+
+2018-10-08 18:42 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   - ide\sample\ciro.hpj
+   * ide\sample\ciro.rc
+   * ide\sample\cvc.fmg
+   * ide\sample\fp.fmg
+   + ide\sample\fp.mnc
+   * ide\sample\fp.mnm
+   * ide\sample\fp.mnn
+   * ide\sample\main.mpm
+   * ide\sample\main.prg
+   * ide\sample\main2.prg
+   * ide\sample\newform.fmg
+   + ide\sample\newform.mnc
+   * ide\sample\qwerty.fmg
+   * ide\sample\tbarsamp.fmg
+   * ide\sample\tbarsamp.tbr
+   + ide\sample\test.csv
+     * Updated by MigSoft.
+
 2018-07-16 18:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
      * Updated.
