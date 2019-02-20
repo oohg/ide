@@ -8,6 +8,128 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-02-19 21:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\build.bat
+     * INCOMPATIBLE: HB30/HB32 parameters changed to HM30/HM32.
+       H now means Harbour and M means MinGW.
+     + Support for Viktor Szakats Harbour 3.4 + MinGW clang
+       compiler (HM34).
+   * ide\compile.bat
+     + Support for xHarbour + MinGW gcc compiler (XM).
+
+   * ide\prgs\formedit.prg
+     ! Some properties are not copied or swapped when a control is
+       copied or it's order inside a tab is changed.
+     ! Red lines around the focused control are not erased when
+       the form is scrolled.
+     ! Tool forms are not shown at startup if they were minimized
+       on exit.
+     ! Control's move and size.
+     ! Wrong toolbar's height.
+     ! Buttons can't be resized using the mouse.
+     ! The names of some controls are forcibly uppercased.
+     ! Some clauses are not recognized when their not uppercased.
+     ! Many clauses were wrongly enclosing it's parameters with
+       quotes thus preventing the use of variables in clauses.
+       ; To work properly literal values must be quoted.
+       ; Unquoted values will be output as is.
+     + Clauses added since last update and some others missing.
+     + Support for nested TAB controls.
+     + Support for #define and #undef constants. Note that, in
+       order to be processed, a #define must be placed before the
+       DEFINE WINDOW TEMPLATE clause, and an #undef must be placed
+       after the END WINDOW clause. In between directives will be
+       ignored. These only applies to DEFINE WINDOW properties.
+     + Support for color constants in FONTCOLOR and BACKCOLOR
+       clauses.
+     + Form's "control order" functionality can now move controls
+       between the pages of a TAB.
+     + A context menu option to restore minimized form tools.
+     + Some checks to ON KEY processing logic to avoid information
+       looses when a data edition results in an invalid array.
+       ; The 'key' and the 'action' parts can't contain, at the
+         same time, a quotation mark ("), an apostrophe (') and a
+         closing square bracket (]).
+       ; Also they can't contain an opening brace ({) or and
+         ending brace (}).
+       ; If you need to use these symbols you must use a #define
+         constant to substitute the offending part.
+     * Methods SwapArray, AddArray, DelArray now use macros over an
+       array to simplify the addition of new properties and reduce
+       the chances of repeating the aforementioned error.
+     * Statusbar related buttons were swapped: the on/off button is
+       now at the controls toolbar and the properties control is
+       now at the designer toolbar.
+     * A red filled box is now displayed in all cases when moving
+       or sizing a control in order to show the progress.
+     % Several minor optimizations.
+     % Code readability and comments.
+
+   * ide\prgs\mgide.prg
+     * Some format.
+     * "About" window updated.
+     + Support for editing i_clrdef.ch from "IDE" tab of Preferences.
+     + Support for configurable tab to spaces expansion when a file
+       is open for edition.
+     ! The upper limit of some values read from the .INI file are not checked.
+     + Load color constants from files "oohg\include\i_color.ch" and
+       "oohg\ide\i_clrdef.ch" at start up.
+     ! The editboxes that the system uses to capture the values of the
+       different properties do not show the text when the Windows
+       "Text Size" configuration is set to 125%.
+     + Support for future localization using i18n function.
+     * Removed "module" from Tree section names.
+     - Removed fixed font and size from all controls.
+     * Section entries of INI files are now enclosed between [].
+
+   * ide\fmgs\form_prefer.prg
+     * Format.
+     + Support for future localization using i18n function.
+     * Field "Additional Libs" of Preferences move to "C Compiler" tab.
+     + Field "Replace chr(8) with spaces" to "IDE" tab of Preferences.
+     * Tab "Other" of Preferences renamed to "IDE".
+     + Button "Supported Color Constants" to "IDE" tab.
+     * "IDE" tab was redesigned.
+     - Removed fixed font and size from all controls.
+
+   * ide\fmgs\fontclrs.prg
+   * ide\fmgs\mymenued.prg
+   * ide\fmgs\mytoolbared.fmg
+   * ide\fmgs\mytbsel.fmg
+   * ide\fmgs\orderf.fmg
+     - Comments and unneeded code.
+     - Removed fixed font and size from some controls.
+     + Support for future localization using i18n function.
+
+   * ide\fmgs\tabprop.fmg
+     % Properties edition.
+     + Support for future localization using i18n function.
+     + Support for new TAB properties.
+
+   * ide\prgs\dbucvc.fmg
+   * ide\prgs\menued.prg
+     + Support for future localization using i18n function.
+
+   * ide\prgs\toolbed.prg
+     * Format.
+     + Support for future localization using i18n function.
+     ! Many clauses were wrongly enclosing it's parameters with
+       quotes thus preventing the use of variables in clauses.
+       ; To work properly literal values must be quoted.
+       ; Unquoted values will be output as is.
+     ! The names of some controls are forcibly uppercased.
+
+   - ide\sample\brmake.ini
+   - ide\sample\hmi.ini
+   - ide\sample\tbarsamp.tbr
+   - ide\sample\test.csv
+
+   * ide\sample\ciro.pmg
+   * ide\sample\ciro.rc
+   * ide\sample\fp.fmg
+   * ide\sample\newrc.rc
+     * Updated.
+
 2018-10-08 18:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      * Updated constant.
@@ -418,7 +540,7 @@
    * ide\prgs\toolbed.prg
      * Toolbar loading process redesigned so it reads
        DEFINE TOOLBAR/BUTTON/END TOOLBAR clauses directly from
-       the fmg file instead of using and auxiliary file.
+       the fmg file instead of using an auxiliary .tbr file.
    * ide\sample\Main2.prg
      * Removed unneeded code.
    * ide\mgide.rc
@@ -1763,3 +1885,14 @@
    + ide\txts\overview.txt
    + ide\txts\tips.txt
    + ide\txts\whatsnew.txt
+     ; Initial upload.
+     ; Thanks to Ciro Vargas for his permission to
+       incorporate this work to OOHG repository.
+     ; Thanks to the following persons for their
+       help to the developement of the ide:
+       - Eduar Saavedra <edst_ed@yahoo.com>
+       - Mirity Andor <ytir@freemail.hu>
+       - Pierpaolo Martinello <pier.martinello@alice.it>
+       - Miguel Juarez <migsoft@oohg.org>
+       - Paola Bruccoleri <pbruccoleri@gmail.com>
+       - Gustavo Carlos Asborno <gcasborno@gmail.com>
