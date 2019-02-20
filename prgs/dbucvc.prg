@@ -81,38 +81,38 @@ LOCAL lDeleted
    _DBUfname := ""
    SET INTERACTIVECLOSE ON
    lDeleted := SET( _SET_DELETED, .F. )
-   define window _DBU at 0,0 width 800 height 600 title "ooHG IDE Plus - Data Manager" icon "IDE_DM" child backcolor myIde:asystemcolor on init DBUtogglemenu() on release DBUclosedbfs()
+   define window _DBU at 0,0 width 800 height 600 title "OOHG IDE+ - " + i18n( "Data Manager" ) icon "IDE_DM" child backcolor myIde:asystemcolor on init DBUtogglemenu() on release DBUclosedbfs()
       define main menu
-         popup "File"
-            item "Create" action DBUcreanew()                          image "IDE_DM_MENUNEW"
-            item "Open" action DBUopendbf()                            image "IDE_OPENDBF"
-            item "Close" action DBUclosedbf() name _DBUitem1           image "IDE_DM_MENUCLOSE"
-            item "Exit" action _DBU.release()                          image "IDE_EXIT"
+         popup i18n( "File" )
+            item i18n( "Create" ) action DBUcreanew()                          image "IDE_DM_MENUNEW"
+            item i18n( "Open" ) action DBUopendbf()                            image "IDE_OPENDBF"
+            item i18n( "Close" ) action DBUclosedbf() name _DBUitem1           image "IDE_DM_MENUCLOSE"
+            item i18n( "Exit" ) action _DBU.release()                          image "IDE_EXIT"
          end popup
-         popup "Edit"
-            item "Structure" action DBUmodistruct() name _DBUitem2     image "IDE_DM_MENUSTRU"
-            item "Edit Mode" action DBUeditworkarea() name _DBUitem3   image "IDE_DM_MENUEDIT"
-            item "Browse" action DBUbrowse1() name _DBUitem4           image "IDE_DM_BROWSE"
+         popup i18n( "Edit" )
+            item i18n( "Structure" ) action DBUmodistruct() name _DBUitem2     image "IDE_DM_MENUSTRU"
+            item i18n( "Edit Mode" ) action DBUeditworkarea() name _DBUitem3   image "IDE_DM_MENUEDIT"
+            item i18n( "Browse" ) action DBUbrowse1() name _DBUitem4           image "IDE_DM_BROWSE"
          end popup
-         popup "Delete"
-            item "Recall" action DBUrecallrec() name _DBUitem5         image "IDE_DM_MENURECA"
-            item "Pack" action DBUpackdbf() name _DBUitem6             image "IDE_DM_MENUPACK"
-            item "Zap" action DBUzapdbf() name _DBUitem7               image "IDE_DM_MENUZAP"
+         popup i18n( "Delete" )
+            item i18n( "Recall" ) action DBUrecallrec() name _DBUitem5         image "IDE_DM_MENURECA"
+            item i18n( "Pack" ) action DBUpackdbf() name _DBUitem6             image "IDE_DM_MENUPACK"
+            item i18n( "Zap" ) action DBUzapdbf() name _DBUitem7               image "IDE_DM_MENUZAP"
          end popup
       end menu
       define statusbar
          statusitem "DBU by S. Rathinagiri" width 150
-         statusitem "Empty" width 400 action DBUopendbf()
+         statusitem i18n( "Empty" ) width 400 action DBUopendbf()
          date width 100
          clock width 100
       end statusbar
       define context menu of _DBU
-         menuitem "Create" action DBUcreanew()                         image "IDE_DM_MENUNEW"
-         menuitem "Open" action DBUopendbf()                           image "IDE_OPEN"
-         menuitem "Close" action DBUclosedbf() name _DBUcontextclose   image "IDE_DM_MENUCLOSE"
+         menuitem i18n( "Create" ) action DBUcreanew()                         image "IDE_DM_MENUNEW"
+         menuitem i18n( "Open" ) action DBUopendbf()                           image "IDE_OPEN"
+         menuitem i18n( "Close" ) action DBUclosedbf() name _DBUcontextclose   image "IDE_DM_MENUCLOSE"
          separator
-         menuitem "Edit" action DBUeditworkarea() name _DBUcontextedit image "IDE_DM_MENUEDIT"
-         menuitem "Browse" action DBUbrowse1() name _DBUcontextbrowse  image "IDE_DM_BROWSE"
+         menuitem i18n( "Edit" ) action DBUeditworkarea() name _DBUcontextedit image "IDE_DM_MENUEDIT"
+         menuitem i18n( "Browse" ) action DBUbrowse1() name _DBUcontextbrowse  image "IDE_DM_BROWSE"
       end menu
       define label labeldbu
          row 140
@@ -144,11 +144,11 @@ FUNCTION DBUopendbf
 //------------------------------------------------------------------------------
 LOCAL _DBUfname1
 
-   _DBUfname1 := getfile({{"DataBase File","*.dbf"}},"Select a dbf to open")
+   _DBUfname1 := getfile({{ i18n( "DataBase File" ), "*.dbf"}}, i18n( "Select a dbf to open." ) )
    _DBUfname1 := alltrim(_DBUfname1)
    if len(_DBUfname1) > 0
       if select( "_DBUalias" ) > 0
-         if msgyesno( "Close currently opened dbf?", 'OOHG IDE+' )
+         if msgyesno( i18n( "Close currently opened dbf?" ), 'OOHG IDE+' )
             _DBUalias->( dbCloseArea() )
             USE &_DBUfname1 ALIAS _DBUalias NEW
             _DBUfname := _DBUfname1
@@ -169,7 +169,7 @@ RETURN NIL
 FUNCTION DBUclosedbf
 //------------------------------------------------------------------------------
    if select( "_DBUalias" ) > 0
-      if MsgYesNo( "Close the currently opened DBF?", 'OOHG IDE+' )
+      if MsgYesNo( i18n( "Close the currently opened DBF?" ), 'OOHG IDE+' )
          _DBUalias->( dbCloseArea() )
          _DBUfname := ""
          _DBUdbfopened := .F.
@@ -189,37 +189,37 @@ LOCAL _DBUi, _DBUtype1
    _DBUoriginalarr := _DBUalias->( dbstruct() )
    _DBUstructarr := _DBUalias->( dbstruct() )
    _DBUdbfsaved := .f.
-   define window _DBUcreadbf at 0,0 width 600 height 500 title "Modify DataBase Table" modal nosize nosysmenu
+   define window _DBUcreadbf at 0,0 width 600 height 500 title i18n( "Modify DataBase Table" ) modal nosize nosysmenu
       define frame _DBUcurfield
          row 10
          col 10
          width 550
          height 150
-         caption "Field"
+         caption i18n( "Field" )
       end frame
       define label _DBUnamelabel
          row 40
          col 40
          width 150
-         value "Name"
+         value i18n( "Name" )
       end label
       define label _DBUtypelabel
          row 40
          col 195
          width 100
-         value "Type"
+         value i18n( "Type" )
       end label
       define label _DBUsizelabel
          row 40
          col 300
          width 100
-         value "Size"
+         value i18n( "Size" )
       end label
       define label _DBUdecimallabel
          row 40
          col 405
          width 75
-         value "Decimals"
+         value i18n( "Decimals" )
       end label
       define textbox _DBUfieldname
          row 70
@@ -261,7 +261,7 @@ LOCAL _DBUi, _DBUtype1
       define button _DBUaddline
          row 120
          col 75
-         caption "Add"
+         caption i18n( "Add" )
          width 100
          flat .T.
          action DBUaddstruct()
@@ -269,7 +269,7 @@ LOCAL _DBUi, _DBUtype1
       define button _DBUinsline
          row 120
          col 225
-         caption "Insert"
+         caption i18n( "Insert" )
          width 100
          flat .T.
          action DBUinsstruct()
@@ -277,7 +277,7 @@ LOCAL _DBUi, _DBUtype1
       define button _DBUdelline
          row 120
          col 400
-         caption "Delete"
+         caption i18n( "Delete" )
          width 100
          flat .T.
          action DBUdelstruct()
@@ -285,14 +285,14 @@ LOCAL _DBUi, _DBUtype1
       define frame _DBUstructframe
          row 190
          col 10
-         caption "Structure of DBF"
+         caption i18n( "Structure of DBF" )
          width 500
          height 180
       end frame
       define grid _DBUstruct
          row 220
          col 40
-         headers {"Name","Type","Size","Decimals"}
+         headers { i18n( "Name" ), i18n( "Type" ), i18n( "Size" ), i18n( "Decimals" ) }
          justify {0,0,1,1}
          widths {150,100,100,75}
          width 450
@@ -303,14 +303,14 @@ LOCAL _DBUi, _DBUtype1
       define button _DBUsavestruct
          row 400
          col 200
-         caption "Modify"
+         caption i18n( "Modify" )
          flat .T.
          action DBUmodistructure()
       end button
       define button _DBUexitnew
          row 400
          col 400
-         caption "Exit"
+         caption i18n( "Exit" )
          flat .T.
          action DBUexitmodidbf()
       end button
@@ -351,7 +351,7 @@ LOCAL _DBUajustify := {}
 LOCAL _DBUi, _DBUsize, _DBUsize1
 
    if ! select( "_DBUalias" ) > 0
-      msginfo( "No database is in use.", 'OOHG IDE+' )
+      msginfo( i18n( "No database is in use." ), 'OOHG IDE+' )
       RETURN NIL
    endif
    _DBUstructarr := _DBUalias->( dbstruct() )
@@ -373,7 +373,7 @@ LOCAL _DBUi, _DBUsize, _DBUsize1
    if len(_DBUanames) == 0
       RETURN NIL
    endif
-   define window _DBUbrowse at 0,0 width 700 height 500 title "Browse Window ("+_DBUfname+")" child nomaximize nominimize on init {|| _dbubrowse.maximize}
+   define window _DBUbrowse at 0,0 width 700 height 500 title i18n( "Browse Window" ) + "(" + _DBUfname+ ")" child nomaximize nominimize on init {|| _dbubrowse.maximize}
       define browse _DBUbrowse1
          row 25
          col 80
@@ -394,7 +394,7 @@ LOCAL _DBUi, _DBUsize, _DBUsize1
       define label label_bro
          row 450
          col 150
-         value  "ALT-A (Add record) - Delete (Delete record) - DblClick (Modify record)"
+         value i18n( "ALT-A (Add record) - Delete (Delete record) - DblClick (Modify record)" )
          width 500
       end label
    end window
@@ -408,13 +408,13 @@ RETURN NIL
 FUNCTION delrec
 //------------------------------------------------------------------------------
    if select( "_DBUalias" ) > 0
-      if msgyesno( "Are you sure?", 'OOHG IDE+' )
+      if msgyesno( i18n( "Are you sure?" ), 'OOHG IDE+' )
          _DBUalias->( dbGoTo( _DBUbrowse._DBUbrowse1.value ) )
          if _DBUalias->( rlock() )
             _DBUalias->( dbDelete() )
             _DBUalias->( dbUnlock() )
          else
-            msgstop("The record can't be locked.", 'OOHG IDE+' )
+            msgstop( i18n( "The record can't be locked." ), 'OOHG IDE+' )
          endif
          _DBUbrowse._DBUbrowse1.refresh
       endif
@@ -432,7 +432,7 @@ RETURN NIL
 FUNCTION DBUrecallrec
 //------------------------------------------------------------------------------
    if select( "_DBUalias" ) > 0
-      IF MsgYesNo( "All deleted records will be recalled. If you want to recall a particular record, try using edit mode. Are you sure you want to recall all?", 'OOHG IDE+' )
+      IF MsgYesNo( i18n( "All deleted records will be recalled. If you want to recall a particular record, try using edit mode. Are you sure you want to recall all?" ), 'OOHG IDE+' )
          _DBUalias->( dbEval( {|| dbRecall()} ) )
       endif
    endif
@@ -442,7 +442,7 @@ RETURN NIL
 FUNCTION DBUpackdbf
 //------------------------------------------------------------------------------
    if select( "_DBUalias" ) > 0
-      if msgyesno( "All deleted records will be physically removed from the dbf. Are you sure you want to pack the dbf?", 'OOHG IDE+' )
+      if msgyesno( i18n( "All deleted records will be physically removed from the dbf. Are you sure you want to pack the dbf?" ), 'OOHG IDE+' )
          _DBUalias->( __dbPack() )
          DBUtogglemenu()
       endif
@@ -453,7 +453,7 @@ RETURN NIL
 FUNCTION DBUzapdbf
 //------------------------------------------------------------------------------
    if select( "_DBUalias" ) > 0
-      if msgyesno("Are you sure you want to zap this dbf? You can not undo.", 'OOHG IDE+' )
+      if msgyesno( i18n( "Are you sure you want to zap this dbf? You can not undo." ), 'OOHG IDE+' )
          _DBUalias->( __dbZap() )
          DBUtogglemenu()
       endif
@@ -477,7 +477,7 @@ FUNCTION DBUtogglemenu
       _DBU._DBUitem7.enabled := .f.
    // _DBU._DBUitem8.enabled := .f.
    else
-      _DBU.statusbar.item(2) := _DBUfname+" (Fields : "+alltrim(str(_DBUalias->(fcount()),5,0))+") (Records : "+alltrim(str(_DBUalias->(reccount()),10,0))+")"
+      _DBU.statusbar.item(2) := _DBUfname + " (" + i18n( "Fields" ) + ": " + alltrim(str(_DBUalias->(fcount()),5,0)) + ") (" + i18n( "Records" ) + " : " + alltrim(str(_DBUalias->(reccount()),10,0)) + ")"
       _DBU._DBUcontextclose.enabled := .t.
       _DBU._DBUcontextedit.enabled := .t.
       _DBU._DBUcontextbrowse.enabled := .t.
@@ -506,7 +506,7 @@ FUNCTION DBUmodistructure
 LOCAL _DBUfname1, _DBUi, _DBUnewname, _DBUbackname, _DBUmodarr, _DBUfieldname
 LOCAL _DBUline
 
-   if .not. msgyesno("Caution: If you have modified either the field name or the field type, the data for that fields can't be saved in the modified dbf. However, a backup file (.bak) will be created. Are you sure you want to modify the structure?", 'OOHG IDE+' )
+   if .not. msgyesno( i18n( "Caution: If you have modified either the field name or the field type, the data for that fields can't be saved in the modified dbf. However, a backup file (.bak) will be created. Are you sure you want to modify the structure?" ), 'OOHG IDE+' )
       RETURN NIL
    endif
    _DBUmodarr := {}
@@ -572,7 +572,7 @@ FUNCTION DBUexitmodidbf
    if len(_DBUstructarr) == 0 .or. _DBUdbfsaved
       release window _DBUcreadbf
    else
-      if msgyesno( "Are you sure you want to abort modifying this dbf?", 'OOHG IDE+' )
+      if msgyesno( i18n( "Are you sure you want to abort modifying this dbf?" ), 'OOHG IDE+' )
          release window _DBUcreadbf
       endif
    endif
@@ -583,37 +583,37 @@ FUNCTION creanew1
 //------------------------------------------------------------------------------
    _DBUstructarr := {}
    _DBUdbfsaved := .f.
-   define window _DBUcreadbf at 0,0 width 600 height 500 title "Create a New DataBase Table (.dbf)" modal nosize nosysmenu
+   define window _DBUcreadbf at 0,0 width 600 height 500 title i18n( "Create a New DataBase Table (.dbf)" ) modal nosize nosysmenu
       define frame _DBUcurfield
          row 10
          col 10
          width 550
          height 150
-         caption "Field"
+         caption i18n( "Field" )
       end frame
       define label _DBUnamelabel
          row 40
          col 40
          width 150
-         value "Name"
+         value i18n( "Name" )
       end label
       define label _DBUtypelabel
          row 40
          col 195
          width 100
-         value "Type"
+         value i18n( "Type" )
       end label
       define label _DBUsizelabel
          row 40
          col 300
          width 100
-         value "Size"
+         value i18n( "Size" )
       end label
       define label _DBUdecimallabel
          row 40
          col 405
          width 75
-         value "Decimals"
+         value i18n( "Decimals" )
       end label
       define textbox _DBUfieldname
          row 70
@@ -655,7 +655,7 @@ FUNCTION creanew1
       define button _DBUaddline
          row 120
          col 75
-         caption "Add"
+         caption i18n( "Add" )
          width 100
          flat .T.
          action DBUaddstruct()
@@ -663,7 +663,7 @@ FUNCTION creanew1
       define button _DBUinsline
          row 120
          col 225
-         caption "Insert"
+         caption i18n( "Insert" )
          width 100
          flat .T.
          action DBUinsstruct()
@@ -671,7 +671,7 @@ FUNCTION creanew1
       define button _DBUdelline
          row 120
          col 400
-         caption "Delete"
+         caption i18n( "Delete" )
          width 100
          flat .T.
          action DBUdelstruct()
@@ -679,7 +679,7 @@ FUNCTION creanew1
       define frame _DBUstructframe
          row 190
          col 10
-         caption "Structure of DBF"
+         caption i18n( "Structure of DBF" )
          width 500
          height 180
       end frame
@@ -696,14 +696,14 @@ FUNCTION creanew1
       define button _DBUsavestruct
          row 400
          col 200
-         caption "Create"
+         caption i18n( "Create" )
          flat .T.
          action DBUsavestructure()
       end button
       define button _DBUexitnew
          row 400
          col 400
-         caption "Exit"
+         caption i18n( "Exit" )
          flat .T.
          action DBUexitcreatenew()
       end button
@@ -718,7 +718,7 @@ FUNCTION DBUexitcreatenew
    if len(_DBUstructarr) == 0 .or. _DBUdbfsaved
       release window _DBUcreadbf
    else
-      if msgyesno( "Are you sure you want to abort creating this dbf?", 'OOHG IDE+')
+      if msgyesno( i18n( "Are you sure you want to abort creating this dbf?" ), 'OOHG IDE+')
          release window _DBUcreadbf
       endif
    endif
@@ -734,7 +734,7 @@ LOCAL _DBUi, _DBUcurline, _DBUtype1
          RETURN NIL
       endif
       if _DBUcreadbf._DBUfieldsize.value == 0
-         msgexclamation( "Field size can't be zero.", 'OOHG IDE+')
+         msgexclamation( i18n( "Field size can't be zero." ), 'OOHG IDE+')
          _DBUcreadbf._DBUfieldsize.setfocus()
          RETURN NIL
       endif
@@ -742,14 +742,14 @@ LOCAL _DBUi, _DBUcurline, _DBUtype1
       DBUsizelostfocus()
       DBUdeclostfocus()
       if _DBUcreadbf._DBUfieldtype.value == 2 .and. _DBUcreadbf._DBUfielddecimals.value >= _DBUcreadbf._DBUfieldsize.value
-         msgexclamation("Number of decimals exceeds the defined field size.", 'OOHG IDE+')
+         msgexclamation( i18n( "Number of decimals exceeds the defined field size." ), 'OOHG IDE+')
          _DBUcreadbf._DBUfielddecimals.setfocus()
          RETURN NIL
       endif
       if len(_DBUstructarr) > 0
          for _DBUi := 1 to len(_DBUstructarr)
             if upper(alltrim(_DBUcreadbf._DBUfieldname.value)) == upper(alltrim(_DBUstructarr[_DBUi,1]))
-               msgexclamation("Duplicate field names are not allowed.", 'OOHG IDE+')
+               msgexclamation(i18n( "Duplicate field names are not allowed." ), 'OOHG IDE+')
                _DBUcreadbf._DBUfieldname.setfocus()
                RETURN NIL
             endif
@@ -801,7 +801,7 @@ LOCAL _DBUi, _DBUcurline, _DBUtype1
             RETURN NIL
          endif
          if _DBUcreadbf._DBUfieldsize.value == 0
-            msgexclamation("Field size can't be zero.", 'OOHG IDE+')
+            msgexclamation( i18n( "Field size can't be zero." ), 'OOHG IDE+')
             _DBUcreadbf._DBUfieldsize.setfocus()
             RETURN NIL
          endif
@@ -809,14 +809,14 @@ LOCAL _DBUi, _DBUcurline, _DBUtype1
          DBUsizelostfocus()
          DBUdeclostfocus()
          if _DBUcreadbf._DBUfieldtype.value == 2 .and. _DBUcreadbf._DBUfielddecimals.value >= _DBUcreadbf._DBUfieldsize.value
-            msgexclamation("Number of decimals exceeds the defined field size.", 'OOHG IDE+')
+            msgexclamation(i18n( "Number of decimals exceeds the defined field size." ), 'OOHG IDE+')
             _DBUcreadbf._DBUfielddecimals.setfocus()
             RETURN NIL
          endif
          if len(_DBUstructarr) > 0
             for _DBUi := 1 to len(_DBUstructarr)
                if upper(alltrim(_DBUcreadbf._DBUfieldname.value)) == upper(alltrim(_DBUstructarr[_DBUi,1])) .and. _DBUi <> _DBUcurline
-                  msgexclamation("Duplicate field names are not allowed.", 'OOHG IDE+')
+                  msgexclamation(i18n( "Duplicate field names are not allowed." ), 'OOHG IDE+')
                    _DBUcreadbf._DBUfieldname.setfocus()
                 RETURN NIL
                endif
@@ -856,7 +856,7 @@ LOCAL _DBUi, _DBUcurline, _DBUtype1
          if len(_DBUstructarr) > 0
             _DBUcreadbf._DBUstruct.value := _DBUcurline
          endif
-         _DBUcreadbf._DBUaddline.caption := "Add"
+         _DBUcreadbf._DBUaddline.caption := i18n( "Add" )
          _DBUcreadbf._DBUinsline.enabled := .t.
          _DBUcreadbf._DBUdelline.enabled := .t.
          _DBUcreadbf._DBUfieldname.value := ""
@@ -885,7 +885,7 @@ LOCAL _DBUi, _DBUpos, _DBUtype1
       RETURN NIL
    endif
    if _DBUcreadbf._DBUfieldsize.value == 0
-      msgexclamation("Field size can't be zero.", 'OOHG IDE+')
+      msgexclamation( i18n( "Field size can't be zero." ), 'OOHG IDE+')
       _DBUcreadbf._DBUfieldsize.setfocus()
       RETURN NIL
    endif
@@ -893,14 +893,14 @@ LOCAL _DBUi, _DBUpos, _DBUtype1
    DBUsizelostfocus()
    DBUdeclostfocus()
    if _DBUcreadbf._DBUfieldtype.value == 2 .and. _DBUcreadbf._DBUfielddecimals.value >= _DBUcreadbf._DBUfieldsize.value
-      msgexclamation("Number of decimals exceeds the defined field size.", 'OOHG IDE+' )
+      msgexclamation( i18n( "Number of decimals exceeds the defined field size.") , 'OOHG IDE+' )
       _DBUcreadbf._DBUfielddecimals.setfocus()
       RETURN NIL
    endif
    if len(_DBUstructarr) > 0
       for _DBUi := 1 to len(_DBUstructarr)
          if upper(alltrim(_DBUcreadbf._DBUfieldname.value)) == upper(alltrim(_DBUstructarr[_DBUi,1]))
-            msgexclamation("Duplicate field names are not allowed.", 'OOHG IDE+' )
+            msgexclamation(i18n( "Duplicate field names are not allowed." ), 'OOHG IDE+' )
             _DBUcreadbf._DBUfieldname.setfocus()
             RETURN NIL
          endif
@@ -996,18 +996,18 @@ LOCAL _DBUlegalchars := 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890'
 LOCAL _DBUi
 
    if len(_DBUname) == 0
-      msgexclamation("Field name can't be empty.", 'OOHG IDE+' )
+      msgexclamation(i18n( "Field name can't be empty." ), 'OOHG IDE+' )
       _DBUcreadbf._DBUfieldname.setfocus()
       return .f.
    endif
    if val(substr(_DBUname,1,1)) > 0 .or. substr(_DBUname,1,1) == "_"
-      msgexclamation("First letter of the field name can't be a numeric character or special character.", 'OOHG IDE+' )
+      msgexclamation(i18n( "First letter of the field name can't be a numeric character or special character." ), 'OOHG IDE+' )
       _DBUcreadbf._DBUfieldname.setfocus()
       return .f.
    else
       for _DBUi := 1 to len(_DBUname)
          if at(upper(substr(_DBUname,_DBUi,1)),_DBUlegalchars) == 0
-            msgexclamation("Field name contains illegal characters. Allowed characters are letters, numbers and the special character '_'.", 'OOHG IDE+' )
+            msgexclamation(i18n( "Field name contains illegal characters. Allowed characters are letters, numbers and the special character '_'." ), 'OOHG IDE+' )
             _DBUcreadbf._DBUfieldname.setfocus()
             return .f.
          endif
@@ -1073,7 +1073,7 @@ LOCAL _DBUcurline := _DBUcreadbf._DBUstruct.value
       _DBUcreadbf._DBUfielddecimals.value := _DBUstructarr[_DBUcurline,4]
       _DBUcreadbf._DBUinsline.enabled := .f.
       _DBUcreadbf._DBUdelline.enabled := .f.
-      _DBUcreadbf._DBUaddline.caption := "Modify"
+      _DBUcreadbf._DBUaddline.caption := i18n( "Modify" )
       _DBUcreadbf._DBUfieldname.setfocus()
    endif
 RETURN NIL
@@ -1084,11 +1084,11 @@ FUNCTION DBUsavestructure
 LOCAL _DBUfname1
 
    if len(_DBUstructarr) > 0
-      _DBUfname1 := alltrim(putfile({{"Database File","*.dbf"}},"Enter a filename"))
+      _DBUfname1 := alltrim( PutFile( { { i18n( "Database File" ), "*.dbf" } } , i18n( "Enter a filename") ) )
       if len(_DBUfname1) > 0
-         if msgyesno("Are you sure you want to create this database file?", 'OOHG IDE+' )
+         if msgyesno( i18n( "Are you sure you want to create this database file?" ), 'OOHG IDE+' )
             dbcreate(_DBUfname1,_DBUstructarr)
-            msginfo( "File has been created successfully.", 'OOHG IDE+' )
+            msginfo( i18n( "File has been created successfully." ), 'OOHG IDE+' )
             if ! select( "_DBUalias" ) > 0
                USE &_DBUfname1 NEW ALIAS _DBUalias
                _DBUfname := _DBUfname1
@@ -1158,7 +1158,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       _DBUcol := _DBUcol + _DBUhspace + _DBUsize
    next _DBUi
 
-   define window _DBUeditdbf at 0,0 width 750 height 520 title "Edit DataBase Records of "+alltrim(_DBUfname) child nosize nosysmenu
+   define window _DBUeditdbf at 0,0 width 750 height 520 title i18n( "Edit DataBase Records of " ) + alltrim(_DBUfname) child nosize nosysmenu
       define tab _DBUrecord at 10,10 width 725 height 360
          for _DBUi := 1 to _DBUpages
             define page "Page "+alltrim(str(_DBUi,3,0))
@@ -1178,7 +1178,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
                      define textbox &( _DBUcontrolarr[_DBUj,3] )
                         row _DBUcontrolarr[_DBUj,1]
                         col _DBUcontrolarr[_DBUj,2]
-                        tooltip "Enter the value for the field "+alltrim(_DBUcontrolarr[_DBUj,3])+". Type of the field is Character. Maximum Length is "+alltrim(str(_DBUcontrolarr[_DBUj,6],6,0))+"."
+                        tooltip i18n( "Enter the value for the field " ) + alltrim(_DBUcontrolarr[_DBUj,3]) + i18n( ". Type of the field is Character. Maximum Length is " ) + alltrim(str(_DBUcontrolarr[_DBUj,6],6,0))+"."
                         width _DBUcontrolarr[_DBUj,4]
                         maxlength _DBUcontrolarr[_DBUj,6]
                      end textbox
@@ -1188,7 +1188,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
                         col _DBUcontrolarr[_DBUj,2]
                         width _DBUcontrolarr[_DBUj,4]
                         maxlength _DBUcontrolarr[_DBUj,6]
-                        tooltip "Enter the value for the field "+alltrim(_DBUcontrolarr[_DBUj,3])+". Type of the field is Numeric. Maximum Length is "+alltrim(str(_DBUcontrolarr[_DBUj,6],6,0))+", with decimals "+alltrim(str(_DBUcontrolarr[_DBUj,7],3,0))+"."
+                        tooltip i18n( "Enter the value for the field " ) + alltrim(_DBUcontrolarr[_DBUj,3]) + i18n( ". Type of the field is Numeric. Maximum Length is " ) + alltrim(str(_DBUcontrolarr[_DBUj,6],6,0)) + i18n( ", with " ) + alltrim(str(_DBUcontrolarr[_DBUj,7],3,0)) + i18n( " decimals." )
                         numeric .t.
                         rightalign .t.
                         if _DBUcontrolarr[_DBUj,7] > 0
@@ -1199,14 +1199,14 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
                      define datepicker &( _DBUcontrolarr[_DBUj,3] )
                         row _DBUcontrolarr[_DBUj,1]
                         col _DBUcontrolarr[_DBUj,2]
-                        tooltip "Enter the date value for the field "+alltrim(_DBUcontrolarr[_DBUj,3])+"."
+                        tooltip i18n( "Enter the value for the field " ) + alltrim(_DBUcontrolarr[_DBUj,3]) + i18n( ". Type of the field is Date." )
                         width _DBUcontrolarr[_DBUj,4]
                      end datepicker
                   case _DBUcontrolarr[_DBUj,5] == "L" // Logical
                      define checkbox &( _DBUcontrolarr[_DBUj,3] )
                         row _DBUcontrolarr[_DBUj,1]
                         col _DBUcontrolarr[_DBUj,2]
-                        tooltip "Select True of False for this Logical Field "+alltrim(_DBUcontrolarr[_DBUj,3])+"."
+                        tooltip i18n( "Select TRUE or FALSE for the field " ) + alltrim(_DBUcontrolarr[_DBUj,3]) + i18n( ". Type of the field is Logical." )
                         width _DBUcontrolarr[_DBUj,4]
                         caption _DBUcontrolarr[_DBUj,3]
                      end checkbox
@@ -1214,7 +1214,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
                      define textbox &( _DBUcontrolarr[_DBUj,3] )
                         row _DBUcontrolarr[_DBUj,1]
                         col _DBUcontrolarr[_DBUj,2]
-                        tooltip "Enter the value for the field "+alltrim(_DBUcontrolarr[_DBUj,3])+". Type of the field is Memo."
+                        tooltip i18n( "Enter the value for the field " ) + alltrim(_DBUcontrolarr[_DBUj,3]) + i18n( ". Type of the field is Memo." )
                         width _DBUcontrolarr[_DBUj,4]
                      end textbox
                   endcase
@@ -1227,7 +1227,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
          row 390
          col 10
          caption "|<"
-         tooltip "Go to first record."
+         tooltip i18n( "Go to first record." )
          width 40
          flat .T.
          action DBUfirstclick()
@@ -1236,7 +1236,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
          row 390
          col 70
          caption "<"
-         tooltip "Go to previous record."
+         tooltip i18n( "Go to previous record." )
          width 40
          flat .T.
          action DBUpreviousclick()
@@ -1245,7 +1245,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
          row 390
          col 130
          caption ">"
-         tooltip "Go to next record."
+         tooltip i18n( "Go to next record." )
          width 40
          flat .T.
          action DBUnextclick()
@@ -1254,7 +1254,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
          row 390
          col 190
          caption ">|"
-         tooltip "Go to last record."
+         tooltip i18n( "Go to last record." )
          width 40
          flat .T.
          action DBUlastclick()
@@ -1262,8 +1262,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUnewrec
          row 390
          col 250
-         caption "New"
-         tooltip "Append blank record."
+         caption i18n( "New" )
+         tooltip i18n( "Append blank record." )
          width 50
          flat .T.
          action DBUnewrecclick()
@@ -1271,8 +1271,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUsave
          row 390
          col 320
-         caption "Save"
-         tooltip "Commit all changes to file."
+         caption i18n( "Save" )
+         tooltip i18n( "Commit all changes to file." )
          width 50
          flat .T.
          action DBUsaveclick()
@@ -1280,8 +1280,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUdelrec
          row 390
          col 390
-         caption "Delete"
-         tooltip "Mark current record as deleted."
+         caption i18n( "Delete" )
+         tooltip i18n( "Mark current record as deleted." )
          width 50
          flat .T.
          action DBUdelrecclick()
@@ -1289,8 +1289,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUrecall
          row 390
          col 450
-         caption "Recall"
-         tooltip "Recall deleted record."
+         caption i18n( "Recall" )
+         tooltip i18n( "Recall deleted record." )
          width 50
          flat .T.
          action DBUrecallclick()
@@ -1298,8 +1298,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUgoto
          row 390
          col 520
-         caption "Goto"
-         tooltip "Go to record number."
+         caption i18n( "Goto" )
+         tooltip i18n( "Go to record number." )
          width 50
          flat .T.
          action DBUgotoclick()
@@ -1309,7 +1309,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
             row 420
             col 10
             width 490
-            tooltip "Select a record number and click 'Goto' to edit it."
+            tooltip i18n( "Select a record number and click 'Goto' to edit it." )
             rangemin IIF( _DBUalias->( reccount() ) == 0, 0, 1 )
             rangemax _DBUalias->( reccount() )
             on change _DBUeditdbf._DBUrecgoto.value := _DBUeditdbf._DBUrecgotoslider.value
@@ -1327,8 +1327,8 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
       define button _DBUsearch
          row 390
          col 590
-         caption "Filter"
-         tooltip "Filter the database file by a given condition."
+         caption i18n( "Filter" )
+         tooltip i18n( "Filter the database file by a given condition." )
          width 50
          flat .T.
          action DBUsearchclick()
@@ -1340,13 +1340,13 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
          items _DBUfieldnames
          value 1
          on change DBUindexchange()
-         tooltip "Index file on a chosen field."
+         tooltip i18n( "Index file on a chosen field." )
       end combobox
       define button _DBUcloseedit
          row 390
          col 660
-         caption "Close"
-         tooltip "Close edit window."
+         caption i18n( "Close" )
+         tooltip i18n( "Close edit window." )
          width 50
          flat .T.
          action DBUcloseedit1()
@@ -1399,7 +1399,7 @@ RETURN NIL
 //------------------------------------------------------------------------------
 FUNCTION DBUnewrecclick
 //------------------------------------------------------------------------------
-   if msgyesno("A new record will be appended to the dbf. You can edit the record and it will be saved only after you click 'Save'. Are you sure you want to append a blank record?", 'OOHG IDE+' )
+   if msgyesno( i18n( "A new record will be appended to the dbf. You can edit the record and it will be saved only after you click 'Save'. Are you sure you want to append a blank record?" ), 'OOHG IDE+' )
       _DBUalias->( dbAppend() )
       if _DBUalias->(reccount()) <= 65535
          _DBUeditdbf._DBUrecgotoslider.rangemax := _DBUalias->(reccount())
@@ -1438,7 +1438,7 @@ LOCAL _DBUi, _DBUpos1
       commit
       DBUrefreshdbf()
    else
-      msginfo( "The record pointer is at EOF. You must click New to append a blank record and then click Save.", 'OOHG IDE+' )
+      msginfo( i18n( "The record pointer is at EOF. You must click New to append a blank record and then click Save." ), 'OOHG IDE+' )
    endif
 RETURN NIL
 
@@ -1469,7 +1469,7 @@ FUNCTION DBUgotoclick
          DBUrefreshdbf()
          RETURN NIL
       else
-         msginfo( "You have entered a record number greater than the dbf's record count.", 'OOHG IDE+' )
+         msginfo( i18n( "You have entered a record number greater than the dbf's record count." ), 'OOHG IDE+' )
          _DBUeditdbf._DBUrecgoto.value := _DBUalias->(reccount())
          _DBUeditdbf._DBUrecgoto.setfocus()
          RETURN NIL
@@ -1488,7 +1488,7 @@ LOCAL _DBUdbffunctions, _DBUfieldsarr, _DBUi
       aadd(_DBUfieldsarr,{_DBUstructarr[_DBUi,1]})
    next _DBUi
    _DBUdbffunctions := {{"ctod()"},{"recno()"},{"max()"},{"min()"},{"deleted()"},{"alltrim()"},{"upper()"},{"lower()"},{"int()"},{"max()"}}
-   define window _DBUfilterbox at 0,0 width 650 height 400 title "Filter Box" modal nosize nosysmenu
+   define window _DBUfilterbox at 0,0 width 650 height 400 title i18n( "Filter Box" ) modal nosize nosysmenu
       define editbox _DBUfiltercondition
          row 30
          col 30
@@ -1500,7 +1500,7 @@ LOCAL _DBUdbffunctions, _DBUfieldsarr, _DBUi
          row 200
          col 30
          value 1
-         headers {"Field Name"}
+         headers { i18n( "Field Name" ) }
          widths {195}
          items _DBUfieldsarr
          on dblclick _DBUfilterbox._DBUfiltercondition.value := alltrim(_DBUfilterbox._DBUfiltercondition.value)+" "+alltrim(_DBUfieldsarr[_DBUfilterbox._DBUfieldnames.value,1])
@@ -1567,7 +1567,7 @@ LOCAL _DBUdbffunctions, _DBUfieldsarr, _DBUi
          row 200
          col 400
          value 1
-         headers {"Functions"}
+         headers { i18n( "Functions" ) }
          widths {195}
          items _DBUdbffunctions
          on dblclick _DBUfilterbox._DBUfiltercondition.value := alltrim(_DBUfilterbox._DBUfiltercondition.value)+" "+alltrim(_DBUdbffunctions[_DBUfilterbox._DBUfunctions.value,1])
@@ -1577,7 +1577,7 @@ LOCAL _DBUdbffunctions, _DBUfieldsarr, _DBUi
       define button _DBUsetfilter
          row 340
          col 100
-         caption "Set Filter"
+         caption i18n( "Set Filter" )
          width 100
          flat .T.
          action DBUfilterset()
@@ -1585,7 +1585,7 @@ LOCAL _DBUdbffunctions, _DBUfieldsarr, _DBUi
       define button _DBUclearfilter
          row 340
          col 250
-         caption "Clear Filter"
+         caption i18n( "Clear Filter" )
          width 100
          flat .T.
          action DBUfilterclear()
@@ -1649,10 +1649,10 @@ LOCAL _DBUtotdeleted, _DBUcurrec, _DBUi, _DBUpos1
    if iscontroldefined(_DBUeditdbf,_DBUrecgotoslider)
       _DBUeditdbf._DBUrecgotoslider.value := _DBUalias->(recno())
    endif
-   _DBUeditdbf.statusbar.item(1) := "Record Pointer is at "+iif(_DBUalias->(eof()),"0",alltrim(str(_DBUalias->(recno()),10,0)))+" of "+alltrim(str(_DBUalias->(reccount()),10,0))+" record(s). "+alltrim(str(_DBUtotdeleted,5,0))+" record(s) are marked for deletion."
-   _DBUeditdbf.statusbar.item(2) := iif(_DBUalias->(deleted())," Del","")
-   _DBUeditdbf.statusbar.item(3) := iif(_DBUfiltered,"Filtered","")
-   _DBUeditdbf.statusbar.item(4) := iif(_DBUindexed,"Indexed","")
+   _DBUeditdbf.statusbar.item(1) := i18n( "Record Pointer is at " ) + iif(_DBUalias->(eof()),"0",alltrim(str(_DBUalias->(recno()),10,0)))+ i18n( " of " ) + alltrim(str(_DBUalias->(reccount()),10,0)) + i18n( " record(s). " ) + alltrim(str(_DBUtotdeleted,5,0))+ i18n( " record(s) are marked for deletion." )
+   _DBUeditdbf.statusbar.item(2) := iif( _DBUalias->( deleted() ), i18n( " Del" ), "" )
+   _DBUeditdbf.statusbar.item(3) := iif( _DBUfiltered, i18n( "Filtered" ), "" )
+   _DBUeditdbf.statusbar.item(4) := iif( _DBUindexed, i18n( "Indexed"), "" )
 RETURN NIL
 
 //------------------------------------------------------------------------------

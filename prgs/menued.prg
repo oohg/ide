@@ -343,8 +343,6 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD Edit( oEditor, nType, cButton ) CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-Local cTitulo := {'Main', 'Context', 'Notify', 'Drop Down'}
-
    SET BROWSESYNC ON
 
    IF HB_IsObject( oEditor )
@@ -361,7 +359,15 @@ Local cTitulo := {'Main', 'Context', 'Notify', 'Drop Down'}
          ::FormEdit:btn_LvlDwn:Enabled := .F.
          ::FormEdit:btn_LvlUp:Enabled := .F.
       ENDIF
-      ::FormEdit:Title := 'ooHG IDE+ ' + cTitulo[ ::nType ] + ' menu editor'
+      IF ::nType == 1
+         ::FormEdit:Title := 'OOHG IDE+ - ' + i18n( 'Main menu editor' )
+      ELSEIF ::nType == 2
+         ::FormEdit:Title := 'OOHG IDE+ - ' + i18n( 'Context menu editor' )
+      ELSEIF ::nType == 3
+         ::FormEdit:Title := 'OOHG IDE+ - ' + i18n( 'Notify menu editor' )
+      ELSE
+         ::FormEdit:Title := 'OOHG IDE+ - ' + i18n( 'Dropdown menu editor' )
+      ENDIF
       IF ( ::cID )->( RecCount() ) > 0
          ::FormEdit:browse_101:Value := 1
       ENDIF
@@ -403,7 +409,7 @@ LOCAL cFile
       ENDIF
       ERASE ( ::cID + ".dbf" )
    ENDIF
-   ::oEditor:lFSave := .F.
+   ::oEditor:lIsFormModified := .T.
 RETURN NIL
 
 //------------------------------------------------------------------------------
@@ -1243,7 +1249,7 @@ METHOD WriteChecked() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
    IF Empty( ::FormEdit:text_102:Value ) .AND. ::FormEdit:checkbox_101:Value
       ::FormEdit:checkbox_101:Value := .F.
-      MsgStop( 'You must first define a name for this item.', 'OOHG IDE+' )
+      MsgStop( i18n( 'You must first define a name for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
    ( ::cID )->checked := IIF( ::FormEdit:checkbox_101:Value, 'X', ' ' )
@@ -1255,7 +1261,7 @@ METHOD WriteDisabled() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
    IF Empty( ::FormEdit:text_102:Value ) .AND. ::FormEdit:checkbox_102:Value
       ::FormEdit:checkbox_102:Value := .F.
-      MsgStop( 'You must first define a name for this item.', 'OOHG IDE+' )
+      MsgStop( i18n( 'You must first define a name for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
    ( ::cID )->enabled := IIF( ::FormEdit:checkbox_102:Value, 'X', ' ' )
@@ -1317,7 +1323,7 @@ METHOD WriteStretch() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
    IF Empty( ::FormEdit:text_103:Value ) .AND. ::FormEdit:checkbox_105:Value
       ::FormEdit:checkbox_105:Value := .F.
-      MsgStop( 'You must first define an image for this item.', 'OOHG IDE+' )
+      MsgStop( i18n( 'You must first define an image for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
    ( ::cID )->stretch := IIF( ::FormEdit:checkbox_105:Value, 'X', ' ' )

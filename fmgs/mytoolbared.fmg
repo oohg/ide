@@ -7,7 +7,7 @@ DEFINE WINDOW TEMPLATE ;
    AT 108, 99 ;
    WIDTH 788 ;
    HEIGHT 519 ;
-   TITLE 'ooHG IDE+ Toolbar editor' ;
+   TITLE 'OOHG IDE+ - ' + i18n( 'Toolbar editor' ) ;
    MODAL ;
    ON RELEASE ::FormEdit := NIL ;
    BACKCOLOR ::oEditor:myIde:aSystemColor ;
@@ -18,7 +18,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 10, 10 FRAME frm_Btns ;
       WIDTH 530 ;
       HEIGHT 260 ;
-      CAPTION 'Buttons' ;
+      CAPTION i18n( 'Buttons' ) ;
       TRANSPARENT 
 
    @ 30, 15 GRID grd_Buttons ;
@@ -34,19 +34,19 @@ DEFINE WINDOW TEMPLATE ;
    @ 235, 15 BUTTON btn_Insert ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Insert button' ;
+      CAPTION i18n( 'Insert button' ) ;
       ACTION ::InsertBtn()
 
    @ 235, 120 BUTTON btn_Delete ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Delete button' ;
+      CAPTION i18n( 'Delete button' ) ;
       ACTION ::DeleteBtn()
 
    @ 235, 225 BUTTON btn_New ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'New button' ;
+      CAPTION i18n( 'New button' ) ;
       ACTION ::AddBtn()
 
    @ 235, 330 BUTTON btn_Up ;
@@ -64,7 +64,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 280, 10 FRAME frm_Props ;
       WIDTH 530 ;
       HEIGHT 195 ;
-      CAPTION 'Toolbar Properties' ;
+      CAPTION i18n( 'Toolbar Properties' ) ;
       TRANSPARENT 
 
    @ 300, 20 CHECKBOX chk_Flat ;
@@ -126,7 +126,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 298, 390 FRAME frm_Size ;
       WIDTH 140 ;
       HEIGHT 80 ;
-      CAPTION 'Button' ;
+      CAPTION i18n( 'Button' ) ;
       TRANSPARENT 
 
    @ 320, 400 LABEL lbl_Height ;
@@ -209,7 +209,7 @@ DEFINE WINDOW TEMPLATE ;
       HEIGHT 24 ;
       VALUE 'Caption' ;
       TRANSPARENT ;
-      CENTERALIGN 
+      CENTERALIGN
 
    @ 440, 20 TEXTBOX txt_Caption ;
       WIDTH 120 ;
@@ -252,7 +252,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 10, 550 FRAME frm_Selected ;
       WIDTH 210 ;
       HEIGHT 420 ;
-      CAPTION 'Selected Item' ;
+      CAPTION i18n( 'Selected Item' ) ;
       TRANSPARENT 
 
    @ 40, 560 LABEL lbl_ItName ;
@@ -376,13 +376,13 @@ DEFINE WINDOW TEMPLATE ;
    @ 438, 550 BUTTON btn_Save ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Save + Exit' ;
+      CAPTION i18n( 'Save + Exit' ) ;
       ACTION ::Save()
 
    @ 438, 660 BUTTON btn_Discard ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Discard' ;
+      CAPTION i18n( 'Discard' ) ;
       ACTION ::Discard()
 
 END WINDOW 

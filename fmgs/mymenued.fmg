@@ -2,22 +2,17 @@
  * $Id: mymenued.fmg $
  */
 
-* ooHG IDE Plus form generated code
-* (c) 2003-2017 Ciro Vargas Clemow <cvc@oohg.org>
-
 DEFINE WINDOW TEMPLATE ;
    AT 108, 99 ;
    WIDTH 778 ;
    HEIGHT 440 ;
    MODAL ;
-   BACKCOLOR ::oEditor:myIde:aSystemColor ;
-   FONT 'arial' ;
-   SIZE 10
+   BACKCOLOR ::oEditor:myIde:aSystemColor
 
    @ 10, 10 FRAME frame_2 ;
       WIDTH 530 ;
       HEIGHT 290 ;
-      CAPTION 'Items' ;
+      CAPTION i18n( 'Items' ) ;
       TRANSPARENT 
 
    @ 30, 15 BROWSE browse_101 ;
@@ -36,19 +31,19 @@ DEFINE WINDOW TEMPLATE ;
    @ 265, 15 BUTTON button_101 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Insert item' ;
+      CAPTION i18n( 'Insert item' ) ;
       ACTION ::InsertItem()
 
    @ 265, 120 BUTTON button_102 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Delete item' ;
+      CAPTION i18n( 'Delete item' ) ;
       ACTION ::DeleteItem()
 
    @ 265, 225 BUTTON button_103 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'New item' ;
+      CAPTION i18n( 'New item' ) ;
       ACTION ::AddItem()
 
    @ 265, 330 BUTTON button_106 ;
@@ -66,7 +61,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 310, 10 FRAME frame_1 ;
       WIDTH 400 ;
       HEIGHT 90 ;
-      CAPTION 'Menu Properties' ;
+      CAPTION i18n( 'Menu Properties' ) ;
       TRANSPARENT 
 
    @ 342, 20 LABEL label_1 ;
@@ -110,19 +105,19 @@ DEFINE WINDOW TEMPLATE ;
    @ 325, 430 BUTTON button_108 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Save / Exit' ;
+      CAPTION i18n( 'Save / Exit' ) ;
       ACTION ::Exit()
 
    @ 360, 430 BUTTON button_109 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION 'Discard' ;
+      CAPTION i18n( 'Discard' ) ;
       ACTION ::Discard()
 
    @ 10, 550 FRAME frame_3 ;
       WIDTH 210 ;
       HEIGHT 390 ;
-      CAPTION 'Selected Item' ;
+      CAPTION i18n( 'Selected Item' ) ;
       TRANSPARENT 
 
    @ 40, 560 LABEL label_101 ;
@@ -133,7 +128,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 37, 635 TEXTBOX text_101 ;
       WIDTH 120 ;
       HEIGHT 23 ;
-      TOOLTIP 'For separator add SEPARATOR caption.' ;
+      TOOLTIP i18n( 'For separator add SEPARATOR caption.' ) ;
       MAXLENGTH 80 ;
       ON CHANGE ::WriteCaption()
 
@@ -237,7 +232,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 340, 560 LABEL label_6 ;
       WIDTH 190 ;
       HEIGHT 24 ;
-      VALUE 'Level:' ;
+      VALUE i18n( 'Level:' ) ;
       TRANSPARENT ;
       CENTERALIGN 
 
@@ -245,17 +240,13 @@ DEFINE WINDOW TEMPLATE ;
       WIDTH 90 ;
       HEIGHT 28 ;
       CAPTION '<--' ;
-      ACTION {|| IIF( ::nLevel > 0 , ::nLevel -- , NIL ), ::WriteLevel(), ::FormEdit:browse_101:SetFocus() } ;
-      FONT 'Arial' ;
-      SIZE 10
+      ACTION {|| IIF( ::nLevel > 0 , ::nLevel -- , NIL ), ::WriteLevel(), ::FormEdit:browse_101:SetFocus() }
 
    @ 360, 660 BUTTON btn_LvlUp ;
       WIDTH 90 ;
       HEIGHT 28 ;
       CAPTION '-->' ;
-      ACTION {|| ::nLevel ++, ::WriteLevel(), ::FormEdit:browse_101:SetFocus() } ;
-      FONT 'Arial' ;
-      SIZE 10
+      ACTION {|| ::nLevel ++, ::WriteLevel(), ::FormEdit:browse_101:SetFocus() }
 
 END WINDOW 
 

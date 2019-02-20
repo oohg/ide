@@ -4,103 +4,101 @@
 
 DEFINE WINDOW TEMPLATE ;
    AT 132, 235 ;
-   WIDTH 298 ;
-   HEIGHT 264 ;
-   TITLE 'Font/Colors' ;
+   WIDTH 400 ;
+   HEIGHT 261 ;
+   TITLE i18n( "Font/Colors" ) ;
    MODAL ;
-   BACKCOLOR ::myIde:aSystemColor
+   BACKCOLOR ::myIde:aSystemColor ;
+   CLIENTAREA
 
-   DEFINE STATUSBAR 
+   DEFINE STATUSBAR
 
-      STATUSITEM ' '
+      STATUSITEM " "
 
-      STATUSITEM 'Exit' ;
+      STATUSITEM i18n( "Exit" ) ;
          WIDTH 90 ;
          ACTION ThisWindow.Release()
 
-   END STATUSBAR 
+   END STATUSBAR
 
-   @ 10, 20 LABEL Label_1 ;
-      WIDTH 260 ;
+   @ 10, 20 LABEL lbl_Object ;
+      WIDTH 250 ;
       HEIGHT 20 ;
-      FONT 'Arial' ;
-      SIZE 9 ;
-      TRANSPARENT 
+      TRANSPARENT
 
-   @ 40, 20 BUTTON button_101 ;
-      WIDTH 110 ;
+   @ 40, 50 BUTTON btn_FntType ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Font Type' ;
+      CAPTION i18n( "Font Type" ) ;
       ACTION ::SetFontType( si ) ;
-      FONT 'Arial' ;
       SIZE 9
 
-   @ 40, 160 BUTTON button_108 ;
-      WIDTH 110 ;
+   @ 40, 220 BUTTON btn_DefFntType ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Default Font Type' ;
+      CAPTION i18n( "Use IDE Font Type" ) ;           // TODO: agregar boton para hacer := NIL
       ACTION ::SetDefaultFontType( si ) ;
-      FONT 'Arial' ;
       SIZE 9
 
-   @ 80, 20 BUTTON button_102 ;
-      WIDTH 110 ;
+    @ 80, 50 BUTTON btn_FntClr ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Backcolor' ;
-      ACTION ( ::SetBackColor( si ), ThisWindow.SetFocus() ) ;
-      FONT 'Arial' ;
+      CAPTION i18n( "Fontcolor" ) ;
+      ACTION ::SetFontColor( si ) ;
       SIZE 9
 
-   @ 80, 160 BUTTON button_107 ;
-      WIDTH 110 ;
+   @ 80, 220 BUTTON btn_DefFntClr ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Default BackColor' ;
-      ACTION ( ::SetDefaultBackColor( si ), ThisWindow.SetFocus() ) ;
-      FONT 'Arial' ;
+      CAPTION i18n( "Default FontColor" ) ;
+      ACTION ::SetDefaultFontColor( si ) ;
+      FONT "Verdana" ;
       SIZE 9
 
-   @ 120, 20 LABEL Label_2 ;
-      WIDTH 260 ;
-      HEIGHT 20 ;
-      VALUE 'FontColor will be used in FORECOLOR clause.' ;
-      FONT 'Arial' ;
-      SIZE 9 ;
-      INVISIBLE 
-
-   @ 120, 20 BUTTON button_103 ;
-      WIDTH 110 ;
+  @ 120, 50 BUTTON btn_BkClr ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Title FontColor' ;
+      CAPTION i18n( "Backcolor" ) ;
+      ACTION ::SetBackColor( si ) ;
+      SIZE 9
+
+   @ 120, 220 BUTTON btn_DefBkClr ;
+      WIDTH 120 ;
+      HEIGHT 28 ;
+      CAPTION i18n( "Default BackColor" ) ;
+      ACTION ::SetBackColorOOHG( si ) ;
+      SIZE 9
+
+   @ 160, 50 BUTTON btn_TtlFntClr ;
+      WIDTH 120 ;
+      HEIGHT 28 ;
+      CAPTION i18n( "Title FontColor" ) ;
       ACTION ::GOtherColors( si, 1 ) ;
-      FONT 'Arial' ;
       SIZE 9 ;
-      INVISIBLE 
+      INVISIBLE
 
-   @ 120, 160 BUTTON btn_TtlBckClr ;
-      WIDTH 110 ;
+   @ 160, 220 BUTTON btn_TtlBkClr ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Title BackColor' ;
+      CAPTION i18n( "Title BackColor" ) ;
       ACTION ::GOtherColors( si, 2 ) ;
-      FONT 'Arial' ;
       SIZE 9 ;
-      INVISIBLE 
+      INVISIBLE
 
-   @ 160, 20 BUTTON btn_TrlFntClr ;
-      WIDTH 110 ;
+   @ 200, 50 BUTTON btn_TrlFntClr ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Trailing FontColor' ;
+      CAPTION i18n( "Trailing FontColor" ) ;
       ACTION ::GOtherColors( si, 3 ) ;
-      FONT 'Arial' ;
       SIZE 9 ;
-      INVISIBLE 
+      INVISIBLE
 
-   @ 160, 160 BUTTON button_106 ;
-      WIDTH 110 ;
+   @ 200, 220 BUTTON btn_BkGrnd ;
+      WIDTH 120 ;
       HEIGHT 28 ;
-      CAPTION 'Background Color' ;
+      CAPTION i18n( "Background Color" ) ;
       ACTION ::GOtherColors( si, 4 ) ;
-      FONT 'Arial' ;
       SIZE 9 ;
-      INVISIBLE 
+      INVISIBLE
 
-END WINDOW 
+END WINDOW

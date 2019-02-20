@@ -65,24 +65,22 @@
 #include "oohg.ch"
 #include "hbclass.ch"
 
-#define UpperNIL( cValue ) IIF( Upper( AllTrim( cValue ) ) == 'NIL', 'NIL', cValue )
-#define EDIT_ABORTED .T.
-#define EDIT_SAVED .F.
+#define UpperNIL( cValue )  iif( Upper( AllTrim( cValue ) ) == "NIL", "NIL", cValue )
+#define EDIT_ABORTED        .T.
+#define EDIT_SAVED          .F.
+#define NOTEMPTY( cValue )  ( ! Empty( cValue ) .AND. UpperNIL( cValue ) != "NIL" )
 
-
-
-
-
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 CLASS TMyToolBarEditor
 
-   DATA aToolBars              INIT {}
-   DATA lChanged               INIT .F.
-   DATA nLast                  INIT 0
-   DATA oEditor                INIT NIL
-   DATA oSplitBox              INIT NIL
+   DATA aToolBars                 INIT {}
+   DATA lChanged                  INIT .F.
+   DATA nLast                     INIT 0
+   DATA oEditor                   INIT NIL
+   DATA oSplitBox                 INIT NIL
 
    METHOD AddToolBar
-   METHOD Count                BLOCK { |Self| Len( ::aToolBars ) }
+   METHOD Count                   BLOCK { |Self| Len( ::aToolBars ) }
    METHOD CreateToolBars
    METHOD DelToolBar
    METHOD Edit
@@ -91,45 +89,47 @@ CLASS TMyToolBarEditor
    METHOD LoadToolBars
    METHOD MoveToolBarDown
    METHOD MoveToolBarUp
-   METHOD New                  CONSTRUCTOR
+   METHOD New                     CONSTRUCTOR
    METHOD Release
 
-ENDCLASS
+   ENDCLASS
 
-//------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD AddToolBar( cName ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL i, oTB
 
-   DEFAULT cName TO 'toolbar_' + Ltrim( Str( ++ ::nLast ) )
+   LOCAL i, oTB
+
+   DEFAULT cName TO "toolbar_" + LTrim( Str( ++ ::nLast ) )
    i := 1
    DO WHILE i <= ::Count
       oTB := ::aToolBars[ i ]
       IF Upper( oTB:Name ) == Upper( cName )
-         cName := 'toolbar_' + Ltrim( Str( ++ ::nLast ) )
+         cName := "toolbar_" + LTrim( Str( ++ ::nLast ) )
          i := 1
       ELSE
          i ++
       ENDIF
    ENDDO
    oTB := TMyToolBar():New( cName, ::oEditor )
-   aAdd( ::aToolBars, oTB )
-RETURN oTB
+   AAdd( ::aToolBars, oTB )
 
-//------------------------------------------------------------------------------
+   RETURN oTB
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD DelToolBar( i ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-   IF i > 0 .and. i <= ::Count
-      ::aToolBars[ i ]:Release()
-      aDel( ::aToolBars, i )
-      aSize( ::aToolBars, ::Count - 1 )
-   ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   IF i > 0 .AND. i <= ::Count
+      ::aToolBars[ i ]:Release()
+      ADel( ::aToolBars, i )
+      ASize( ::aToolBars, ::Count - 1 )
+   ENDIF
+
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Edit() CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oLst, oDel, oEdit
+
+   LOCAL oLst, oDel, oEdit
 
    SET INTERACTIVECLOSE ON
    LOAD WINDOW myTBSel
@@ -138,16 +138,17 @@ LOCAL oLst, oDel, oEdit
    SET INTERACTIVECLOSE OFF
    ::CreateToolBars()
    ::oEditor:oDesignForm:SetFocus()
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD CreateToolBars() CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oTB
 
-   IF HB_IsObject( ::oSplitBox )
+   LOCAL oTB
+
+   IF HB_ISOBJECT( ::oSplitBox )
       FOR EACH oTB IN ::aToolBars
-         IF HB_IsObject( oTB:oTBCtrl )
+         IF HB_ISOBJECT( oTB:oTBCtrl )
             oTB:oTBCtrl:Release()
          ENDIF
       NEXT
@@ -162,14 +163,15 @@ LOCAL oTB
    IF Len( ::aToolBars ) > 1
       END SPLITBOX
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD EditToolBar( i ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL lRet
 
-   IF i > 0 .and. i <= ::Count
+   LOCAL lRet
+
+   IF i > 0 .AND. i <= ::Count
       IF ( lRet := ::aToolBars[ i ]:Edit() ) == EDIT_SAVED
          ::lChanged := .T.
       ELSE
@@ -178,12 +180,13 @@ LOCAL lRet
    ELSE
       lRet := EDIT_ABORTED
    ENDIF
-RETURN lRet
 
-//------------------------------------------------------------------------------
+   RETURN lRet
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD FmgOutput( nSpacing ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oTB, cOutput := ''
+
+   LOCAL oTB, cOutput := ""
 
    IF Len( ::aToolBars ) > 1
       cOutput += "DEFINE SPLITBOX" + CRLF
@@ -197,17 +200,18 @@ LOCAL oTB, cOutput := ''
    IF Len( ::aToolBars ) > 1
       cOutput += "END SPLITBOX" + CRLF + CRLF
    ENDIF
-RETURN cOutput
 
-//------------------------------------------------------------------------------
+   RETURN cOutput
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
  METHOD LoadToolBars() CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL i := 1, cName, oTB
+
+   LOCAL i := 1, cName, oTB
 
    ::aToolBars := {}
    ::lChanged := .F.
    DO WHILE i <= Len( ::oEditor:aLine )
-      IF At( 'DEFINE TOOLBAR ', Upper( LTrim( ::oEditor:aLine[ i ] ) ) ) == 1
+      IF At( "DEFINE TOOLBAR ", Upper( LTrim( ::oEditor:aLine[ i ] ) ) ) == 1
          cName := ::oEditor:ReadCtrlName( i )
          IF ! Empty( cName )
             oTB := ::AddToolBar( cName )
@@ -217,96 +221,101 @@ LOCAL i := 1, cName, oTB
       i ++
    ENDDO
    ::CreateToolBars()
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD MoveToolBarDown( i ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oTB
 
-   IF i > 0 .and. i < ::Count
+   LOCAL oTB
+
+   IF i > 0 .AND. i < ::Count
       oTB := ::aToolBars[ i ]
-      aDel( ::aToolBars, i )
+      ADel( ::aToolBars, i )
       i ++
-      aIns( ::aToolBars, i )
+      AIns( ::aToolBars, i )
       ::aToolBars[ i ] := oTB
       ::lChanged := .T.
    ENDIF
-RETURN i
 
-//------------------------------------------------------------------------------
+   RETURN i
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD MoveToolBarUp( i ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oTB
 
-   IF i > 1 .and. i <= ::Count
+   LOCAL oTB
+
+   IF i > 1 .AND. i <= ::Count
       oTB := ::aToolBars[ i ]
-      aDel( ::aToolBars, i )
+      ADel( ::aToolBars, i )
       i --
-      aIns( ::aToolBars, i )
+      AIns( ::aToolBars, i )
       ::aToolBars[ i ] := oTB
       ::lChanged := .T.
    ENDIF
-RETURN i
 
-//------------------------------------------------------------------------------
+   RETURN i
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD New( oEditor ) CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-   ::oEditor := oEditor
-RETURN Self
 
-//------------------------------------------------------------------------------
+   ::oEditor := oEditor
+
+   RETURN Self
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Release() CLASS TMyToolBarEditor
-//------------------------------------------------------------------------------
-LOCAL oTB
+
+   LOCAL oTB
 
    FOR EACH oTB IN ::aToolBars
       oTB:Release()
    NEXT
    ::aToolBars := {}
    ::oEditor := NIL
-RETURN NIL
+
+   RETURN NIL
 
 
-
-
-
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 CLASS TMyToolBar
 
-   DATA aButtons               INIT {}
-   DATA aData                  INIT {}
-   DATA cAction                INIT ''
-   DATA cCaption               INIT ''
-   DATA cFont                  INIT 'Arial'
-   DATA cObj                   INIT ''
-   DATA cSubclass              INIT ''
-   DATA cToolTip               INIT ''
-   DATA FormEdit               INIT NIL
-   DATA lBold                  INIT .F.
-   DATA lBorder                INIT .T.
-   DATA lBottom                INIT .F.
-   DATA lBreak                 INIT .F.
-   DATA lFlat                  INIT .F.
-   DATA lItalic                INIT .F.
-   DATA lNoBreak               INIT .F.
-   DATA lNoTabStop             INIT .F.
-   DATA lRightText             INIT .F.
-   DATA lRTL                   INIT .F.
-   DATA lEditResult            INIT EDIT_ABORTED
-   DATA lOwnTT                 INIT .F.
-   DATA lStrikeout             INIT .F.
-   DATA lUnderline             INIT .F.
-   DATA lVertical              INIT .F.
-   DATA Name                   INIT ''
-   DATA nColorB                INIT 0
-   DATA nColorG                INIT 0
-   DATA nColorR                INIT 0
-   DATA nHeight                INIT 65
-   DATA nLastBtn               INIT 0
-   DATA nSize                  INIT 10
-   DATA nWidth                 INIT 65
-   DATA oEditor                INIT NIL
-   DATA oTBCtrl                INIT NIL
+   DATA aButtons                  INIT {}
+   DATA aData                     INIT {}
+   DATA cAction                   INIT ""
+   DATA cCaption                  INIT ""
+   DATA cFontName                 INIT ""
+   DATA cFontNameFrm              INIT ""
+   DATA cFontSizeFrm              INIT ""
+   DATA cObj                      INIT ""
+   DATA cSubclass                 INIT ""
+   DATA cToolTip                  INIT ""
+   DATA FormEdit                  INIT NIL
+   DATA lBold                     INIT .F.
+   DATA lBorder                   INIT .T.
+   DATA lBottom                   INIT .F.
+   DATA lBreak                    INIT .F.
+   DATA lEditResult               INIT EDIT_ABORTED
+   DATA lFlat                     INIT .F.
+   DATA lItalic                   INIT .F.
+   DATA lNoBreak                  INIT .F.
+   DATA lNoTabStop                INIT .F.
+   DATA lOwnTT                    INIT .F.
+   DATA lRightText                INIT .F.
+   DATA lRTL                      INIT .F.
+   DATA lStrikeout                INIT .F.
+   DATA lUnderline                INIT .F.
+   DATA lVertical                 INIT .F.
+   DATA Name                      INIT ""
+   DATA nColorB                   INIT 0
+   DATA nColorG                   INIT 0
+   DATA nColorR                   INIT 0
+   DATA nFontSize                 INIT 0
+   DATA nHeight                   INIT 65
+   DATA nLastBtn                  INIT 0
+   DATA nWidth                    INIT 65
+   DATA oEditor                   INIT NIL
+   DATA oTBCtrl                   INIT NIL
 
    METHOD AddBtn
    METHOD CreateCtrl
@@ -318,7 +327,7 @@ CLASS TMyToolBar
    METHOD InsertBtn
    METHOD MoveDown
    METHOD MoveUp
-   METHOD New                  CONSTRUCTOR
+   METHOD New                     CONSTRUCTOR
    METHOD OnEditInit
    METHOD OnGridChange
    METHOD PreProcessDefine
@@ -341,19 +350,19 @@ CLASS TMyToolBar
    METHOD WriteToolTip
    METHOD WriteWhole
 
-ENDCLASS
+   ENDCLASS
 
-//------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD AddBtn() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut, nNew
+
+   LOCAL oBut, nNew
 
    ::nLastBtn ++
-   oBut := TMyTBBtn():New( ::Name + '_button_' + LTrim( Str( ::nLastBtn ) ), ::oEditor )
-   aAdd( ::aButtons, oBut )
+   oBut := TMyTBBtn():New( ::Name + "_button_" + LTrim( Str( ::nLastBtn ) ), ::oEditor )
+   AAdd( ::aButtons, oBut )
 
    nNew := ::FormEdit:grd_Buttons:ItemCount + 1
-   ::FormEdit:grd_Buttons:InsertItem( nNew, { oBut:Name, '', '', .F., .F., '', .F., .F., '', '', .F., .F., '' } )
+   ::FormEdit:grd_Buttons:InsertItem( nNew, { oBut:Name, "", "", .F., .F., "", .F., .F., "", "", .F., .F., "" } )
    ::FormEdit:grd_Buttons:Value := nNew
    ::FormEdit:grd_Buttons:SetFocus()
 
@@ -364,41 +373,42 @@ LOCAL oBut, nNew
       ::FormEdit:btn_Insert:Enabled := .T.
       ::FormEdit:btn_Delete:Enabled := .T.
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD CreateCtrl() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL i
 
-   IF HB_IsObject( ::oTBCtrl )
+   LOCAL i
+
+   IF HB_ISOBJECT( ::oTBCtrl )
       ::oTBCtrl:Release()
    ENDIF
 
-   ::oTBCtrl := TToolBar():Define( 0, ::oEditor:oDesignForm, 0, 0, ::nWidth, ;
-                                   ::nHeight, ::cCaption, NIL, ::cFont, ;
-                                   ::nSize, ::cToolTip, ::lFlat, ::lBottom, ;
-                                   ::lRightText, ::lBreak, ::lBold, ::lItalic, ;
-                                   ::lUnderline, ::lStrikeout, ::lBorder, ;
-                                   ::lRTL, ::lNoTabStop, ::lVertical, ::lOwnTT )
+   ::oTBCtrl := TToolBar():Define( 0, ::oEditor:oDesignForm, 0, 0, ::nWidth, ::nHeight, ;
+                                   ::oEditor:StrToValueCtrl( ::cCaption, "C" ), NIL, ::cFontName, ::nFontSize, ;
+                                   ::oEditor:StrToValueCtrl( ::cToolTip, "C" ), ::lFlat, ::lBottom, ::lRightText, ;
+                                   ::lBreak, ::lBold, ::lItalic, ::lUnderline, ::lStrikeout, ::lBorder, ::lRTL, ;
+                                   ::lNoTabStop, ::lVertical, ::lOwnTT )
 
    FOR i := 1 TO Len( ::aButtons )
        ::aButtons[ i ]:CreateCtrl()
    NEXT i
 
    _EndToolBar( ! ::lNoBreak )
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD DeleteBtn() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL nLen, nBut
+
+   LOCAL nLen, nBut
 
    nBut := ::FormEdit:grd_Buttons:Value
    nLen := Len( ::aButtons )
    IF nBut > 0 .AND. nBut <= nLen
-      aDel( ::aButtons, nBut )
-      aSize( ::aButtons, nLen - 1 )
+      ADel( ::aButtons, nBut )
+      ASize( ::aButtons, nLen - 1 )
 
       ::FormEdit:grd_Buttons:DeleteItem( nBut )
       ::FormEdit:grd_Buttons:Value := Min( nBut, ::FormEdit:grd_Buttons:ItemCount )
@@ -418,92 +428,99 @@ LOCAL nLen, nBut
          ::FormEdit:btn_Down:Enabled   := .F.
       ENDIF
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Discard() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-   IF MsgYesNo( "Changes will be discarded, are you sure?", 'OOHG IDE+' )
+
+   IF MsgYesNo( i18n( "Changes will be discarded, are you sure?" ), "OOHG IDE+" )
       ::FormEdit:Release()
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Edit() CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    SET INTERACTIVECLOSE ON
    LOAD WINDOW myToolBarEd
    ON KEY ESCAPE OF myToolBarEd ACTION ::Discard()
    ACTIVATE WINDOW myToolBarEd
    SET INTERACTIVECLOSE OFF
-
    ::oEditor:oDesignForm:SetFocus()
-RETURN ::lEditResult
 
-//------------------------------------------------------------------------------
+   RETURN ::lEditResult
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD FmgOutput( nSpacing ) CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL cOutput := '', oBut, oMenu
 
-   cOutput += Space( nSpacing ) + 'DEFINE TOOLBAR ' + AllTrim( ::Name ) + ' ;' + CRLF
-   cOutput += Space( nSpacing * 2 ) + 'BUTTONSIZE ' + LTrim( Str( ::nWidth ) ) + ',' + LTrim( Str( ::nHeight ) )       // Do not add a space after the comma
-   cOutput += IIF( Empty( ::cObj ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'OBJ ' + AllTrim( ::cObj ) )
-   cOutput += IIF( Empty( ::cFont ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'FONT ' + StrToStr( ::cFont ) )
-   cOutput += IIF( ::nSize > 0, ' ;' + CRLF + Space( nSpacing * 2 ) + 'SIZE ' + LTrim( Str( ::nSize ) ), '' )
-   cOutput += IIF( ::lBold, ' ;' + CRLF + Space( nSpacing * 2 ) + 'BOLD ', '' )
-   cOutput += IIF( ::lItalic, ' ;' + CRLF + Space( nSpacing * 2 ) + 'ITALIC ', '' )
-   cOutput += IIF( ::lUnderline, ' ;' + CRLF + Space( nSpacing * 2 ) + 'UNDERLINE ', '' )
-   cOutput += IIF( ::lStrikeout, ' ;' + CRLF + Space( nSpacing * 2 ) + 'STRIKEOUT ', '' )
-   cOutput += IIF( Empty( ::cToolTip ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'TOOLTIP ' + StrToStr( ::cToolTip, .T. ) )
-   cOutput += IIF( ::lOwnTT, ' ;' + CRLF + Space( nSpacing * 2 ) + 'OWNTOOLTIP ', '' )
-   cOutput += IIF( ::lFlat, ' ;' + CRLF + Space( nSpacing * 2 ) + 'FLAT ', '' )
-   cOutput += IIF( ::lBottom, ' ;' + CRLF + Space( nSpacing * 2 ) + 'BOTTOM ', '' )
-   cOutput += IIF( ::lRightText, ' ;' + CRLF + Space( nSpacing * 2 ) + 'RIGHTTEXT ', '' )
-   cOutput += IIF( ::lBorder, ' ;' + CRLF + Space( nSpacing * 2 ) + 'BORDER ', '' )
-   cOutput += IIF( ::lVertical, ' ;' + CRLF + Space( nSpacing * 2 ) + 'VERTICAL ', '' )
-   cOutput += IIF( ::lBreak, ' ;' + CRLF + Space( nSpacing * 2 ) + 'BREAK ', '' )
-   cOutput += IIF( ::lRTL, ' ;' + CRLF + Space( nSpacing * 2 ) + 'RTL ', '' )
-   cOutput += IIF( ::lNoTabStop, ' ;' + CRLF + Space( nSpacing * 2 ) + 'NOTABSTOP ', '' )
-   cOutput += IIF( Empty( ::cCaption ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'CAPTION ' + StrToStr( ::cCaption, .T. ) )
-   cOutput += IIF( Empty( ::cAction ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'ACTION ' + AllTrim( ::cAction ) )
-   cOutput += IIF( Empty( ::cSubclass ), '', ' ;' + CRLF + Space( nSpacing * 2 ) + 'SUBCLASS ' + AllTrim( ::cSubclass ) )
+   LOCAL cOutput := "", oBut, oMenu
+
+   cOutput += Space( nSpacing ) + "DEFINE TOOLBAR " + AllTrim( ::Name ) + " ;" + CRLF
+   cOutput += Space( nSpacing * 2 ) + "BUTTONSIZE " + LTrim( Str( ::nWidth ) ) + ", " + LTrim( Str( ::nHeight ) )
+   cOutput += iif( NOTEMPTY( ::cObj ), " ;" + CRLF + Space( nSpacing * 2 ) + "OBJ " + AllTrim( ::cObj ), "" )
+   cOutput += iif( NOTEMPTY( ::cFontNameFrm ), " ;" + CRLF + Space( nSpacing * 2 ) + "FONT " + AllTrim( ::cFontNameFrm ), "" )
+   cOutput += iif( NOTEMPTY( ::cFontSizeFrm ), " ;" + CRLF + Space( nSpacing * 2 ) + "SIZE " + AllTrim( ::cFontSizeFrm ), "" )
+   cOutput += iif( ::lBold, " ;" + CRLF + Space( nSpacing * 2 ) + "BOLD ", "" )
+   cOutput += iif( ::lItalic, " ;" + CRLF + Space( nSpacing * 2 ) + "ITALIC ", "" )
+   cOutput += iif( ::lUnderline, " ;" + CRLF + Space( nSpacing * 2 ) + "UNDERLINE ", "" )
+   cOutput += iif( ::lStrikeout, " ;" + CRLF + Space( nSpacing * 2 ) + "STRIKEOUT ", "" )
+   cOutput += iif( NOTEMPTY( ::cToolTip ), " ;" + CRLF + Space( nSpacing * 2 ) + "TOOLTIP " + AllTrim( ::cToolTip ), "" )
+   cOutput += iif( ::lOwnTT, " ;" + CRLF + Space( nSpacing * 2 ) + "OWNTOOLTIP ", "" )
+   cOutput += iif( ::lFlat, " ;" + CRLF + Space( nSpacing * 2 ) + "FLAT ", "" )
+   cOutput += iif( ::lBottom, " ;" + CRLF + Space( nSpacing * 2 ) + "BOTTOM ", "" )
+   cOutput += iif( ::lRightText, " ;" + CRLF + Space( nSpacing * 2 ) + "RIGHTTEXT ", "" )
+   cOutput += iif( ::lBorder, " ;" + CRLF + Space( nSpacing * 2 ) + "BORDER ", "" )
+   cOutput += iif( ::lVertical, " ;" + CRLF + Space( nSpacing * 2 ) + "VERTICAL ", "" )
+   cOutput += iif( ::lBreak, " ;" + CRLF + Space( nSpacing * 2 ) + "BREAK ", "" )
+   cOutput += iif( ::lRTL, " ;" + CRLF + Space( nSpacing * 2 ) + "RTL ", "" )
+   cOutput += iif( ::lNoTabStop, " ;" + CRLF + Space( nSpacing * 2 ) + "NOTABSTOP ", "" )
+   cOutput += iif( NOTEMPTY( ::cCaption ), " ;" + CRLF + Space( nSpacing * 2 ) + "CAPTION " + AllTrim( ::cCaption ), "" )
+   cOutput += iif( NOTEMPTY( ::cAction ), " ;" + CRLF + Space( nSpacing * 2 ) + "ACTION " + AllTrim( ::cAction ), "" )
+   cOutput += iif( NOTEMPTY( ::cSubclass ), " ;" + CRLF + Space( nSpacing * 2 ) + "SUBCLASS " + AllTrim( ::cSubclass ), "" )
    cOutput += CRLF + CRLF
 
    FOR EACH oBut IN ::aButtons
       cOutput += oBut:FmgOutput( nSpacing )
    NEXT
 
-   cOutput += Space( nSpacing ) + 'END TOOLBAR '
-   cOutput += IIF( ::lNoBreak, ' ;' + CRLF + Space( nSpacing * 2 ) + 'NOBREAK ', '' )
+   cOutput += Space( nSpacing ) + "END TOOLBAR "
+   cOutput += iif( ::lNoBreak, " ;" + CRLF + Space( nSpacing * 2 ) + "NOBREAK ", "" )
    cOutput += CRLF + CRLF
 
-   // TODO: DROP DOWN MENU
+   /* TODO: DROP DOWN MENU */
    oMenu := TMyMenuEditor()
    oMenu:oEditor := ::oEditor
    oMenu:nType := 4
    FOR EACH oBut IN ::aButtons
-      IF File( ::oEditor:cFName + '.' + oBut:Name + '.mnd' )
-         cOutput += oMenu:FmgOutput( NIL, NIL, nSpacing, oBut:Name )
+      IF File( ::oEditor:cFName + "." + oBut:Name + ".mnd" )
+         IF oBut:lDrop .OR. oBut:lWhole
+            cOutput += oMenu:FmgOutput( NIL, NIL, nSpacing, oBut:Name )
+         ELSE
+            ERASE ( ::oEditor:cFName + "." + oBut:Name + ".mnd" )
+         ENDIF
       ENDIF
    NEXT
-RETURN cOutput
 
-//------------------------------------------------------------------------------
+   RETURN cOutput
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD InsertBtn() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL nBut, nLen, oBut
+
+   LOCAL nBut, nLen, oBut
 
    nBut := ::FormEdit:grd_Buttons:Value
    nLen := Len( ::aButtons )
    IF nBut > 0 .AND. nBut <= nLen
-      aSize( ::aButtons, nLen + 1 )
-      aIns( ::aButtons, nBut )
+      ASize( ::aButtons, nLen + 1 )
+      AIns( ::aButtons, nBut )
       ::nLastBtn ++
 
-      oBut := TMyTBBtn():New( ::Name + '_button_' + LTrim( Str( ::nLastBtn ) ), ::oEditor )
+      oBut := TMyTBBtn():New( ::Name + "_button_" + LTrim( Str( ::nLastBtn ) ), ::oEditor )
       ::aButtons[ nBut ] := oBut
 
-      ::FormEdit:grd_Buttons:InsertItem( nBut, { oBut:Name, '', '', .F., .F., '', .F., .F., '', '', .F., .F., '' } )
+      ::FormEdit:grd_Buttons:InsertItem( nBut, { oBut:Name, "", "", .F., .F., "", .F., .F., "", "", .F., .F., "" } )
       ::FormEdit:grd_Buttons:Value := Min( nBut, ::FormEdit:grd_Buttons:ItemCount )
       ::FormEdit:grd_Buttons:SetFocus()
 
@@ -521,11 +538,12 @@ LOCAL nBut, nLen, oBut
    ENDIF
 
    ::FormEdit:grd_Buttons:SetFocus()
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD MoveDown() CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    IF ::FormEdit:grd_Buttons:Value < 1
       IF ::FormEdit:grd_Buttons:ItemCount > 0
          ::FormEdit:grd_Buttons:Value := 1
@@ -535,27 +553,30 @@ METHOD MoveDown() CLASS TMyToolBar
          ::FormEdit:grd_Buttons:Value := ::FormEdit:grd_Buttons:Value + 1
       ENDIF
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD MoveUp() CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    IF ::FormEdit:grd_Buttons:Value > 1
       ::FormEdit:grd_Buttons:Value := ::FormEdit:grd_Buttons:Value - 1
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD New( cName, oEditor ) CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    ::Name    := cName
    ::oEditor := oEditor
-RETURN Self
 
-//------------------------------------------------------------------------------
+   RETURN Self
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD OnEditInit() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    ::FormEdit:txt_Name:Value     := ::Name
    ::FormEdit:txt_Width:Value    := ::nWidth
@@ -594,12 +615,13 @@ LOCAL oBut
       ::FormEdit:btn_Up:Enabled     := .F.
       ::FormEdit:btn_Down:Enabled   := .F.
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD OnGridChange() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -630,39 +652,40 @@ LOCAL oBut
       ::FormEdit:chk_ItGroup:Value     := .F.
       ::FormEdit:chk_ItWhole:Value     := .F.
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD PreProcessDefine() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", j, c, k
-LOCAL aTokens0 := { "BOLD", "ITALIC", "UNDERLINE", "STRIKEOUT", "OWNTOOLTIP", "FLAT", "BOTTOM", "RIGHTTEXT", "BORDER", "VERTICAL", "BREAK", "RTL", "NOTABSTOP" }
-LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "ACTION", "SUBCLASS" }
 
-   // Concatenate lines
-   IF ( i := aScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
-      zi := ::oEditor:aSpeed[ i ]
-      zf := ::oEditor:aNumber[ i ]
-      FOR i := zi TO zf
+   LOCAL nFrom, nTo, i, cData := "", j, c, k
+   LOCAL aTokens0 := { "BOLD", "ITALIC", "UNDERLINE", "STRIKEOUT", "OWNTOOLTIP", "FLAT", "BOTTOM", "RIGHTTEXT", "BORDER", "VERTICAL", "BREAK", "RTL", "NOTABSTOP" }
+   LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "ACTION", "SUBCLASS" }
+
+   /* Concatenate lines */
+   IF ( i := AScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
+      nFrom := ::oEditor:aSpeed[ i ]
+      nTo := ::oEditor:aNumber[ i ]
+      FOR i := nFrom TO nTo
          IF Empty( ::oEditor:aLine[ i ] )
             EXIT
          ENDIF
          cData += ::oEditor:aLine[ i ]
       NEXT i
       cData := RTrim( cData )
-      // convert to tokens
+      /* Convert to tokens */
       ::aData := hb_ATokens( cData, " ", .T., .F. )
-      // add ; at the end to make parsing easier
+      /* Add ; at the end to make parsing easier */
       IF ATail( ::aData ) # ";"
          AAdd( ::aData, ";" )
       ENDIF
-      // this routine locates the toolbar's clauses and concatenates all the
-      // subsequent tokens until the next clause or a semicolon if found
+      /* This routine locates the toolbar's clauses and concatenates all the
+         subsequent tokens until the next clause or a semicolon is found */
       i := 1
       DO WHILE i < Len( ::aData )
          DO CASE
          CASE AScan( aTokens0, ::aData[i] ) > 0
-            // 'logical' properties
+            /* 'logical' properties */
             i ++
             j := i
             DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
@@ -679,15 +702,15 @@ LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "
             ENDIF
             i ++
          CASE AScan( aTokens1, ::aData[i] ) > 0
-            // properties with 1 parameter
+            /* Properties with 1 parameter */
             i ++
             j := i
-            c := " "
+            c := ""
             DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
-               c += ( " " + ::aData[j] )
+               c += ( ::aData[j] + " " )
                j ++
             ENDDO
-            c := LTrim( c )
+            c := RTrim( c )
             IF ! Empty( c )
                ::aData[i] := c
                i ++
@@ -709,46 +732,48 @@ LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "
       ENDDO
    ENDIF
 
-RETURN NIL
+   RETURN NIL
 
-//------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadFromFMG() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL i, cLine, cName, cSize, nPos, nVal, oBut
 
-   IF ( i := aScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
+   LOCAL i, cLine, cName, cSize, nPos, nVal, oBut
+
+   IF ( i := AScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
       ::PreProcessDefine()
 
-      ::cObj       := ::ReadToolBarStringData( 'OBJ', ::cObj )
-      ::cCaption   := ::oEditor:Clean( ::ReadToolBarStringData( 'CAPTION', ::cCaption ) )
-      ::cCaption   := ::oEditor:Clean( ::ReadToolBarStringData( 'GRIPPERTEXT', ::cCaption ) )
-      ::cAction    := ::ReadToolBarStringData( 'ACTION', ::cAction )
-      ::cFont      := ::oEditor:Clean( ::ReadToolBarStringData( 'FONT', ::cFont ) )
-      ::cFont      := ::oEditor:Clean( ::ReadToolBarStringData( 'FONTNAME', ::cFont ) )
-      ::nSize      := Val( ::ReadToolBarStringData( 'SIZE', LTrim( Str( ::nSize ) ) ) )
-      ::nSize      := Val( ::ReadToolBarStringData( 'FONTSIZE', LTrim( Str( ::nSize ) ) ) )
-      ::lBold      := ::ReadToolBarLogicalData( 'BOLD', ::lBold )
-      ::lBold      := ::ReadToolBarLogicalData( 'FONTBOLD', ::lBold )
-      ::lItalic    := ::ReadToolBarLogicalData( 'ITALIC', ::lItalic )
-      ::lItalic    := ::ReadToolBarLogicalData( 'FONTITALIC', ::lItalic )
-      ::lUnderline := ::ReadToolBarLogicalData( 'UNDERLINE', ::lUnderline )
-      ::lUnderline := ::ReadToolBarLogicalData( 'FONTUNDERLINE', ::lUnderline )
-      ::lStrikeout := ::ReadToolBarLogicalData( 'STRIKEOUT', ::lStrikeout )
-      ::lStrikeout := ::ReadToolBarLogicalData( 'FONTSTRIKEOUT', ::lStrikeout )
-      ::cToolTip   := ::oEditor:Clean( ::ReadToolBarStringData( 'TOOLTIP', ::cToolTip ) )
-      ::lOwnTT     := ::ReadToolBarLogicalData( 'OWNTOOLTIP', ::lFlat )
-      ::lFlat      := ::ReadToolBarLogicalData( 'FLAT', ::lFlat )
-      ::lBottom    := ::ReadToolBarLogicalData( 'BOTTOM', ::lBottom )
-      ::lVertical  := ::ReadToolBarLogicalData( 'VERTICAL', ::lVertical )
-      ::lRightText := ::ReadToolBarLogicalData( 'RIGHTTEXT', ::lRightText )
-      ::lBorder    := ::ReadToolBarLogicalData( 'BORDER', ::lBorder )
-      ::lBreak     := ::ReadToolBarLogicalData( 'BREAK', ::lBreak )
-      ::lRTL       := ::ReadToolBarLogicalData( 'RTL', ::lRTL )
-      ::cSubClass  := ::ReadToolBarStringData( 'SUBCLASS', ::cSubClass )
-      ::lNoTabStop := ::ReadToolBarLogicalData( 'NOTABSTOP', ::lNoTabStop )
+      ::cObj         := ::ReadToolBarStringData( "OBJ", ::cObj )
+      ::cCaption     := ::ReadToolBarStringData( "CAPTION", ::cCaption )
+      ::cCaption     := ::ReadToolBarStringData( "GRIPPERTEXT", ::cCaption )
+      ::cAction      := ::ReadToolBarStringData( "ACTION", ::cAction )
+      ::cFontNameFrm := ::ReadToolBarStringData( "FONT", ::cFontNameFrm )
+      ::cFontNameFrm := ::ReadToolBarStringData( "FONTNAME", ::cFontNameFrm )
+      ::cFontName    := ::oEditor:StrToValueCtrl( ::cFontNameFrm, "C", "" )
+      ::cFontSizeFrm := ::ReadToolBarStringData( "SIZE", ::cFontSizeFrm )
+      ::cFontSizeFrm := ::ReadToolBarStringData( "FONTSIZE", ::cFontSizeFrm )
+      ::nFontSize    := ::oEditor:StrToValueCtrl( ::cFontSizeFrm, "N", 0, 1, 9999 )
+      ::lBold        := ::ReadToolBarLogicalData( "BOLD", ::lBold )
+      ::lBold        := ::ReadToolBarLogicalData( "FONTBOLD", ::lBold )
+      ::lItalic      := ::ReadToolBarLogicalData( "ITALIC", ::lItalic )
+      ::lItalic      := ::ReadToolBarLogicalData( "FONTITALIC", ::lItalic )
+      ::lUnderline   := ::ReadToolBarLogicalData( "UNDERLINE", ::lUnderline )
+      ::lUnderline   := ::ReadToolBarLogicalData( "FONTUNDERLINE", ::lUnderline )
+      ::lStrikeout   := ::ReadToolBarLogicalData( "STRIKEOUT", ::lStrikeout )
+      ::lStrikeout   := ::ReadToolBarLogicalData( "FONTSTRIKEOUT", ::lStrikeout )
+      ::cToolTip     := ::ReadToolBarStringData( "TOOLTIP", ::cToolTip )
+      ::lOwnTT       := ::ReadToolBarLogicalData( "OWNTOOLTIP", ::lFlat )
+      ::lFlat        := ::ReadToolBarLogicalData( "FLAT", ::lFlat )
+      ::lBottom      := ::ReadToolBarLogicalData( "BOTTOM", ::lBottom )
+      ::lVertical    := ::ReadToolBarLogicalData( "VERTICAL", ::lVertical )
+      ::lRightText   := ::ReadToolBarLogicalData( "RIGHTTEXT", ::lRightText )
+      ::lBorder      := ::ReadToolBarLogicalData( "BORDER", ::lBorder )
+      ::lBreak       := ::ReadToolBarLogicalData( "BREAK", ::lBreak )
+      ::lRTL         := ::ReadToolBarLogicalData( "RTL", ::lRTL )
+      ::cSubClass    := ::ReadToolBarStringData( "SUBCLASS", ::cSubClass )
+      ::lNoTabStop   := ::ReadToolBarLogicalData( "NOTABSTOP", ::lNoTabStop )
 
-      cSize := ::ReadToolBarStringData( 'BUTTONSIZE', '' )
-      IF ( nPos := At( ',', cSize ) ) > 0
+      cSize := ::ReadToolBarStringData( "BUTTONSIZE", "" )
+      IF ( nPos := At( ",", cSize ) ) > 0
          IF ( nVal := Val( SubStr( cSize, 1, nPos - 1 ) ) ) > 0
             ::nWidth := nVal
          ENDIF
@@ -761,12 +786,12 @@ LOCAL i, cLine, cName, cSize, nPos, nVal, oBut
          ENDIF
       ENDIF
       /*
-      aFontColor := UpperNIL( ::ReadToolBarStringData( 'FONTCOLOR', 'NIL' ) )
-      IF IsValidArray( aFontColor )
+      aFontColor := UpperNIL( ::ReadToolBarStringData( "FONTCOLOR", "NIL" ) )
+      IF "A" == Type( aFontColor )
          ::nColorR := aFontColor[ 1 ]
          ::nColorG := aFontColor[ 2 ]
          ::nColorB := aFontColor[ 3 ]
-      ELSEIF Type( aFontColor ) == 'N'
+      ELSEIF Type( aFontColor ) == "N"
          ::nColorR := GetRed( aFontColor )
          ::nColorG := GetGreen( aFontColor )
          ::nColorB := GetBlue( aFontColor )
@@ -777,37 +802,39 @@ LOCAL i, cLine, cName, cSize, nPos, nVal, oBut
       DO WHILE i < Len( ::oEditor:aLine )
          i ++
          cLine := Upper( LTrim( ::oEditor:aLine[ i ] ) )
-         IF At( 'DEFINE TBBUTTON ', cLine ) == 1
+         IF At( "DEFINE TBBUTTON ", cLine ) == 1
             cName := ::oEditor:ReadCtrlName( i )
             IF ! Empty( cName )
                oBut := TMyTBBtn():New( cName, ::oEditor )
-               aAdd( ::aButtons, oBut )
+               AAdd( ::aButtons, oBut )
                oBut:ReadFromFMG()
             ENDIF
-         ELSEIF At( 'END TOOLBAR', cLine ) == 1 .OR. At( 'END WINDOW', cLine ) == 1
-            ::lNoBreak := ( AllTrim( SubStr( cLine, 12 ) ) == 'NOBREAK' )
+         ELSEIF At( "END TOOLBAR", cLine ) == 1 .OR. At( "END WINDOW", cLine ) == 1
+            ::lNoBreak := ( AllTrim( SubStr( cLine, 12 ) ) == "NOBREAK" )
             EXIT
          ENDIF
       ENDDO
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadToolBarLogicalData( cProp, lDefault ) CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL i
+
+   LOCAL i
 
    FOR EACH i IN ::aData
       IF Upper( i ) == cProp
          RETURN .T.
       ENDIF
    NEXT i
-RETURN lDefault
 
-//------------------------------------------------------------------------------
+   RETURN lDefault
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadToolBarStringData( cProp, cDefault ) CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL nLen, i, c2, c1
+
+   LOCAL nLen, i, c2, c1
 
    IF ( i := At( " ", cProp ) ) > 0
       c1 := SubStr( cProp, 1, i - 1 )
@@ -828,60 +855,66 @@ LOCAL nLen, i, c2, c1
          ENDIF
       NEXT i
    ENDIF
-RETURN cDefault
 
-//------------------------------------------------------------------------------
+   RETURN cDefault
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Release() CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    ::aButtons := {}
    ::oEditor := NIL
-   IF HB_IsObject( ::oTBCtrl )
+   IF HB_ISOBJECT( ::oTBCtrl )
       ::oTBCtrl:Release()
       ::oTBCtrl := NIL
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD Save() CLASS TMyToolBar
-//------------------------------------------------------------------------------
+
    DO CASE
    CASE Empty( ::Name )
-      MsgStop( 'ToolBar must have a name.', 'OOHG IDE+' )
+      MsgStop( i18n( "ToolBar must have a name." ), "OOHG IDE+" )
    CASE ::nWidth <= 0
-      MsgStop( 'Width must be greater than 0.', 'OOHG IDE+' )
+      MsgStop( i18n( "Width must be greater than 0." ), "OOHG IDE+" )
    CASE ::nHeight <= 0
-      MsgStop( 'Height must be greater than 0.', 'OOHG IDE+' )
+      MsgStop( i18n( "Height must be greater than 0." ), "OOHG IDE+" )
    OTHERWISE
-      ::lEditResult := EDIT_SAVED       // TODO: ver si algo cambió
+      ::lEditResult := EDIT_SAVED      
       ::FormEdit:Release()
    ENDCASE
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD SetFont() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL aFont, cColor
 
-   cColor := '{' + Str( ::nColorR, 3 ) + ',' + Str( ::nColorG, 3 ) + ',' + Str( ::nColorB, 3 ) + '}'
-   aFont := GetFont( ::cFont, ::nSize, ::lBold, ::lItalic, &cColor, ::lUnderline, ::lStrikeout, 0 )
-   IF aFont[ 1 ] == ''
+   LOCAL aFont, cColor
+
+   cColor := "{" + Str( ::nColorR, 3 ) + "," + Str( ::nColorG, 3 ) + "," + Str( ::nColorB, 3 ) + "}"
+   aFont := GetFont( ::cFontName, ::nFontSize, ::lBold, ::lItalic, &cColor, ::lUnderline, ::lStrikeout, 0 )
+   IF aFont[ 1 ] == ""
       RETURN NIL
    ENDIF
-   ::cFont      := aFont[ 1 ]
-   ::nSize      := aFont[ 2 ]
-   ::lBold      := aFont[ 3 ]
-   ::lItalic    := aFont[ 4 ]
-   ::nColorR    := aFont[ 5, 1 ]
-   ::nColorG    := aFont[ 5, 2 ]
-   ::nColorB    := aFont[ 5, 3 ]
-   ::lUnderline := aFont[ 6 ]
-   ::lStrikeout := aFont[ 7 ]
-RETURN NIL
+   ::cFontName    := aFont[ 1 ]
+   ::cFontNameFrm := StrToStr( aFont[1] )
+   ::nFontSize    := aFont[ 2 ]
+   ::cFontSizeFrm := LTrim( Str( aFont[2] ) )
+   ::lBold        := aFont[ 3 ]
+   ::lItalic      := aFont[ 4 ]
+   ::nColorR      := aFont[ 5, 1 ]
+   ::nColorG      := aFont[ 5, 2 ]
+   ::nColorB      := aFont[ 5, 3 ]
+   ::lUnderline   := aFont[ 6 ]
+   ::lStrikeout   := aFont[ 7 ]
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteAction() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -891,12 +924,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteAutosize() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -906,12 +940,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteCaption() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -921,12 +956,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteCheck() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -936,12 +972,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteGroup() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -951,12 +988,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteName() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL i, oBut, cNewName
+
+   LOCAL i, oBut, cNewName
 
    IF ::FormEdit:grd_Buttons:Value > 0
       cNewName := Upper( AllTrim( ::FormEdit:txt_ItName:Value ) )
@@ -965,7 +1003,7 @@ LOCAL i, oBut, cNewName
          IF i # ::FormEdit:grd_Buttons:Value
             oBut := ::aButtons[ i ]
             IF Upper( oBut:Name ) == cNewName
-               MsgStop( 'Another button has the same name.', 'OOHG IDE+' )
+               MsgStop( i18n( "Another button has the same name." ), "OOHG IDE+" )
                RETURN NIL
             ENDIF
          ENDIF
@@ -975,7 +1013,7 @@ LOCAL i, oBut, cNewName
 
       WITH OBJECT oBut
          IF Empty( cNewName )
-            MsgStop( 'Button must have a name.', 'OOHG IDE+' )
+            MsgStop( i18n( "Button must have a name." ), "OOHG IDE+" )
             ::FormEdit:txt_ItName:Value := :Name
             RETURN NIL
          ENDIF
@@ -984,12 +1022,13 @@ LOCAL i, oBut, cNewName
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteObj() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -999,12 +1038,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WritePicture() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -1014,12 +1054,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteSeparator() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -1029,12 +1070,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteSubclass() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -1044,12 +1086,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteToolTip() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -1059,12 +1102,13 @@ LOCAL oBut
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD WriteWhole() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
@@ -1074,147 +1118,148 @@ LOCAL oBut
             :lWhole := ::FormEdit:chk_ItWhole:Value
             ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
          ELSE
-            MsgStop( 'Button has no dropdown menu.', 'OOHG IDE+' )
+            MsgStop( i18n( "Button has no dropdown menu." ), "OOHG IDE+" )
          ENDIF
       END WITH
    ENDIF
-RETURN NIL
 
-//TODO: from here
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD EditDropDownButton() CLASS TMyToolBar
-//------------------------------------------------------------------------------
-LOCAL oBut
+
+   LOCAL oBut
 
    IF ::FormEdit:grd_Buttons:Value > 0
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
 
       WITH OBJECT oBut
          TMyMenuEditor():Edit( ::oEditor, 4, :Name )
-         :lDrop := File( ::oEditor:cFName + '.' + :Name + '.mnd' )
+         :lDrop := File( ::oEditor:cFName + "." + :Name + ".mnd" )
          IF ! :lDrop
             :lWhole := .F.
          ENDIF
          ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
       END WITH
    ENDIF
-RETURN NIL
+
+   RETURN NIL
 
 
-
-
-
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 CLASS TMyTBBtn
 
-   DATA aData                  INIT {}
-   DATA cAction                INIT ''
-   DATA cCaption               INIT ''
-   DATA cObj                   INIT ''
-   DATA cPicture               INIT ''
-   DATA cToolTip               INIT ''
-   DATA cSubclass              INIT ''
-   DATA lAutosize              INIT .F.
-   DATA lCheck                 INIT .F.
-   DATA lDrop                  INIT .F.
-   DATA lGroup                 INIT .F.
-   DATA lSeparator             INIT .F.
-   DATA lWhole                 INIT .F.
-   DATA Name                   INIT ''
-   DATA oEditor                INIT NIL
+   DATA aData                     INIT {}
+   DATA cAction                   INIT ""
+   DATA cCaption                  INIT ""
+   DATA cObj                      INIT ""
+   DATA cPicture                  INIT ""
+   DATA cToolTip                  INIT ""
+   DATA cSubclass                 INIT ""
+   DATA lAutosize                 INIT .F.
+   DATA lCheck                    INIT .F.
+   DATA lDrop                     INIT .F.
+   DATA lGroup                    INIT .F.
+   DATA lSeparator                INIT .F.
+   DATA lWhole                    INIT .F.
+   DATA Name                      INIT ""
+   DATA oEditor                   INIT NIL
 
    METHOD CreateCtrl
    METHOD FmgOutput
-   METHOD New                  CONSTRUCTOR                                      
+   METHOD New                     CONSTRUCTOR
    METHOD PreProcessDefine                                                      
    METHOD ReadFromFMG                                                           
    METHOD ReadTBBtnLogicalData                                                  
    METHOD ReadTBBtnStringData                                                   
 
-ENDCLASS
+   ENDCLASS
 
-//------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD FmgOutput( nSpacing ) CLASS TMyTBBtn
-//------------------------------------------------------------------------------
-LOCAL cOutput := ''
 
-   cOutput += Space( nSpacing * 2 ) + 'BUTTON ' + AllTrim( ::Name )
-   cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'CAPTION ' + StrToStr( ::cCaption )
-   IF ! Empty( ::cPicture )
-     cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'PICTURE ' + StrToStr( ::cPicture )
+   LOCAL cOutput := ""
+
+   cOutput += Space( nSpacing * 2 ) + "BUTTON " + AllTrim( ::Name )
+   cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "CAPTION " + AllTrim( ::cCaption )
+   IF NOTEMPTY( ::cPicture )
+     cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "PICTURE " + AllTrim( ::cPicture )
    ENDIF
-   IF ! Empty( ::cAction )
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'ACTION ' + AllTrim( ::cAction )
+   IF NOTEMPTY( ::cAction )
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "ACTION " + AllTrim( ::cAction )
    ENDIF
    IF ::lSeparator
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'SEPARATOR '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "SEPARATOR "
    ENDIF
    IF ::lAutosize
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'AUTOSIZE '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "AUTOSIZE "
    ENDIF
    IF ::lCheck
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'CHECK '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "CHECK "
    ENDIF
    IF ::lGroup
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'GROUP '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "GROUP "
    ENDIF
    IF ::lWhole
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'WHOLEDROPDOWN '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "WHOLEDROPDOWN "
    ELSEIF ::lDrop
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'DROPDOWN '
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "DROPDOWN "
    ENDIF
-   IF ! Empty( ::cToolTip )
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'TOOLTIP ' + StrToStr( ::cToolTip )
+   IF NOTEMPTY( ::cToolTip )
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "TOOLTIP " + AllTrim( ::cToolTip )
    ENDIF
-   IF ! Empty( ::cObj )
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'OBJ ' + AllTrim( ::cObj )
+   IF NOTEMPTY( ::cObj )
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "OBJ " + AllTrim( ::cObj )
    ENDIF
-   IF ! Empty( ::cSubclass )
-      cOutput += ' ;' + CRLF + Space( nSpacing * 3 ) + 'SUBCLASS ' + AllTrim( ::cSubclass )
+   IF NOTEMPTY( ::cSubclass )
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "SUBCLASS " + AllTrim( ::cSubclass )
    ENDIF
    cOutput += CRLF + CRLF
-RETURN cOutPut
 
-//------------------------------------------------------------------------------
+   RETURN cOutPut
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD New( cName, oEditor ) CLASS TMyTBBtn
-//------------------------------------------------------------------------------
+
    ::Name := cName
    ::oEditor := oEditor
-RETURN Self
 
-//------------------------------------------------------------------------------
+   RETURN Self
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD PreProcessDefine() CLASS TMyTBBtn
-//------------------------------------------------------------------------------
-LOCAL zi, zf, i, cData := "", j, c, k
-LOCAL aTokens0 := { "SEPARATOR", "AUTOSIZE", "DROPDOWN", "WHOLEDROPDOWN", "CHECK", "GROUP" }
-LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK", "SUBCLASS" }
 
-   // Concatenate lines
-   IF ( i := aScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
-      zi := ::oEditor:aSpeed[ i ]
-      zf := ::oEditor:aNumber[ i ]
-      FOR i := zi TO zf
+   LOCAL nFrom, nTo, i, cData := "", j, c, k
+   LOCAL aTokens0 := { "SEPARATOR", "AUTOSIZE", "DROPDOWN", "WHOLEDROPDOWN", "CHECK", "GROUP" }
+   LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK", "SUBCLASS" }
+
+   /* Concatenate lines */
+   IF ( i := AScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
+      nFrom := ::oEditor:aSpeed[ i ]
+      nTo := ::oEditor:aNumber[ i ]
+      FOR i := nFrom TO nTo
          IF Empty( ::oEditor:aLine[ i ] )
             EXIT
          ENDIF
          cData += ::oEditor:aLine[ i ]
       NEXT i
       cData := RTrim( cData )
-      // convert to tokens
+      /* Convert to tokens */
       ::aData := hb_ATokens( cData, " ", .T., .F. )
-      // add ; at the end to make parsing easier
+      /* add ; at the end to make parsing easier */
       IF ATail( ::aData ) # ";"
          AAdd( ::aData, ";" )
       ENDIF
-      // this routine locates the button's clauses and concatenates all the
-      // subsequent tokens until the next clause or a semicolon if found
+      /* This routine locates the button's clauses and concatenates all the
+         subsequent tokens until the next clause or a semicolon is found */
       i := 1
       DO WHILE i < Len( ::aData )
          DO CASE
-         CASE AScan( aTokens0, ::aData[i] ) > 0
-            // 'logical' properties
+         CASE AScan( aTokens0, Upper( ::aData[i] ) ) > 0
+            /* 'logical' properties */
             i ++
             j := i
-            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, Upper( ::aData[j] ) ) > 0 .AND. ! AScan( aTokens1, Upper( ::aData[j] ) ) > 0
                j ++
             ENDDO
             FOR k := j - 1 TO i STEP -1
@@ -1227,16 +1272,16 @@ LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK",
                ::aData[i] := ";"
             ENDIF
             i ++
-         CASE AScan( aTokens1, ::aData[i] ) > 0
-            // properties with 1 parameter
+         CASE AScan( aTokens1, Upper( ::aData[i] ) ) > 0
+            /* Properties with 1 parameter */
             i ++
             j := i
-            c := " "
-            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
-               c += ( " " + ::aData[j] )
+            c := ""
+            DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, Upper( ::aData[j] ) ) > 0 .AND. ! AScan( aTokens1, Upper( ::aData[j] ) ) > 0
+               c += ( ::aData[j] + " " )
                j ++
             ENDDO
-            c := LTrim( c )
+            c := RTrim( c )
             IF ! Empty( c )
                ::aData[i] := c
                i ++
@@ -1252,24 +1297,24 @@ LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK",
             ENDIF
             i ++
          CASE ::aData[i] == "ON"
-            // action
+            /* Action */
             i ++
             IF ::aData[i] == "CLICK"
                i ++
                j := i
-               c := " "
-               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
-                  c += ( " " + ::aData[j] )
+               c := ""
+               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, Upper( ::aData[j] ) ) > 0 .AND. ! AScan( aTokens1, Upper( ::aData[j] ) ) > 0
+                  c += ( AllTrim( ::aData[j] ) + " " )
                   j ++
                ENDDO
-               c := LTrim( c )
+               c := RTrim( c )
                IF ! Empty( c )
                   ::aData[i] := c
                   i ++
                ENDIF
             ELSE
                j := i
-               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, ::aData[j] ) > 0 .AND. ! AScan( aTokens1, ::aData[j] ) > 0
+               DO WHILE ::aData[j] # ";" .AND. ! AScan( aTokens0, Upper( ::aData[j] ) ) > 0 .AND. ! AScan( aTokens1, Upper( ::aData[j] ) ) > 0
                   j ++
                ENDDO
             ENDIF
@@ -1290,33 +1335,34 @@ LOCAL aTokens1 := { "OBJ", "CAPTION", "PICTURE", "TOOLTIP", "ACTION", "ONCLICK",
       ENDDO
    ENDIF
 
-RETURN NIL
+   RETURN NIL
 
-//------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadFromFMG() CLASS TMyTBBtn
-//------------------------------------------------------------------------------
+
    ::PreProcessDefine()
 
-   ::cObj       := ::ReadTBBtnStringData( 'OBJ', '' )
-   ::cCaption   := ::oEditor:Clean( ::ReadTBBtnStringData( 'CAPTION', '' ) )
-   ::cPicture   := ::oEditor:Clean( ::ReadTBBtnStringData( 'PICTURE', '' ) )
-   ::cAction    := ::ReadTBBtnStringData( 'ACTION', '' )
-   ::cAction    := ::ReadTBBtnStringData( 'ON CLICK', ::cAction )
-   ::cAction    := ::ReadTBBtnStringData( 'ONCLICK', ::cAction )
-   ::cToolTip   := ::oEditor:Clean( ::ReadTBBtnStringData( 'TOOLTIP', '' ) )
-   ::lSeparator := ::ReadTBBtnLogicalData( 'SEPARATOR', .F. )
-   ::lAutoSize  := ::ReadTBBtnLogicalData( 'AUTOSIZE', .F. )
-   ::lCheck     := ::ReadTBBtnLogicalData( 'CHECK', .F. )
-   ::lGroup     := ::ReadTBBtnLogicalData( 'GROUP', .F. )
-   ::lWhole     := ::ReadTBBtnLogicalData( 'WHOLEDROPDOWN', .F. )
-   ::lDrop      := ::lWhole .OR. ::ReadTBBtnLogicalData( 'DROPDOWN', .F. )
-   ::cSubClass  := ::ReadTBBtnStringData( 'SUBCLASS', '' )
-RETURN NIL
+   ::cObj       := ::ReadTBBtnStringData( "OBJ", "" )
+   ::cCaption   := ::ReadTBBtnStringData( "CAPTION", "" )
+   ::cPicture   := ::ReadTBBtnStringData( "PICTURE", "" )
+   ::cAction    := ::ReadTBBtnStringData( "ACTION", "" )
+   ::cAction    := ::ReadTBBtnStringData( "ON CLICK", ::cAction )
+   ::cAction    := ::ReadTBBtnStringData( "ONCLICK", ::cAction )
+   ::cToolTip   := ::ReadTBBtnStringData( "TOOLTIP", "" )
+   ::lSeparator := ::ReadTBBtnLogicalData( "SEPARATOR", .F. )
+   ::lAutoSize  := ::ReadTBBtnLogicalData( "AUTOSIZE", .F. )
+   ::lCheck     := ::ReadTBBtnLogicalData( "CHECK", .F. )
+   ::lGroup     := ::ReadTBBtnLogicalData( "GROUP", .F. )
+   ::lWhole     := ::ReadTBBtnLogicalData( "WHOLEDROPDOWN", .F. )
+   ::lDrop      := ::lWhole .OR. ::ReadTBBtnLogicalData( "DROPDOWN", .F. )
+   ::cSubClass  := ::ReadTBBtnStringData( "SUBCLASS", "" )
 
-//------------------------------------------------------------------------------
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadTBBtnStringData( cProp, cDefault ) CLASS TMyTBBtn
-//------------------------------------------------------------------------------
-LOCAL nLen, i, c2, c1
+
+   LOCAL nLen, i, c2, c1
 
    IF ( i := At( " ", cProp ) ) > 0
       c1 := SubStr( cProp, 1, i - 1 )
@@ -1337,37 +1383,44 @@ LOCAL nLen, i, c2, c1
          ENDIF
       NEXT i
    ENDIF
-RETURN cDefault
 
-//------------------------------------------------------------------------------
+   RETURN cDefault
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadTBBtnLogicalData( cProp, lDefault ) CLASS TMyTBBtn
-//------------------------------------------------------------------------------
-LOCAL i
+
+   LOCAL i
 
    FOR EACH i IN ::aData
       IF Upper( i ) == cProp
          RETURN .T.
       ENDIF
    NEXT i
-RETURN lDefault
 
-//------------------------------------------------------------------------------
+   RETURN lDefault
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD CreateCtrl() CLASS TMyTBBtn
-//------------------------------------------------------------------------------
-LOCAL oBut
 
-   // TODO: Add support for image from RC file
-   oBut := TToolButton():Define( 0, 0, 0, AllTrim( ::cCaption ), NIL, NIL, ;
-                                 NIL, ::cPicture, ::cToolTip, NIL, NIL, .F., ;
-                                 ::lSeparator, ::lAutosize, ::lCheck, ;
-                                 ::lGroup, ::lDrop, ::lWhole )
+   LOCAL cPicture, oBut
+
+   IF ! Empty( cPicture := ::oEditor:StrToValueCtrl( ::cPicture, "C", NIL ) )
+      IF ! File( cPicture )
+         cPicture := "ZZZ_AAAOOHG"
+      ENDIF
+   ENDIF
+
+   oBut := TToolButton():Define( 0, 0, 0, ::oEditor:StrToValueCtrl( ::cCaption, "C" ), NIL, NIL, NIL, ;
+                                 cPicture, ::oEditor:StrToValueCtrl( ::cToolTip, "C" ), NIL, NIL, .F., ;
+                                 ::lSeparator, ::lAutosize, ::lCheck, ::lGroup, ::lDrop, ::lWhole )
 
    IF ::lDrop .OR. ::lWhole
-      // DROPDOWN MENU
+      /* DROPDOWN MENU */
       // TODO: load from FMG file
       TMyMenuEditor():CreateMenuFromFile( ::oEditor, 4, ::Name, oBut )
    ENDIF
-RETURN NIL
+
+   RETURN NIL
 
 /*
  * EOF

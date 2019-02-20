@@ -6,7 +6,7 @@ DEFINE WINDOW TEMPLATE ;
    AT 132, 235 ;
    WIDTH 390 ;
    HEIGHT 340 ;
-   TITLE "Control's TabStop Order" ;
+   TITLE 'OOHG IDE+ - ' + i18n( "Control's TabStop Order" ) ;
    MODAL ;
    ON INIT ::FillListOfGroups() ;
    BACKCOLOR ::myIde:aSystemColor ;
@@ -17,7 +17,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 10, 20 LABEL Label_2 ;
       WIDTH 130 ;
       HEIGHT 24 ;
-      VALUE 'Control group' ;
+      VALUE i18n( 'Control group' ) ;
       SIZE 11 ;
       CENTERALIGN 
 
@@ -30,7 +30,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 10, 170 LABEL Label_3 ;
       WIDTH 200 ;
       HEIGHT 24 ;
-      VALUE 'Control order' ;
+      VALUE i18n( 'Control order' ) ;
       SIZE 11 ;
       CENTERALIGN 
 
@@ -45,7 +45,7 @@ DEFINE WINDOW TEMPLATE ;
       CAPTION '/\' ;
       ACTION ::OrderUp() ;
       SIZE 9 ;
-      TOOLTIP 'Move up.'
+      TOOLTIP i18n( 'Move up.' )
 
    @ 290, 90 BUTTON Button_Down ;
       WIDTH 40 ;
@@ -53,10 +53,10 @@ DEFINE WINDOW TEMPLATE ;
       CAPTION '\/' ;
       ACTION ::OrderDown() ;
       SIZE 9 ;
-      TOOLTIP 'Move down.'
+      TOOLTIP i18n( 'Move down.' )
 
-   @ 290, 170 CHECKBUTTON CheckBtn_Filter ;
-      CAPTION 'Filter Dynamic Controls' ;
+   @ 290, 170 CHECKBUTTON CheckButton_Filter ;
+      CAPTION i18n( 'Filter Dynamic Controls' ) ;
       WIDTH 200 ;
       HEIGHT 28 ;
       VALUE .F. ;
@@ -66,7 +66,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 270, 20 FRAME frame_1 ;
       WIDTH 130 ;
       HEIGHT 60 ;
-      CAPTION 'Move control' ;
+      CAPTION i18n( 'Move control' ) ;
       TRANSPARENT 
 
 END WINDOW 

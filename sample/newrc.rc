@@ -7,8 +7,6 @@
 //
 
 
-// MANIFEST FOR CREATE 'XP-STYLE' APPLICATIONS
-1 24 "c:\minigui\resources\WindowsXP.Manifest"
-// HBPRINT PRINT PREVIEW IMAGE BUTTONS
+// MANIFEST ALLOW THE STYLING OF CONTROLS BY THE OS
+1 24 "c:\oohg\resources\Windows.Manifest"
 
-

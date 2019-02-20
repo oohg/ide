@@ -5,4 +5,4 @@
 //      Author:
 //        Date: 2004.09.15
 //
-////#include "c:\oohg\resources\oohg.rc"
+#include "c:\oohg\resources\oohg.rc"

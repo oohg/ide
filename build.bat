@@ -26,37 +26,42 @@ rem
 
 :TEST
 
-   if /I "%1"=="HB30" ( shift & goto CALL30 )
-   if /I "%1"=="HB32" ( shift & goto CALL32 )
+   if /I "%1"=="HM30" ( shift & goto CALL30 )
+   if /I "%1"=="HM32" ( shift & goto CALL32 )
+   if /I "%1"=="HM34" ( shift & goto CALL34 )
 
 :NOVERSION
 
-   if exist "%HG_ROOT%\BuildApp30.bat" goto CONTINUE
+   if exist "%HG_ROOT%\BuildApp30.bat" goto CALL30
    if exist "%HG_ROOT%\BuildApp32.bat" goto CALL32
-   echo File %HG_ROOT%\BuildApp30.bat not found !!!
-   echo File %HG_ROOT%\BuildApp32.bat not found !!!
-   echo.
-   goto END
+   if exist "%HG_ROOT%\BuildApp34.bat" goto CALL34
 
-:CONTINUE
-
-   if not exist "%HG_ROOT%\BuildApp32.bat" goto CALL30
+:VERSIONNEEDED
    echo Syntax:
-   echo    To build with Harbour 3.0
-   echo       build [/C] HB30 [options]
-   echo   To build with Harbour 3.2
-   echo       build [/C] HB32 [options]
+   echo    To build with Harbour 3.0 and MinGW
+   echo       build [/C] HM30 [options]
+   echo   To build with Harbour 3.2 and MinGW
+   echo       build [/C] HM32 [options]
+   echo   To build with Harbour 3.4 and MinGW
+   echo       build [/C] HM34 [options]
    echo.
    goto END
 
 :CALL30
 
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HB30 mgide %1 %2 %3 %4 %5 %6 %7 %8 %9
+   if exist "%HG_ROOT%\BuildApp32.bat" goto VERSIONNEEDED
+   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM30 mgide %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL32
 
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HB32 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM32 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   goto END
+
+:CALL34
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM34 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :END

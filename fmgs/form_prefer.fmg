@@ -6,32 +6,26 @@ DEFINE WINDOW TEMPLATE ;
    AT 129, 100 ;
    WIDTH 630 ;
    HEIGHT 390 ;
-   TITLE 'Preferences' ;
+   TITLE i18n( "Preferences" ) ;
    MODAL ;
    NOAUTORELEASE ;
    NOMINIMIZE ;
    NOMAXIMIZE ;
    NOSIZE ;
-   NOSYSMENU ;
-   FONT 'Arial' ;
-   SIZE 10
+   NOSYSMENU
 
    @ 320, 402 BUTTON button_101 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION '&Ok' ;
+      CAPTION i18n( "&Ok" ) ;
       ACTION ::OkPrefer( aFont ) ;
-      FONT 'Arial' ;
-      SIZE 10 ;
       FLAT
 
    @ 320, 510 BUTTON button_102 ;
       WIDTH 100 ;
       HEIGHT 28 ;
-      CAPTION '&Cancel' ;
+      CAPTION i18n( "&Cancel" ) ;
       ACTION {|| form_prefer.release } ;
-      FONT 'Arial' ;
-      SIZE 10 ;
       FLAT
 
    DEFINE TAB tab_1 ;
@@ -39,635 +33,555 @@ DEFINE WINDOW TEMPLATE ;
       WIDTH 600 ;
       HEIGHT 294 ;
       VALUE 1 ;
-      FONT 'Arial' ;
-      SIZE 10 ;
       BUTTONS ;
       FLAT
 
-      DEFINE PAGE 'Project'
+      DEFINE PAGE i18n( "Project" )
 
          @ 50, 20 LABEL label_1 ;
             WIDTH 100 ;
             HEIGHT 24 ;
-            VALUE 'Project Folder' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Project Folder" ) ;
             TRANSPARENT
 
          @ 50, 160 TEXTBOX text_3 ;
             WIDTH 250 ;
             HEIGHT 24 ;
             READONLY ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30 ;
             NOTABSTOP 
 
          @ 85, 20 LABEL label_2 ;
             WIDTH 100 ;
             HEIGHT 23 ;
-            VALUE 'Output Name' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Output Name" ) ;
             TRANSPARENT
 
          @ 85, 160 TEXTBOX text_4 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 160, 45 RADIOGROUP radiogroup_1 ;
-            OPTIONS {'Harbour','xHarbour'} ;
+            OPTIONS { i18n( "Harbour" ), i18n( "xHarbour" ) } ;
             WIDTH 100 ;
-            SPACING 25 ;
-            FONT 'Arial' ;
-            SIZE 10
+            SPACING 25
 
          @ 160, 241 RADIOGROUP radiogroup_2 ;
-            OPTIONS {'MinGW','BCC','Pelles C'} ;
+            OPTIONS { i18n( "MinGW" ), i18n( "BCC" ), i18n( "Pelles C") } ;
             WIDTH 100 ;
-            SPACING 25 ;
-            FONT 'Arial' ;
-            SIZE 10
+            SPACING 25
 
          @ 130, 26 FRAME frame_1 ;
             WIDTH 140 ;
             HEIGHT 140 ;
-            CAPTION 'xBase Compiler' ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION i18n( "xBase Compiler" )
 
          @ 130, 219 FRAME frame_2 ;
             WIDTH 140 ;
             HEIGHT 140 ;
-            CAPTION 'C Compiler' ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION i18n( "C Compiler" )
 
          @ 130, 412 FRAME frame_3 ;
             WIDTH 140 ;
             HEIGHT 140 ;
-            CAPTION 'Build Type' ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION i18n( "Build Type" )
 
          @ 160, 431 RADIOGROUP radiogroup_3 ;
-            OPTIONS {'Compile.bat','Own Make'} ;
+            OPTIONS { i18n( "Compile.bat" ), i18n( "Own Make" ) } ;
             WIDTH 100 ;
-            SPACING 25 ;
-            FONT 'Arial' ;
-            SIZE 10
+            SPACING 25
 
       END PAGE 
 
-      DEFINE PAGE '(x)Harbour'
+      DEFINE PAGE i18n( "(x)Harbour" )
 
          @ 85, 20 LABEL label_5 ;
             WIDTH 133 ;
             HEIGHT 18 ;
-            VALUE 'Harbour-Borland C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Harbour-Borland C" ) ;
             TRANSPARENT 
 
          @ 85, 160 TEXTBOX text_2 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 82, 420 BUTTON button_3 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_2.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_2.Value := Folder, NIL )
 
          @ 50, 160 TEXTBOX text_8 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 50, 20 LABEL label_6 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'Harbour-MinGW' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Harbour-MinGW" ) ;
             TRANSPARENT 
 
          @ 47, 420 BUTTON button_11 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_8.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_8.Value := folder, NIL )
 
          @ 120, 20 LABEL label_4 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'Harbour-Pelles C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Harbour-Pelles C" ) ;
             TRANSPARENT 
 
          @ 120, 160 TEXTBOX text_7 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 117, 420 BUTTON button_2 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_7.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_7.Value := Folder, NIL )
 
          @ 160, 20 LABEL label_14 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'xHarbour-MinGW' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "xHarbour-MinGW" ) ;
             TRANSPARENT 
 
          @ 195, 20 LABEL label_15 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'xHarbour-Borland C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "xHarbour-Borland C" ) ;
             TRANSPARENT 
 
          @ 230, 20 LABEL label_16 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'xHarbour-Pelles C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "xHarbour-Pelles C" ) ;
             TRANSPARENT 
 
          @ 160, 160 TEXTBOX text_13 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 195, 160 TEXTBOX text_14 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 230, 160 TEXTBOX text_15 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 156, 420 BUTTON button_8 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_13.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_13.Value := Folder, NIL )
 
          @ 196, 420 BUTTON button_12 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_14.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_14.Value := Folder, NIL )
 
          @ 230, 420 BUTTON button_13 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_15.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_15.Value := Folder, NIL ) ;
 
       END PAGE 
 
-      DEFINE PAGE 'C Compiler'
+      DEFINE PAGE i18n( "C Compiler" )
+
+         @ 50, 20 LABEL label_8 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "MinGW Folder" ) ;
+            TRANSPARENT
+
+         @ 50, 160 TEXTBOX text_10 ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 47, 420 BUTTON button_10 ;
+            WIDTH 30 ;
+            HEIGHT 28 ;
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_10.Value := folder, NIL )
 
          @ 85, 20 LABEL label_11 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'BCC Folder' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "BCC Folder" ) ;
             TRANSPARENT 
 
          @ 85, 160 TEXTBOX text_5 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 82, 420 BUTTON button_4 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_5.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_5.Value := Folder, NIL );
 
          @ 120, 20 LABEL label_13 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'Pelles C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Pelles C" ) ;
             TRANSPARENT 
 
          @ 120, 160 TEXTBOX text_6 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 117, 420 BUTTON button_5 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_6.Value := Folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_6.Value := Folder, NIL )
 
-         @ 50, 160 TEXTBOX text_10 ;
-            WIDTH 250 ;
+         @ 155, 20 LABEL label_12 ;
+            WIDTH 140 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "Additional Libs" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_lib ;
+            WIDTH 400 ;
+            HEIGHT 24 ;
+            TOOLTIP i18n( "Names must be separated by commas." ) ;
             MAXLENGTH 30
 
-         @ 50, 20 LABEL label_8 ;
-            WIDTH 120 ;
-            HEIGHT 24 ;
-            VALUE 'MinGW Folder' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT 
+      END PAGE
 
-         @ 47, 420 BUTTON button_10 ;
-            WIDTH 30 ;
-            HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_10.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
-
-      END PAGE 
-
-      DEFINE PAGE 'GUI'
+      DEFINE PAGE i18n( "GUI" )
 
          @ 50, 20 LABEL label_10 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-Hb-MinGW' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-Hb-MinGW" ) ;
             TRANSPARENT 
 
          @ 47, 420 BUTTON button_9 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_12.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_12.Value := folder, NIL )
 
          @ 50, 160 TEXTBOX text_12 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 85, 20 LABEL label_7 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-Hb-BCC' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-Hb-BCC" ) ;
             TRANSPARENT 
 
          @ 120, 20 LABEL label_9 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-Hb-Pelles C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-Hb-Pelles C" ) ;
             TRANSPARENT 
 
          @ 85, 160 TEXTBOX text_9 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 120, 160 TEXTBOX text_11 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 82, 420 BUTTON button_6 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_9.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_9.Value := folder, NIL )
 
          @ 117, 420 BUTTON button_7 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_11.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_11.Value := folder, NIL )
 
          @ 160, 160 TEXTBOX text_16 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 195, 160 TEXTBOX text_17 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 230, 160 TEXTBOX text_18 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
          @ 160, 20 LABEL label_17 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-xHb-MinGW' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-xHb-MinGW" ) ;
             TRANSPARENT 
 
          @ 195, 20 LABEL label_18 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-xHb-BCC' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-xHb-BCC" ) ;
             TRANSPARENT 
 
          @ 230, 20 LABEL label_19 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE 'ooHG-xHb-Pelles C' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
+            VALUE i18n( "ooHG-xHb-Pelles C" ) ;
             TRANSPARENT 
 
          @ 156, 420 BUTTON button_14 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_16.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_16.Value := folder, NIL )
 
          @ 196, 420 BUTTON button_15 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_17.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_17.Value := folder, NIL )
 
          @ 230, 420 BUTTON button_16 ;
             WIDTH 30 ;
             HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFolder() ) , form_prefer.text_18.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_18.Value := folder, NIL )
 
       END PAGE 
 
-      DEFINE PAGE 'Other'
+      DEFINE PAGE i18n( "IDE 1" )
 
-         @ 50, 20 LABEL label_12 ;
+         @ 50, 20 LABEL label_3 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE 'Additional Libs' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT 
+            VALUE i18n( "Text Editor" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 50, 170 TEXTBOX text_lib ;
-            WIDTH 400 ;
-            HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP 'Names must be separated with commas.' ;
-            MAXLENGTH 30
-
-         @ 85, 20 LABEL label_3 ;
-            WIDTH 140 ;
-            HEIGHT 24 ;
-            VALUE 'Text Editor' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT 
-
-         @ 85, 170 TEXTBOX text_1 ;
+         @ 50, 180 TEXTBOX text_1 ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
-         @ 82, 427 BUTTON button_1 ;
+         @ 50, 440 BUTTON button_1 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION If ( ! Empty( Folder := GetFile() ) , form_prefer.text_1.Value := folder , ) ;
-            FONT 'Arial' ;
-            SIZE 10
+            HEIGHT 24 ;
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFile() ), form_prefer.text_1.Value := folder, NIL )
 
-         @ 120, 20 LABEL label_20 ;
+         @ 85, 20 LABEL label_20 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE "Form's Default Font" ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT 
+            VALUE i18n( "Form's Default Font" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 120, 170 TEXTBOX text_font ;
+         @ 85, 180 TEXTBOX text_font ;
             WIDTH 250 ;
             HEIGHT 24 ;
             READONLY ;
-            FONT 'Arial' ;
-            SIZE 10 ;
             MAXLENGTH 30
 
-         @ 117, 427 BUTTON button_newfont ;
+         @ 85, 440 BUTTON button_newfont ;
             WIDTH 30 ;
-            HEIGHT 28 ;
-            CAPTION '...' ;
-            ACTION GetPreferredFont( ::Form_prefer, @aFont ) ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP 'Select a font to use as default for newly created forms.'
+            HEIGHT 24 ;
+            CAPTION "..." ;
+            ACTION ::GetPreferredFont( aFont ) ;
+            TOOLTIP i18n( "Select a font to use as default for newly created forms." )
 
-         @ 117, 464 BUTTON button_deffont ;
+         @ 85, 480 BUTTON button_deffont ;
             WIDTH 30 ;
-            HEIGHT 28 ;
-            CAPTION '...' ;
+            HEIGHT 24 ;
+            CAPTION "..." ;
             ACTION ResetPreferredFont( ::Form_prefer, @aFont ) ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP "Set OOHG's default font as default for newly created forms."
+            TOOLTIP i18n( "Set OOHG's default font as default for newly created forms." )
 
-         @ 155, 20 LABEL label_21 ;
+         @ 120, 20 LABEL label_21 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE "Label's Default Height" ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT
+            VALUE i18n( "Label's Default Height" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 155, 170 TEXTBOX text_19 ;
+         @ 120, 180 TEXTBOX text_19 ;
             WIDTH 40 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP "Enter a 0 to use OOHG's default height." ;
+            TOOLTIP i18n( "Enter a 0 to use OOHG's default height." ) ;
             NUMERIC ;
             MAXLENGTH 3
 
-         @ 155, 320 CHECKBOX chk_HideTT ;
+         @ 120, 320 CHECKBOX chk_HideTT ;
             WIDTH 250 ;
             HEIGHT 24 ;
-            CAPTION 'Hide the tooltip of the Project Tree.' ;
-            VALUE .F. ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION i18n( "Hide the tooltip of the Project Tree" ) ;
+            VALUE .F.
 
-         @ 190, 20 LABEL label_22 ;
+         @ 155, 20 LABEL label_22 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE "Textbox's Default Height" ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT
+            VALUE i18n( "Textbox's Default Height" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 190, 170 TEXTBOX text_21 ;
+         @ 155, 180 TEXTBOX text_21 ;
             WIDTH 40 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP "Enter a 0 to use OOHG's default height." ;
+            TOOLTIP i18n( "Enter a 0 to use OOHG's default height." ) ;
             NUMERIC ;
             MAXLENGTH 3
 
-         @ 193, 320 LABEL label_26 ;
+         @ 155, 320 LABEL label_26 ;
             WIDTH 90 ;
             HEIGHT 24 ;
-            VALUE "FMG Syntax" ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT
+            VALUE i18n( "FMG Syntax" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 190, 410 COMBOBOX combo_26 ;
+         @ 155, 440 COMBOBOX combo_26 ;
             WIDTH 100 ;
-            ITEMS { 'Standard', 'Alternative' } ;
-            VALUE 1 ;
-            FONT 'Arial' ;
-            SIZE 10
+            ITEMS { i18n( "Standard" ), i18n( "Alternative" ) } ;
+            VALUE 1
 
-         @ 225, 320 CHECKBOX chk_Snap ;
+         @ 190, 320 CHECKBOX chk_Snap ;
             WIDTH 100 ;
             HEIGHT 24 ;
-            CAPTION 'Snap to Grid' ;
-            VALUE .F. ;
-            FONT 'Arial' ;
-            SIZE 10
+            CAPTION i18n( "Snap to Grid" ) ;
+            VALUE .F.
 
-         @ 225, 20 LABEL label_23 ;
+         @ 190, 20 LABEL label_23 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE 'Standard Vertical Gap' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT
+            VALUE i18n( "Standard Vertical Gap" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 225, 170 TEXTBOX text_22 ;
+         @ 190, 180 TEXTBOX text_22 ;
             WIDTH 40 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP 'Enter a 0 to use 24 px as default value.' ;
+            TOOLTIP i18n( "Enter a 0 to use 24 px as default value." ) ;
             NUMERIC ;
             MAXLENGTH 3
 
-         @ 260, 20 LABEL label_24 ;
+         @ 225, 20 LABEL label_24 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE 'Keyboard Move (Px)' ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TRANSPARENT
+            VALUE i18n( "Keyboard Move (Px)" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 260, 170 TEXTBOX text_23 ;
+         @ 225, 180 TEXTBOX text_23 ;
             WIDTH 40 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP 'Enter a 0 to use 5 px as default value.' ;
+            TOOLTIP i18n( "Enter a 0 to use 5 px as default value." ) ;
             NUMERIC ;
             MAXLENGTH 3
 
-         @ 260, 320 LABEL label_25 ;
+         @ 225, 320 LABEL label_25 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE 'Keyboard Size (Px)' ;
-            FONT 'Arial' ;
-            TRANSPARENT
+            VALUE i18n( "Keyboard Size (Px)" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
 
-         @ 260, 470 TEXTBOX text_24 ;
+         @ 225, 500 TEXTBOX text_24 ;
             WIDTH 40 ;
             HEIGHT 24 ;
-            FONT 'Arial' ;
-            SIZE 10 ;
-            TOOLTIP 'Enter a 0 to use 1 px as default value.' ;
+            TOOLTIP i18n( "Enter a 0 to use 1 px as default value." ) ;
             NUMERIC ;
             MAXLENGTH 3
+
+         @ 260, 20 BUTTON button_17 ;
+            WIDTH 200 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Supported Color Constants" ) ;
+            ACTION ::EditColors()
+
+         @ 260, 320 LABEL label_27 ;
+            WIDTH 190 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Replace chr(8) with spaces" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
+
+         @ 260, 500 TEXTBOX text_25 ;
+            WIDTH 40 ;
+            HEIGHT 24 ;
+            TOOLTIP i18n( "Enter a positive number." ) ;
+            NUMERIC ;
+            MAXLENGTH 3
+
+      END PAGE
+
+      DEFINE PAGE i18n( "IDE 2" )
+
+         @ 50, 20 LABEL label_28 ;
+            WIDTH 140 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Right exclusion border" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
+
+         @ 50, 180 TEXTBOX text_31 ;
+            WIDTH 40 ;
+            HEIGHT 24 ;
+            NUMERIC ;
+            MAXLENGTH 4
+
+         @ 50, 320 CHECKBOX chk_SaveDefs ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Save replacement values" ) ;
+            VALUE .F.
+
+         @ 85, 20 LABEL label_29 ;
+            WIDTH 160 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Bottom exclusion border" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
+
+         @ 85, 180 TEXTBOX text_32 ;
+            WIDTH 40 ;
+            HEIGHT 24 ;
+            NUMERIC ;
+            MAXLENGTH 4
+
+         @ 120, 20 LABEL label_30 ;
+            WIDTH 140 ;
+            HEIGHT 24 ;
+            VALUE i18n( "# of lines skipped" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
+
+         @ 120, 180 TEXTBOX text_33 ;
+            WIDTH 40 ;
+            HEIGHT 24 ;
+            NUMERIC ;
+            MAXLENGTH 2
 
       END PAGE
 

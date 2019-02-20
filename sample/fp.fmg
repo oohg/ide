@@ -14,12 +14,12 @@ DEFINE WINDOW TEMPLATE ;
    FONT 'arial' ;
    SIZE 10
 
-   DEFINE STATUSBAR 
+   DEFINE STATUSBAR
 
       STATUSITEM 'Statusbar AbCdEfGhIjKlMnOpQrStUvWxYz' ;
          WIDTH 180
 
-      KEYBOARD 
+      KEYBOARD
 
       DATE ;
          WIDTH 80
@@ -27,33 +27,33 @@ DEFINE WINDOW TEMPLATE ;
       CLOCK ;
          WIDTH 80
 
-   END STATUSBAR 
+   END STATUSBAR
 
-   DEFINE MAIN MENU 
+   DEFINE MAIN MENU
 
       POPUP 'first popup'
 
          ITEM 'subx' ;
             NAME 'subx' ;
             ACTION msgbox('subx') ;
-            DISABLED 
+            DISABLED
 
          POPUP 'sub1'
 
             ITEM 'sub11' ;
                NAME 'prueba1' ;
                ACTION msgbox('sub11') ;
-               CHECKED 
+               CHECKED
 
             ITEM 'sub12' ;
                ACTION msgbox('12')
 
-            SEPARATOR 
+            SEPARATOR
 
             ITEM 'sub13' ;
                ACTION msgbox('sub13')
 
-         END POPUP 
+         END POPUP
 
          ITEM 'sub2' ;
             ACTION msgbox('sub2 ')
@@ -61,9 +61,9 @@ DEFINE WINDOW TEMPLATE ;
          ITEM 'suby1a' ;
             NAME 'y1a' ;
             ACTION msgbox('y') ;
-            CHECKED 
+            CHECKED
 
-      END POPUP 
+      END POPUP
 
       POPUP 'second popup'
 
@@ -73,7 +73,7 @@ DEFINE WINDOW TEMPLATE ;
          ITEM 'sub4' ;
             ACTION msgbox('sub4')
 
-         SEPARATOR 
+         SEPARATOR
 
          ITEM 'sub5a' ;
             ACTION msgbox('sub5')
@@ -89,24 +89,24 @@ DEFINE WINDOW TEMPLATE ;
             ITEM 'option' ;
                ACTION nil
 
-         END POPUP 
+         END POPUP
 
-      END POPUP 
+      END POPUP
 
       POPUP 'other popup'
 
          ITEM 'othe1' ;
             ACTION nil ;
-            HILITED 
+            HILITED
 
          ITEM 'othe2' ;
             ACTION nil
 
-      END POPUP 
+      END POPUP
 
-   END MENU 
+   END MENU
 
-   DEFINE CONTEXT MENU 
+   DEFINE CONTEXT MENU
 
       ITEM 'hola' ;
          NAME 'hola' ;
@@ -120,9 +120,9 @@ DEFINE WINDOW TEMPLATE ;
          NAME 'context' ;
          ACTION msgbox("menu contextual")
 
-   END MENU 
+   END MENU
 
-   DEFINE NOTIFY MENU 
+   DEFINE NOTIFY MENU
 
       ITEM 'about' ;
          ACTION msgbox('about')
@@ -205,7 +205,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 244, 126 ANIMATEBOX animate_101 ;
       WIDTH 100 ;
       HEIGHT 50 ;
-      CENTER 
+      CENTER
 
    @ 30, 250 DATEPICKER datepicker_101 ;
       WIDTH 120 ;
@@ -289,7 +289,7 @@ DEFINE WINDOW TEMPLATE ;
       FONT 'Arial' ;
       SIZE 10 ;
       BACKCOLOR {0 , 0 , 255 } ;
-      CENTERALIGN 
+      CENTERALIGN
 
    @ 75, 86 BUTTON button_102 ;
       WIDTH 100 ;
@@ -325,5 +325,4 @@ DEFINE WINDOW TEMPLATE ;
       INTERVAL 20000 ;
       ACTION msgbox("timer each 20 seg")
 
-END WINDOW 
-
+END WINDOW
