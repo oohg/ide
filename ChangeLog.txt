@@ -8,6 +8,11 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-02-22 09:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+   * ide\fmgs\form_prefer.prg
+     ! RTE at OKPREFER line 1583: array access.
+
 2019-02-19 21:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\build.bat
      * INCOMPATIBLE: HB30/HB32 parameters changed to HM30/HM32.
