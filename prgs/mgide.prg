@@ -114,7 +114,7 @@ CLASS THMI
    DATA cBCCFolder         INIT ''
    DATA cExtEditor         INIT ''
    DATA cFile              INIT ''
-   DATA cFormDefFontColor  INIT '{ 0, 0, 0 }'
+   DATA cFormDefFontColor  INIT 'NIL'
    DATA cFormDefFontName   INIT 'MS Sans Serif'
    DATA cGuiHbBCC          INIT ''
    DATA cGuiHbMinGW        INIT ''
@@ -1465,9 +1465,11 @@ METHOD GetPreferredFont( aFont )
       iif( aFont[4], " Italic", "" ) + ;
       iif( aFont[6], " Underline", "" ) + ;
       iif( aFont[7], " Strikeout", "" ) + ;
-      iif( aFont[5, 1] # NIL .AND. aFont[5, 2] # NIL .AND. aFont[5, 3] # NIL, ;
-           ", Color " + ::ColorToStr( aFont[5] ), ;
-           iif( _OOHG_DefaultFontColor # NIL, ", Color " + ::ColorToStr( _OOHG_DefaultFontColor ), "" ) )
+      iif( Empty(aFont[5] ), "", ;
+           iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, ;
+                iif( _OOHG_DefaultFontColor == NIL, "", ;
+                     ", Color " + ::ColorToStr( _OOHG_DefaultFontColor ) ), ;
+                ", Color " + ::ColorToStr( aFont[5] ) ) )
 // TODO: Add properties for bold, italic, underline and strikeout
 RETURN NIL
 
@@ -1580,7 +1582,7 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::cLib               := AllTrim( ::Form_Prefer:text_lib:Value )
    ::cFormDefFontName   := iif( Empty( aFont[1] ), '', aFont[1] )
    ::nFormDefFontSize   := iif( aFont[2] > 0, Int( aFont[2] ), 0 )
-   ::cFormDefFontColor  := iif( aFont[5, 1] # NIL .AND. aFont[5, 2] # NIL .AND. aFont[5, 3] # NIL, "NIL", ::ColorToStr( aFont[5] ) )
+   ::cFormDefFontColor  := iif( Empty( aFont[5] ), "NIL", iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, "NIL", ::ColorToStr( aFont[5] ) ) )
    ::nLabelHeight       := ::Form_Prefer:text_19:Value
    ::nTextBoxHeight     := ::Form_Prefer:text_21:Value
    ::nStdVertGap        := ::Form_Prefer:text_22:Value

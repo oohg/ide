@@ -410,7 +410,7 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 30 ;
             HEIGHT 24 ;
             CAPTION "..." ;
-            ACTION ::GetPreferredFont( aFont ) ;
+            ACTION ::GetPreferredFont( @aFont ) ;
             TOOLTIP i18n( "Select a font to use as default for newly created forms." )
 
          @ 85, 480 BUTTON button_deffont ;
