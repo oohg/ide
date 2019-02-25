@@ -5,19 +5,23 @@
  * ooHG source code:
  * ooHG IDE+ form generator
  *
+ * Copyright 2014-2019 Fernando Yurisich <fyurisich@oohg.org> and contributors of
+ * the Object Oriented (x)Harbour GUI (aka OOHG) Project, https://oohg.github.io
+ *
+ * Based upon:
+ * Harbour Minigui Ide
  * Copyright 2002-2014 Ciro Vargas Clemow <cvc@oohg.org>
- * Copyright 2014-2017 Fernando Yurisich <fyurisich@oohg.org>
- * https://oohg.github.io
  *
- * Portions of this project are based upon Harbour MiniGUI library.
- * Copyright 2002-2005 Roberto Lopez <roblez@ciudad.com.ar>
- *
- * Portions of this project are based upon Harbour GUI framework for Win32.
- * Copyright 2001 Alexander S.Kresin <alex@belacy.belgorod.su>
- * Copyright 2001 Antonio Linares <alinares@fivetech.com>
- *
- * Portions of this project are based upon Harbour Project.
- * Copyright 1999-2017, https://harbour.github.io/
+ * Portions of this project are based upon:
+ *    "Harbour MiniGUI Extended Edition Library"
+ *       Copyright 2005-2019 MiniGUI Team, http://hmgextended.com
+ *    "Harbour GUI framework for Win32"
+ *       Copyright 2001 Alexander S.Kresin <alex@kresin.ru>
+ *       Copyright 2001 Antonio Linares <alinares@fivetech.com>
+ *    "Harbour MiniGUI"
+ *       Copyright 2002-2016 Roberto Lopez <mail.box.hmg@gmail.com>
+ *    "Harbour Project"
+ *       Copyright 1999-2019 Contributors, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -1344,7 +1348,7 @@ LOCAL oForm
          AUTOSIZE
 
       @ 160,20 HYPERLINK hlk_1 ;
-         VALUE "Maintained by OOHG Development Team, (c) 2014-" + LTrim( Str( Year( Date() ) ) ) ;
+         VALUE "Adapted and maintained by OOHG Development Team, (c) 2014-" + LTrim( Str( Year( Date() ) ) ) ;
          ADDRESS 'https://oohg.github.io/' ;
          HEIGHT 24 ;
          AUTOSIZE ;
