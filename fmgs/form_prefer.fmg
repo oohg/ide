@@ -161,7 +161,7 @@ DEFINE WINDOW TEMPLATE ;
          @ 85, 20 LABEL label_5 ;
             WIDTH 133 ;
             HEIGHT 18 ;
-            VALUE i18n( "Harbour-Borland C" ) ;
+            VALUE i18n( "Harbour-BCC" ) ;
             TRANSPARENT 
 
          @ 85, 160 TEXTBOX text_2 ;
@@ -218,7 +218,7 @@ DEFINE WINDOW TEMPLATE ;
          @ 195, 20 LABEL label_15 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "xHarbour-Borland C" ) ;
+            VALUE i18n( "xHarbour-BCC" ) ;
             TRANSPARENT 
 
          @ 230, 20 LABEL label_16 ;
