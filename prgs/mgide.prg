@@ -513,7 +513,7 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
 
    DEFINE WINDOW Form_Wait OBJ ::Form_Wait  ;
       AT 10, 10 ;
-      WIDTH 150 ;
+      WIDTH 180 ;
       HEIGHT 100 ;
       TITLE i18n( "Information" ) ;
       CHILD ;
@@ -1731,12 +1731,12 @@ METHOD BldMinGW( nOption ) CLASS THMI
          cOut += 'APP_NAME      = ' + cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
-         For i := 1 To nPrgFiles
+         FOR i := 1 TO nPrgFiles
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.o '
          NEXT i
-         For i := 1 to Len( aRcFiles )
+         IF Len( aRcFiles ) > 0
             cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
-         NEXT i
+         ENDIF
          cOut += CRLF
          cOut += 'LINK_EXE      = GCC.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Wall -mwindows -O3 -Wl,--allow-multiple-definition' + CRLF
@@ -1758,7 +1758,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
                                 ' -I' + cCompFolder + 'INCLUDE' + ;
                                 ' -I' + cHarbourFolder + 'INCLUDE' + ;
                                 ' -I' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolder + iif( File( cHarbourFolder + 'BIN\WIN\MINGW\HARBOUR.EXE' ), 'BIN\WIN\MINGW', 'BIN' ) + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
                                 ' -i' + cHarbourFolder + 'INCLUDE' + ;
@@ -1795,11 +1795,9 @@ METHOD BldMinGW( nOption ) CLASS THMI
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolder + 'resources > ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolder + 'resources\oohg.rc _temp.rc > NUL' + CRLF
-         For i := 1 To Len( aRcFiles )
-            IF File( aRcFiles[ i ] )
-               cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
-               cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + ' _temp.rc > NUL' + CRLF
-            ENDIF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
          NEXT i
 
          // Build batch to launch make utility
@@ -1882,7 +1880,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
       ENDIF
 
       // Cleanup
-      BorraTemp( cFolder )
+      //BorraTemp( cFolder )
       ::Form_Wait:Hide()
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
@@ -2025,12 +2023,12 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          cOut += 'APP_NAME      = ' + cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
-         For i := 1 To nPrgFiles
+         FOR i := 1 TO nPrgFiles
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.o '
          NEXT i
-         For i := 1 to Len( aRcFiles )
+         IF Len( aRcFiles ) > 0
             cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
-         NEXT i
+         ENDIF
          cOut += CRLF
          cOut += 'LINK_EXE      = GCC.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Wall -mwindows -O3 -Wl,--allow-multiple-definition' + CRLF
@@ -2052,7 +2050,7 @@ METHOD xBldMinGW( nOption ) CLASS THMI
                                 ' -I' + cCompFolder + 'INCLUDE' + ;
                                 ' -I' + cHarbourFolder + 'INCLUDE' + ;
                                 ' -I' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolder + iif( File( cHarbourFolder + 'BIN\WIN\MINGW\HARBOUR.EXE' ), 'BIN\WIN\MINGW', 'BIN' ) + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
                                 ' -i' + cHarbourFolder + 'INCLUDE' + ;
@@ -2089,11 +2087,9 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolder + 'resources > ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolder + 'resources\oohg.rc _temp.rc > NUL' + CRLF
-         For i := 1 To Len( aRcFiles )
-            IF File( aRcFiles[ i ] )
-               cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
-               cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + ' _temp.rc > NUL' + CRLF
-            ENDIF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
          NEXT i
 
          // Build batch to launch make utility
