@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-03-03 17:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\build.bat
+     ! oIDE is not builded when more than one flavor is installed.
+
 2019-02-27 20:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\mgide.prg
      ! Harbour+MinGW ownmake build.
