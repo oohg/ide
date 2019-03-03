@@ -1,4 +1,4 @@
-@echo oN
+@echo off
 rem
 rem $Id: build.bat $
 rem
