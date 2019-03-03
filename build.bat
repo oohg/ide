@@ -1,4 +1,4 @@
-@echo off
+@echo oN
 rem
 rem $Id: build.bat $
 rem
@@ -49,14 +49,11 @@ rem
 
 :CALL30
 
-   if exist "%HG_ROOT%\BuildApp32.bat" goto VERSIONNEEDED
-   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
    call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM30 mgide %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL32
 
-   if exist "%HG_ROOT%\BuildApp34.bat" goto VERSIONNEEDED
    call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM32 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
