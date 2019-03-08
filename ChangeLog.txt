@@ -8,6 +8,12 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-03-07 21:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+   * ide\prgs\mgide.prg
+     * Subfolder for (x)Harbour, C compiler and OOHG are now
+       fully customizable.
+
 2019-03-03 18:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\build.bat
      ! Echo.
