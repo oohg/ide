@@ -156,7 +156,12 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 100 ;
             SPACING 25
 
-      END PAGE 
+         @ 160, 431 RADIOGROUP radiogroup_4 ;
+            OPTIONS { i18n( "Compile.bat" ), i18n( "Own Make" ), i18n( "HbMk2" ) } ;
+            WIDTH 100 ;
+            SPACING 25
+
+      END PAGE
 
       DEFINE PAGE i18n( "(x)Harbour" )
 
