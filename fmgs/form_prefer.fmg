@@ -127,12 +127,14 @@ DEFINE WINDOW TEMPLATE ;
          @ 160, 45 RADIOGROUP radiogroup_1 ;
             OPTIONS { i18n( "Harbour" ), i18n( "xHarbour" ) } ;
             WIDTH 100 ;
-            SPACING 25
+            SPACING 25 ;
+            ON CHANGE ::Form_Prefer_OnChange()
 
          @ 160, 241 RADIOGROUP radiogroup_2 ;
             OPTIONS { i18n( "MinGW" ), i18n( "BCC" ), i18n( "Pelles C") } ;
             WIDTH 100 ;
-            SPACING 25
+            SPACING 25 ;
+            ON CHANGE ::Form_Prefer_OnChange()
 
          @ 130, 26 FRAME frame_1 ;
             WIDTH 140 ;
@@ -158,109 +160,355 @@ DEFINE WINDOW TEMPLATE ;
 
       DEFINE PAGE i18n( "(x)Harbour" )
 
-         @ 85, 20 LABEL label_5 ;
-            WIDTH 133 ;
-            HEIGHT 18 ;
-            VALUE i18n( "Harbour-BCC" ) ;
-            TRANSPARENT 
-
-         @ 85, 160 TEXTBOX text_2 ;
-            WIDTH 250 ;
-            HEIGHT 24 ;
-            MAXLENGTH 30
-
-         @ 82, 420 BUTTON button_3 ;
-            WIDTH 30 ;
-            HEIGHT 28 ;
-            CAPTION "..." ;
-            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_2.Value := Folder, NIL )
-
-         @ 50, 160 TEXTBOX text_8 ;
-            WIDTH 250 ;
-            HEIGHT 24 ;
-            MAXLENGTH 30
-
          @ 50, 20 LABEL label_6 ;
             WIDTH 120 ;
             HEIGHT 24 ;
             VALUE i18n( "Harbour-MinGW" ) ;
-            TRANSPARENT 
+            TRANSPARENT
 
-         @ 47, 420 BUTTON button_11 ;
+         @ 85, 20 LABEL label_6_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_8 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_11 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_8.Value := folder, NIL )
 
-         @ 120, 20 LABEL label_4 ;
+         @ 120, 20 LABEL label_6_2 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "Harbour-Pelles C" ) ;
-            TRANSPARENT 
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
 
-         @ 120, 160 TEXTBOX text_7 ;
-            WIDTH 250 ;
+         @ 120, 160 TEXTBOX text_8_2 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 117, 420 BUTTON button_2 ;
+         @ 155, 20 LABEL label_6_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_8_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_6_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_8_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_5 ;
+            WIDTH 133 ;
+            HEIGHT 18 ;
+            VALUE i18n( "Harbour-BCC" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_5_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_3 ;
+            WIDTH 30 ;
+            HEIGHT 28 ;
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_2.Value := Folder, NIL )
+
+         @ 120, 20 LABEL label_5_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_2_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_5_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_2_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_5_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_2_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Harbour-Pelles C" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_4_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_7 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_2 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_7.Value := Folder, NIL )
 
-         @ 160, 20 LABEL label_14 ;
+         @ 120, 20 LABEL label_4_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_7_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_4_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_7_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_4_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_7_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_14 ;
             WIDTH 120 ;
             HEIGHT 24 ;
             VALUE i18n( "xHarbour-MinGW" ) ;
-            TRANSPARENT 
+            TRANSPARENT
 
-         @ 195, 20 LABEL label_15 ;
+         @ 85, 20 LABEL label_14_1 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "xHarbour-BCC" ) ;
-            TRANSPARENT 
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
 
-         @ 230, 20 LABEL label_16 ;
-            WIDTH 120 ;
-            HEIGHT 24 ;
-            VALUE i18n( "xHarbour-Pelles C" ) ;
-            TRANSPARENT 
-
-         @ 160, 160 TEXTBOX text_13 ;
-            WIDTH 250 ;
+         @ 85, 160 TEXTBOX text_13 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 195, 160 TEXTBOX text_14 ;
-            WIDTH 250 ;
-            HEIGHT 24 ;
-            MAXLENGTH 30
-
-         @ 230, 160 TEXTBOX text_15 ;
-            WIDTH 250 ;
-            HEIGHT 24 ;
-            MAXLENGTH 30
-
-         @ 156, 420 BUTTON button_8 ;
+         @ 82, 530 BUTTON button_8 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_13.Value := Folder, NIL )
 
-         @ 196, 420 BUTTON button_12 ;
+         @ 120, 20 LABEL label_14_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_13_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_14_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_13_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_14_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_13_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_15 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "xHarbour-BCC" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_15_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_14 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_12 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_14.Value := Folder, NIL )
 
-         @ 230, 420 BUTTON button_13 ;
+         @ 120, 20 LABEL label_15_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_14_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_15_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_14_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_15_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_14_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_16 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "xHarbour-Pelles C" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_16_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_15 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_13 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
-            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_15.Value := Folder, NIL ) ;
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_15.Value := Folder, NIL )
 
-      END PAGE 
+         @ 120, 20 LABEL label_16_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_15_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_16_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_15_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_16_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_15_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 225, 20 LABEL label_31 ;
+            WIDTH 140 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Additional Libs" ) ;
+            TRANSPARENT
+
+         @ 225, 160 TEXTBOX text_libXH ;
+            WIDTH 400 ;
+            HEIGHT 24 ;
+            TOOLTIP i18n( "This text will be send as is to the compiler." ) ;
+            MAXLENGTH 30
+
+      END PAGE
 
       DEFINE PAGE i18n( "C Compiler" )
 
@@ -270,61 +518,178 @@ DEFINE WINDOW TEMPLATE ;
             VALUE i18n( "MinGW Folder" ) ;
             TRANSPARENT
 
-         @ 50, 160 TEXTBOX text_10 ;
-            WIDTH 250 ;
+         @ 85, 20 LABEL label_8_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_10 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 47, 420 BUTTON button_10 ;
+         @ 82, 530 BUTTON button_10 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_10.Value := folder, NIL )
 
-         @ 85, 20 LABEL label_11 ;
+         @ 120, 20 LABEL label_8_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_10_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_8_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_10_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_8_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_10_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_11 ;
             WIDTH 120 ;
             HEIGHT 24 ;
             VALUE i18n( "BCC Folder" ) ;
-            TRANSPARENT 
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_11_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
 
          @ 85, 160 TEXTBOX text_5 ;
-            WIDTH 250 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 420 BUTTON button_4 ;
+         @ 82, 530 BUTTON button_4 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
-            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_5.Value := Folder, NIL );
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_5.Value := folder, NIL )
 
-         @ 120, 20 LABEL label_13 ;
+         @ 120, 20 LABEL label_11_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_5_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_11_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_5_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_11_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_5_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_13 ;
             WIDTH 120 ;
             HEIGHT 24 ;
             VALUE i18n( "Pelles C" ) ;
-            TRANSPARENT 
+            TRANSPARENT
 
-         @ 120, 160 TEXTBOX text_6 ;
-            WIDTH 250 ;
+         @ 85, 20 LABEL label_13_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_6 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 117, 420 BUTTON button_5 ;
+         @ 82, 530 BUTTON button_5 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
-            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_6.Value := Folder, NIL )
+            ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_6.Value := folder, NIL )
 
-         @ 155, 20 LABEL label_12 ;
+         @ 120, 20 LABEL label_13_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "BIN" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_6_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_13_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_6_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_13_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_6_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 225, 20 LABEL label_12 ;
             WIDTH 140 ;
             HEIGHT 24 ;
             VALUE i18n( "Additional Libs" ) ;
             TRANSPARENT
 
-         @ 155, 160 TEXTBOX text_lib ;
+         @ 225, 160 TEXTBOX text_libCC ;
             WIDTH 400 ;
             HEIGHT 24 ;
-            TOOLTIP i18n( "Names must be separated by commas." ) ;
+            TOOLTIP i18n( "This text will be send as is to the compiler." ) ;
             MAXLENGTH 30
 
       END PAGE
@@ -334,104 +699,338 @@ DEFINE WINDOW TEMPLATE ;
          @ 50, 20 LABEL label_10 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "ooHG-Hb-MinGW" ) ;
-            TRANSPARENT 
+            VALUE i18n( "OOHG-Hb-MinGW" ) ;
+            TRANSPARENT
 
-         @ 47, 420 BUTTON button_9 ;
+         @ 85, 20 LABEL label_10_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_12 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_9 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_12.Value := folder, NIL )
 
-         @ 50, 160 TEXTBOX text_12 ;
-            WIDTH 250 ;
+         @ 120, 20 LABEL label_10_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_12_2 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 85, 20 LABEL label_7 ;
+         @ 155, 20 LABEL label_10_3 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "ooHG-Hb-BCC" ) ;
-            TRANSPARENT 
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
 
-         @ 120, 20 LABEL label_9 ;
+         @ 155, 160 TEXTBOX text_12_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_10_4 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "ooHG-Hb-Pelles C" ) ;
-            TRANSPARENT 
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_12_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_7 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "OOHG-Hb-BCC" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_7_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
 
          @ 85, 160 TEXTBOX text_9 ;
-            WIDTH 250 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 120, 160 TEXTBOX text_11 ;
-            WIDTH 250 ;
-            HEIGHT 24 ;
-            MAXLENGTH 30
-
-         @ 82, 420 BUTTON button_6 ;
+         @ 82, 530 BUTTON button_6 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_9.Value := folder, NIL )
 
-         @ 117, 420 BUTTON button_7 ;
+         @ 120, 20 LABEL label_7_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_9_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_7_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_9_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_7_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_9_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_9 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "OOHG-Hb-Pelles C" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_9_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_11 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_7 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_11.Value := folder, NIL )
 
-         @ 160, 160 TEXTBOX text_16 ;
-            WIDTH 250 ;
+         @ 120, 20 LABEL label_9_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_11_2 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 195, 160 TEXTBOX text_17 ;
-            WIDTH 250 ;
+         @ 155, 20 LABEL label_9_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_11_3 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 230, 160 TEXTBOX text_18 ;
-            WIDTH 250 ;
+         @ 190, 20 LABEL label_9_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_11_4 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 160, 20 LABEL label_17 ;
+         @ 50, 20 LABEL label_17 ;
             WIDTH 120 ;
             HEIGHT 24 ;
             VALUE i18n( "ooHG-xHb-MinGW" ) ;
-            TRANSPARENT 
+            TRANSPARENT
 
-         @ 195, 20 LABEL label_18 ;
+         @ 85, 20 LABEL label_17_1 ;
             WIDTH 120 ;
             HEIGHT 24 ;
-            VALUE i18n( "ooHG-xHb-BCC" ) ;
-            TRANSPARENT 
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
 
-         @ 230, 20 LABEL label_19 ;
-            WIDTH 120 ;
+         @ 85, 160 TEXTBOX text_16 ;
+            WIDTH 360 ;
             HEIGHT 24 ;
-            VALUE i18n( "ooHG-xHb-Pelles C" ) ;
-            TRANSPARENT 
+            MAXLENGTH 30
 
-         @ 156, 420 BUTTON button_14 ;
+         @ 82, 530 BUTTON button_14 ;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_16.Value := folder, NIL )
 
-         @ 196, 420 BUTTON button_15 ;
+         @ 120, 20 LABEL label_17_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_16_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_17_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_16_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_17_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_16_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_18;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ooHG-xHb-BCC" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_18_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_17 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_15;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_17.Value := folder, NIL )
 
-         @ 230, 420 BUTTON button_16 ;
+         @ 120, 20 LABEL label_18_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_17_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_18_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_17_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_18_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_17_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 50, 20 LABEL label_19 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ooHG-xHb-Pelles C" ) ;
+            TRANSPARENT
+
+         @ 85, 20 LABEL label_19_1 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "ROOT" ) ;
+            TRANSPARENT
+
+         @ 85, 160 TEXTBOX text_18 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 82, 530 BUTTON button_16;
             WIDTH 30 ;
             HEIGHT 28 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_18.Value := folder, NIL )
+
+         @ 120, 20 LABEL label_19_2 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "INCLUDE" ) ;
+            TRANSPARENT
+
+         @ 120, 160 TEXTBOX text_18_2 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 155, 20 LABEL label_19_3 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "LIB" ) ;
+            TRANSPARENT
+
+         @ 155, 160 TEXTBOX text_18_3 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
+
+         @ 190, 20 LABEL label_19_4 ;
+            WIDTH 120 ;
+            HEIGHT 24 ;
+            VALUE i18n( "RESOURCES" ) ;
+            TRANSPARENT
+
+         @ 190, 160 TEXTBOX text_18_4 ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            MAXLENGTH 30
 
       END PAGE 
 

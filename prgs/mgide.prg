@@ -116,31 +116,77 @@ CLASS THMI
    DATA aSystemColor       INIT { 215, 231, 244 }
    DATA aSystemColorAux    INIT  {}
    DATA cBCCFolder         INIT ''
+   DATA cBCCFolderB        INIT ''
+   DATA cBCCFolderI        INIT ''
+   DATA cBCCFolderL        INIT ''
    DATA cExtEditor         INIT ''
    DATA cFile              INIT ''
    DATA cFormDefFontColor  INIT 'NIL'
    DATA cFormDefFontName   INIT 'MS Sans Serif'
    DATA cGuiHbBCC          INIT ''
+   DATA cGuiHbBCCI         INIT ''
+   DATA cGuiHbBCCL         INIT ''
+   DATA cGuiHbBCCR         INIT ''
    DATA cGuiHbMinGW        INIT ''
+   DATA cGuiHbMinGWI       INIT ''
+   DATA cGuiHbMinGWL       INIT ''
+   DATA cGuiHbMinGWR       INIT ''
    DATA cGuiHbPelles       INIT ''
+   DATA cGuiHbPellesI      INIT ''
+   DATA cGuiHbPellesL      INIT ''
+   DATA cGuiHbPellesR      INIT ''
    DATA cGuixHbBCC         INIT ''
+   DATA cGuixHbBCCI        INIT ''
+   DATA cGuixHbBCCL        INIT ''
+   DATA cGuixHbBCCR        INIT ''
    DATA cGuixHbMinGW       INIT ''
+   DATA cGuixHbMinGWI      INIT ''
+   DATA cGuixHbMinGWL      INIT ''
+   DATA cGuixHbMinGWR      INIT ''
    DATA cGuixHbPelles      INIT ''
+   DATA cGuixHbPellesI     INIT ''
+   DATA cGuixHbPellesL     INIT ''
+   DATA cGuixHbPellesR     INIT ''
    DATA cHbBCCFolder       INIT ''
+   DATA cHbBCCFolderB      INIT ''
+   DATA cHbBCCFolderI      INIT ''
+   DATA cHbBCCFolderL      INIT ''
    DATA cHbMinGWFolder     INIT ''
+   DATA cHbMinGWFolderB    INIT ''
+   DATA cHbMinGWFolderI    INIT ''
+   DATA cHbMinGWFolderL    INIT ''
    DATA cHbPellFolder      INIT ''
+   DATA cHbPellFolderB     INIT ''
+   DATA cHbPellFolderI     INIT ''
+   DATA cHbPellFolderL     INIT ''
    DATA cIDE_Folder        INIT ''
    DATA cItemFile          INIT ''
-   DATA cLib               INIT ""
+   DATA cLibCC             INIT ""
+   DATA cLibXH             INIT ""
    DATA cMinGWFolder       INIT ''
+   DATA cMinGWFolderB      INIT ''
+   DATA cMinGWFolderI      INIT ''
+   DATA cMinGWFolderL      INIT ''
    DATA cOutFile           INIT ''
    DATA cPellFolder        INIT ''
+   DATA cPellFolderB       INIT ''
+   DATA cPellFolderI       INIT ''
+   DATA cPellFolderL       INIT ''
    DATA cProjectName       INIT ''
    DATA cProjFolder        INIT ''
    DATA cText              INIT ''
    DATA cxHbBCCFolder      INIT ''
+   DATA cxHbBCCFolderB     INIT ''
+   DATA cxHbBCCFolderI     INIT ''
+   DATA cxHbBCCFolderL     INIT ''
    DATA cxHbMinGWFolder    INIT ''
+   DATA cxHbMinGWFolderB   INIT ''
+   DATA cxHbMinGWFolderI   INIT ''
+   DATA cxHbMinGWFolderL   INIT ''
    DATA cxHbPellFolder     INIT ''
+   DATA cxHbPellFolderB    INIT ''
+   DATA cxHbPellFolderI    INIT ''
+   DATA cxHbPellFolderL    INIT ''
    DATA Form_Edit          INIT NIL
    DATA Form_Prefer        INIT NIL
    DATA Form_Splash        INIT NIL
@@ -188,6 +234,7 @@ CLASS THMI
    METHOD EditColors
    METHOD EditorExit
    METHOD Exit
+   METHOD Form_Prefer_OnChange
    METHOD GetPreferredFont
    METHOD GoLine
    METHOD InitializeProject
@@ -575,8 +622,8 @@ RETURN NIL
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 FUNCTION BorraTemp( cFolder )
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-   IF File( cFolder + "\OBJ\nul" )
-      ZapDirectory( cFolder + "\OBJ" + NUL )
+   IF File( cFolder + "OBJ\nul" )
+      ZapDirectory( cFolder + "OBJ" + NUL )
    ENDIF
    FErase( cFolder + '_aux.rc' )
    FErase( cFolder + '_build.bat' )
@@ -774,28 +821,35 @@ RETURN NIL
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD LoadClrDefs() CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL cMiniGuiFolder, cFile, cText, nLineCount, i, cLine, cColor, cArray, aColor, nPos
+LOCAL cMiniGuiFolder, cMiniGuiFolderI, cFile, cText, nLineCount, i, cLine, cColor, cArray, aColor, nPos
 
    DO CASE
    CASE ( ::nCompxBase == 1 .AND. ::nCompilerC == 1 )  // Harbour-MinGW
-      cMiniGuiFolder := ::cGUIHbMinGW
+      cMiniGuiFolder  := ::cGUIHbMinGW
+      cMiniGuiFolderI := ::cGUIHbMinGWI
    CASE ( ::nCompxBase == 1 .AND. ::nCompilerC == 2 )  // Harbour-BCC
-      cMiniGuiFolder := ::cGuiHbBCC
+      cMiniGuiFolder  := ::cGuiHbBCC
+      cMiniGuiFolderI := ::cGuiHbBCCI
    CASE ( ::nCompxBase == 1 .AND. ::nCompilerC == 3 )  // Harbour-PellesC
-      cMiniGuiFolder := ::cGuixHbPelles
+      cMiniGuiFolder  := ::cGuixHbPelles
+      cMiniGuiFolderI := ::cGuixHbPellesI
    CASE ( ::nCompxBase == 2 .AND. ::nCompilerC == 1 )  // xHarbour-MinGW
-      cMiniGuiFolder := ::cGUIxHbMinGW
+      cMiniGuiFolder  := ::cGUIxHbMinGW
+      cMiniGuiFolderI := ::cGUIxHbMinGWI
    CASE ( ::nCompxBase == 2 .AND. ::nCompilerC == 2 )  // xHarbour-BCC
-      cMiniGuiFolder := ::cGuixHbBCC
+      cMiniGuiFolder  := ::cGuixHbBCC
+      cMiniGuiFolderI := ::cGuixHbBCCI
    CASE ( ::nCompxBase == 2 .AND. ::nCompilerC == 3 )  // xHarbour-PellesC
-      cMiniGuiFolder := ::cGuixHbPelles
+      cMiniGuiFolder  := ::cGuixHbPelles
+      cMiniGuiFolderI := ::cGuixHbPellesI
    OTHERWISE
-      cMiniGuiFolder := ""
+      cMiniGuiFolder  := ""
+      cMiniGuiFolderI := ""
    ENDCASE
 
    cText := ""
-   IF ! Empty( cMiniGuiFolder )
-      cFile := cMiniGuiFolder + "\include\i_color.ch"
+   IF ! Empty( cMiniGuiFolderI )
+      cFile := cMiniGuiFolder + '\' + cMiniGuiFolderI + "\i_color.ch"
       IF File( cFile )
          cText := MemoRead( cFile )
       ENDIF
@@ -958,24 +1012,24 @@ LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
 
    BEGIN INI FILE cFile
       // PROJECT
-      GET ::cOutFile          SECTION 'PROJECT'   ENTRY "OUTFILE"         DEFAULT ''
+      GET ::cOutFile          SECTION 'PROJECT'     ENTRY "OUTFILE"       DEFAULT ''
       // EDITOR
-      GET ::cExtEditor        SECTION 'EDITOR'    ENTRY "EXTERNAL"        DEFAULT ''
-      GET ::nTabSize          SECTION "EDITOR"    ENTRY "TABSIZE"         DEFAULT 8
+      GET ::cExtEditor        SECTION 'EDITOR'      ENTRY "EXTERNAL"      DEFAULT ''
+      GET ::nTabSize          SECTION "EDITOR"      ENTRY "TABSIZE"       DEFAULT 8
       IF ::nTabSize < 1 .OR. ::nTabSize > 99
          ::nTabSize := 8
       ENDIF
       // FORM'S FONT
-      GET ::cFormDefFontName   SECTION "FORMFONT" ENTRY "FONT"            DEFAULT ::cFormDefFontName
+      GET ::cFormDefFontName   SECTION "FORMFONT"   ENTRY "FONT"          DEFAULT ::cFormDefFontName
       IF ::cFormDefFontName == 'NIL'
          ::cFormDefFontName := _OOHG_DefaultFontName
       ENDIF
-      GET ::nFormDefFontSize   SECTION "FORMFONT" ENTRY "SIZE"            DEFAULT ::nFormDefFontSize
+      GET ::nFormDefFontSize   SECTION "FORMFONT"   ENTRY "SIZE"          DEFAULT ::nFormDefFontSize
       ::nFormDefFontSize := Int( ::nFormDefFontSize )
       IF ::nFormDefFontSize < 1
          ::nFormDefFontSize := _OOHG_DefaultFontSize
       ENDIF
-      GET cColor               SECTION "FORMFONT" ENTRY "COLOR"           DEFAULT ::cFormDefFontColor
+      GET cColor               SECTION "FORMFONT"   ENTRY "COLOR"         DEFAULT ::cFormDefFontColor
       IF ::StrToColor( cColor ) == NIL
          ::cFormDefFontColor := ::ColorToStr( _OOHG_DefaultFontColor )
       ELSE
@@ -1005,62 +1059,108 @@ LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
          ::nPxSize := 1
       ENDIF
       // OOHG
-      GET ::cGuiHbMinGW       SECTION 'GUILIB'    ENTRY "GUIHBMINGW"      DEFAULT 'c:\oohg'
-      GET ::cGuiHbBCC         SECTION 'GUILIB'    ENTRY "GUIHBBCC"        DEFAULT 'c:\oohg'
-      GET ::cGuiHbPelles      SECTION 'GUILIB'    ENTRY "GUIHBPELL"       DEFAULT 'c:\oohg'
-      GET ::cGuixHbMinGW      SECTION 'GUILIB'    ENTRY "GUIXHBMINGW"     DEFAULT 'c:\oohg'
-      GET ::cGuixHbBCC        SECTION 'GUILIB'    ENTRY "GUIXHBBCC"       DEFAULT 'c:\oohg'
-      GET ::cGuixHbPelles     SECTION 'GUILIB'    ENTRY "GUIXHBPELL"      DEFAULT 'c:\oohg'
+      GET ::cGuiHbMinGW       SECTION 'GUILIB'      ENTRY "GUIHBMINGW"    DEFAULT 'c:\oohg'
+      GET ::cGuiHbBCC         SECTION 'GUILIB'      ENTRY "GUIHBBCC"      DEFAULT 'c:\oohg'
+      GET ::cGuiHbPelles      SECTION 'GUILIB'      ENTRY "GUIHBPELL"     DEFAULT 'c:\oohg'
+      GET ::cGuixHbMinGW      SECTION 'GUILIB'      ENTRY "GUIXHBMINGW"   DEFAULT 'c:\oohg'
+      GET ::cGuixHbBCC        SECTION 'GUILIB'      ENTRY "GUIXHBBCC"     DEFAULT 'c:\oohg'
+      GET ::cGuixHbPelles     SECTION 'GUILIB'      ENTRY "GUIXHBPELL"    DEFAULT 'c:\oohg'
+      GET ::cGuiHbBCCI        SECTION 'GUIHBBCC'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbBCCL        SECTION 'GUIHBBCC'    ENTRY "LIB"           DEFAULT 'lib\hb\bcc'
+      GET ::cGuiHbBCCR        SECTION 'GUIHBBCC'    ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuiHbMinGWI      SECTION 'GUIHBMINGW'  ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbMinGWL      SECTION 'GUIHBMINGW'  ENTRY "LIB"           DEFAULT 'lib\hb\mingw'
+      GET ::cGuiHbMinGWR      SECTION 'GUIHBMINGW'  ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuiHbPellesI     SECTION 'GUIHBPELL'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbPellesL     SECTION 'GUIHBPELL'   ENTRY "LIB"           DEFAULT 'lib\hb\pcc'
+      GET ::cGuiHbPellesR     SECTION 'GUIHBPELL'   ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbBCCI       SECTION 'GUIXHBBCC'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbBCCL       SECTION 'GUIXHBBCC'   ENTRY "LIB"           DEFAULT 'lib\xhb\bcc'
+      GET ::cGuixHbBCCR       SECTION 'GUIXHBBCC'   ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbMinGWI     SECTION 'GUIXHBMINGW' ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbMinGWL     SECTION 'GUIXHBMINGW' ENTRY "LIB"           DEFAULT 'lib\xhb\mingw'
+      GET ::cGuixHbMinGWR     SECTION 'GUIXHBMINGW' ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbPellesI    SECTION 'GUIXHBPELL'  ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbPellesL    SECTION 'GUIXHBPELL'  ENTRY "LIB"           DEFAULT 'lib\xhb\pcc'
+      GET ::cGuixHbPellesR    SECTION 'GUIXHBPELL'  ENTRY "RESOURCES"     DEFAULT 'resources'
       // HARBOUR
-      GET ::cHbMinGWFolder    SECTION 'HARBOUR'   ENTRY "HBMINGW"         DEFAULT 'c:\harbourm'
-      GET ::cHbBCCFolder      SECTION 'HARBOUR'   ENTRY "HBBCC"           DEFAULT 'c:\harbourb'
-      GET ::cHbPellFolder     SECTION 'HARBOUR'   ENTRY "HBPELLES"        DEFAULT 'c:\harbourp'
+      GET ::cHbMinGWFolder    SECTION 'HARBOUR'     ENTRY "HBMINGW"       DEFAULT 'c:\harbourm'
+      GET ::cHbBCCFolder      SECTION 'HARBOUR'     ENTRY "HBBCC"         DEFAULT 'c:\harbourb'
+      GET ::cHbPellFolder     SECTION 'HARBOUR'     ENTRY "HBPELLES"      DEFAULT 'c:\harbourp'
+      GET ::cHbMinGWFolderB   SECTION 'HBMINGW'     ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbMinGWFolderI   SECTION 'HBMINGW'     ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbMinGWFolderL   SECTION 'HBMINGW'     ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cHbBCCFolderB     SECTION 'HBBCC'       ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbBCCFolderI     SECTION 'HBBCC'       ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbBCCFolderL     SECTION 'HBBCC'       ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cHbPellFolderB    SECTION 'HBPELLES'    ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbPellFolderI    SECTION 'HBPELLES'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbPellFolderL    SECTION 'HBPELLES'    ENTRY "LIB"           DEFAULT 'lib'
       // XHARBOUR
-      GET ::cxHbMinGWFolder   SECTION 'HARBOUR'   ENTRY "XHBMINGW"        DEFAULT 'c:\xharbourm'
-      GET ::cxHbBCCFolder     SECTION 'HARBOUR'   ENTRY "XHBBCC"          DEFAULT 'c:\xharbourb'
-      GET ::cxHbPellFolder    SECTION 'HARBOUR'   ENTRY "XHBPELLES"       DEFAULT 'c:\xharbourp'
+      GET ::cxHbMinGWFolder   SECTION 'HARBOUR'     ENTRY "XHBMINGW"      DEFAULT 'c:\xharbourm'
+      GET ::cxHbBCCFolder     SECTION 'HARBOUR'     ENTRY "XHBBCC"        DEFAULT 'c:\xharbourb'
+      GET ::cxHbPellFolder    SECTION 'HARBOUR'     ENTRY "XHBPELLES"     DEFAULT 'c:\xharbourp'
+      GET ::cxHbMinGWFolderB  SECTION 'XHBMINGW'    ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbMinGWFolderI  SECTION 'XHBMINGW'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbMinGWFolderL  SECTION 'XHBMINGW'    ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cxHbBCCFolderB    SECTION 'XHBBCC'      ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbBCCFolderI    SECTION 'XHBBCC'      ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbBCCFolderL    SECTION 'XHBBCC'      ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cxHbPellFolderB   SECTION 'XHBPELLES'   ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbPellFolderI   SECTION 'XHBPELLES'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbPellFolderL   SECTION 'XHBPELLES'   ENTRY "LIB"           DEFAULT 'lib'
       // C COMPILER
-      GET ::cMinGWFolder      SECTION 'COMPILER'  ENTRY "MINGWFOLDER"     DEFAULT 'c:\MinGW'
-      GET ::cBCCFolder        SECTION 'COMPILER'  ENTRY "BCCFOLDER"       DEFAULT 'c:\Borland\BCC55'
-      GET ::cPellFolder       SECTION 'COMPILER'  ENTRY "PELLESFOLDER"    DEFAULT 'c:\PellesC'
+      GET ::cMinGWFolder      SECTION 'COMPILER'    ENTRY "MINGWFOLDER"   DEFAULT 'c:\MinGW'
+      GET ::cMinGWFolderB     SECTION 'MINGW'       ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cMinGWFolderI     SECTION 'MINGW'       ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cMinGWFolderL     SECTION 'MINGW'       ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cBCCFolder        SECTION 'COMPILER'    ENTRY "BCCFOLDER"     DEFAULT 'c:\Borland\BCC55'
+      GET ::cBCCFolderB       SECTION 'BCC'         ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cBCCFolderI       SECTION 'BCC'         ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cBCCFolderL       SECTION 'BCC'         ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cPellFolder       SECTION 'COMPILER'    ENTRY "PELLESFOLDER"  DEFAULT 'c:\PellesC'
+      GET ::cPellFolderB      SECTION 'PELLES'      ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cPellFolderI      SECTION 'PELLES'      ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cPellFolderL      SECTION 'PELLES'      ENTRY "LIB"           DEFAULT 'lib'
       // MODE
-      GET ::nCompxBase        SECTION 'WHATCOMP'  ENTRY "XBASECOMP"       DEFAULT 1  // 1 Harbour  2 xHarbour
-      GET ::nCompilerC        SECTION 'WHATCOMP'  ENTRY "CCOMPILER"       DEFAULT 1  // 1 MinGW    2 BCC   3 Pelles C
+      GET ::nCompxBase        SECTION 'WHATCOMP'    ENTRY "XBASECOMP"     DEFAULT 1  // 1 Harbour  2 xHarbour
+      GET ::nCompilerC        SECTION 'WHATCOMP'    ENTRY "CCOMPILER"     DEFAULT 1  // 1 MinGW    2 BCC   3 Pelles C
       // POSITION
-      GET nPos                SECTION 'POSITION'  ENTRY "FORM_MAIN_ROW"   DEFAULT ::aPositions[1, 1]
+      GET nPos                SECTION 'POSITION'    ENTRY "FORM_MAIN_ROW" DEFAULT ::aPositions[1, 1]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[1, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'  ENTRY "FORM_MAIN_COL"   DEFAULT ::aPositions[1, 2]
+      GET nPos                SECTION 'POSITION'    ENTRY "FORM_MAIN_COL" DEFAULT ::aPositions[1, 2]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[1, 2] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'  ENTRY "CVCCNTRLS_ROW"   DEFAULT ::aPositions[2, 1]
+      GET nPos                SECTION 'POSITION'    ENTRY "CVCCNTRLS_ROW" DEFAULT ::aPositions[2, 1]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[2, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'  ENTRY "CVCCNTRLS_COL"   DEFAULT ::aPositions[2, 2]
+      GET nPos                SECTION 'POSITION'    ENTRY "CVCCNTRLS_COL" DEFAULT ::aPositions[2, 2]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[2, 2] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'  ENTRY "FORM_LIST_ROW"   DEFAULT ::aPositions[3, 1]
+      GET nPos                SECTION 'POSITION'    ENTRY "FORM_LIST_ROW" DEFAULT ::aPositions[3, 1]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[3, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'  ENTRY "FORM_LIST_COL"   DEFAULT ::aPositions[3, 2]
+      GET nPos                SECTION 'POSITION'    ENTRY "FORM_LIST_COL" DEFAULT ::aPositions[3, 2]
       IF HB_IsNumeric( nPos ) .AND. nPos >= 0
          ::aPositions[3, 2] := nPos
       ENDIF
       // IDE
-      GET ::nLineSkip         SECTION 'SETTINGS'  ENTRY "LINESKIP"        DEFAULT 5
-      GET ::lTBuild           SECTION 'SETTINGS'  ENTRY "BUILD"           DEFAULT 2  // 1 Compile.bat 2 Own Make
-      GET lSaveDefaultValues  SECTION 'SETTINGS'  ENTRY "SAVEDEFAULTS"    DEFAULT 1
+      GET ::nLineSkip         SECTION 'SETTINGS'    ENTRY "LINESKIP"      DEFAULT 5
+      GET ::lTBuild           SECTION 'SETTINGS'    ENTRY "BUILD"         DEFAULT 2  // 1 Compile.bat 2 Own Make
+      GET lSaveDefaultValues  SECTION 'SETTINGS'    ENTRY "SAVEDEFAULTS"  DEFAULT 1
       ::lSaveDefaultValues := ( lSaveDefaultValues == 1 )
-      GET lSnap               SECTION 'SETTINGS'  ENTRY "SNAP"            DEFAULT 0
+      GET lSnap               SECTION 'SETTINGS'    ENTRY "SNAP"          DEFAULT 0
       ::lSnap := ( lSnap == 1 )
-      GET ::cLib              SECTION 'SETTINGS'  ENTRY "LIB"             DEFAULT ''
-      GET ::nSyntax           SECTION 'SETTINGS'  ENTRY "SYNTAX"          DEFAULT 1
-      GET lHideTT             SECTION 'SETTINGS'  ENTRY "HIDETT"          DEFAULT 0
+      GET ::cLibCC            SECTION 'SETTINGS'    ENTRY "ADDLIBCC"      DEFAULT ''
+      GET ::cLibXH            SECTION 'SETTINGS'    ENTRY "ADDLIBXH"      DEFAULT ''
+      GET ::nSyntax           SECTION 'SETTINGS'    ENTRY "SYNTAX"        DEFAULT 1
+      GET lHideTT             SECTION 'SETTINGS'    ENTRY "HIDETT"        DEFAULT 0
       ::lHideTT := ( lHideTT == 1 )
    END INI
 RETURN NIL
@@ -1095,22 +1195,67 @@ METHOD SaveINI( cFile ) CLASS THMI
       // OOHG
       SET SECTION 'GUILIB'      ENTRY "GUIHBMINGW"    TO ::cGuiHbMinGW
       SET SECTION 'GUILIB'      ENTRY "GUIHBBCC"      TO ::cGuiHbBCC
-      SET SECTION 'GUILIB'      ENTRY "GUIHBPELL"     TO ::cGuiHBPelles
+      SET SECTION 'GUILIB'      ENTRY "GUIHBPELL"     TO ::cGuiHbPelles
       SET SECTION 'GUILIB'      ENTRY "GUIXHBMINGW"   TO ::cGuixHbMinGW
       SET SECTION 'GUILIB'      ENTRY "GUIXHBBCC"     TO ::cGuixHbBCC
-      SET SECTION 'GUILIB'      ENTRY "GUIXHBPELL"    TO ::cGuixHBPelles
-      // HARBOUR
+      SET SECTION 'GUILIB'      ENTRY "GUIXHBPELL"    TO ::cGuixHbPelles
+      SET SECTION 'GUIHBBCC'    ENTRY "INCLUDE"       TO ::cGuiHbBCCI
+      SET SECTION 'GUIHBBCC'    ENTRY "LIB"           TO ::cGuiHbBCCL
+      SET SECTION 'GUIHBBCC'    ENTRY "RESOURCES"     TO ::cGuiHbBCCR
+      SET SECTION 'GUIHBMINGW'  ENTRY "INCLUDE"       TO ::cGuiHbMinGWI
+      SET SECTION 'GUIHBMINGW'  ENTRY "LIB"           TO ::cGuiHbMinGWL
+      SET SECTION 'GUIHBMINGW'  ENTRY "RESOURCES"     TO ::cGuiHbMinGWR
+      SET SECTION 'GUIHBPELL'   ENTRY "INCLUDE"       TO ::cGuiHbPellesI
+      SET SECTION 'GUIHBPELL'   ENTRY "LIB"           TO ::cGuiHbPellesL
+      SET SECTION 'GUIHBPELL'   ENTRY "RESOURCES"     TO ::cGuiHbPellesR
+      SET SECTION 'GUIXHBBCC'   ENTRY "INCLUDE"       TO ::cGuixHbBCCI
+      SET SECTION 'GUIXHBBCC'   ENTRY "LIB"           TO ::cGuixHbBCCL
+      SET SECTION 'GUIXHBBCC'   ENTRY "RESOURCES"     TO ::cGuixHbBCCR
+      SET SECTION 'GUIXHBMINGW' ENTRY "INCLUDE"       TO ::cGuixHbMinGWI
+      SET SECTION 'GUIXHBMINGW' ENTRY "LIB"           TO ::cGuixHbMinGWL
+      SET SECTION 'GUIXHBMINGW' ENTRY "RESOURCES"     TO ::cGuixHbMinGWR
+      SET SECTION 'GUIXHBPELL'  ENTRY "INCLUDE"       TO ::cGuixHbPellesI
+      SET SECTION 'GUIXHBPELL'  ENTRY "LIB"           TO ::cGuixHbPellesL
+      SET SECTION 'GUIXHBPELL'  ENTRY "RESOURCES"     TO ::cGuixHbPellesR
+                     // HARBOUR
       SET SECTION 'HARBOUR'     ENTRY "HBMINGW"       TO ::cHbMinGWFolder
       SET SECTION 'HARBOUR'     ENTRY "HBBCC"         TO ::cHbBCCFolder
       SET SECTION 'HARBOUR'     ENTRY "HBPELLES"      TO ::cHbPellFolder
+      SET SECTION 'HBMINGW'     ENTRY "BIN"           TO ::cHbMinGWFolderB
+      SET SECTION 'HBMINGW'     ENTRY "INCLUDE"       TO ::cHbMinGWFolderI
+      SET SECTION 'HBMINGW'     ENTRY "LIB"           TO ::cHbMinGWFolderL
+      SET SECTION 'HBBCC'       ENTRY "BIN"           TO ::cHbBCCFolderB
+      SET SECTION 'HBBCC'       ENTRY "INCLUDE"       TO ::cHbBCCFolderI
+      SET SECTION 'HBBCC'       ENTRY "LIB"           TO ::cHbBCCFolderL
+      SET SECTION 'HBPELLES'    ENTRY "BIN"           TO ::cHbPellFolderB
+      SET SECTION 'HBPELLES'    ENTRY "INCLUDE"       TO ::cHbPellFolderI
+      SET SECTION 'HBPELLES'    ENTRY "LIB"           TO ::cHbPellFolderL
       // XHARBOUR
       SET SECTION 'HARBOUR'     ENTRY "XHBMINGW"      TO ::cxHbMinGWFolder
       SET SECTION 'HARBOUR'     ENTRY "XHBBCC"        TO ::cxHbBCCFolder
       SET SECTION 'HARBOUR'     ENTRY "XHBPELLES"     TO ::cxHbPellFolder
+      SET SECTION 'XHBMINGW'    ENTRY "BIN"           TO ::cxHbMinGWFolderB
+      SET SECTION 'XHBMINGW'    ENTRY "INCLUDE"       TO ::cxHbMinGWFolderI
+      SET SECTION 'XHBMINGW'    ENTRY "LIB"           TO ::cxHbMinGWFolderL
+      SET SECTION 'XHBBCC'      ENTRY "BIN"           TO ::cxHbBCCFolderB
+      SET SECTION 'XHBBCC'      ENTRY "INCLUDE"       TO ::cxHbBCCFolderI
+      SET SECTION 'XHBBCC'      ENTRY "LIB"           TO ::cxHbBCCFolderL
+      SET SECTION 'XHBPELLES'   ENTRY "BIN"           TO ::cxHbPellFolderB
+      SET SECTION 'XHBPELLES'   ENTRY "INCLUDE"       TO ::cxHbPellFolderI
+      SET SECTION 'XHBPELLES'   ENTRY "LIB"           TO ::cxHbPellFolderL
       // C COMPILER
       SET SECTION 'COMPILER'    ENTRY "MINGWFOLDER"   TO ::cMinGWFolder
       SET SECTION 'COMPILER'    ENTRY "BCCFOLDER"     TO ::cBCCFolder
       SET SECTION 'COMPILER'    ENTRY "PELLESFOLDER"  TO ::cPellFolder
+      SET SECTION 'MINGW'       ENTRY "BIN"           TO ::cMinGWFolderB
+      SET SECTION 'MINGW'       ENTRY "INCLUDE"       TO ::cMinGWFolderI
+      SET SECTION 'MINGW'       ENTRY "LIB"           TO ::cMinGWFolderL
+      SET SECTION 'BCC'         ENTRY "BIN"           TO ::cBCCFolderB
+      SET SECTION 'BCC'         ENTRY "INCLUDE"       TO ::cBCCFolderI
+      SET SECTION 'BCC'         ENTRY "LIB"           TO ::cBCCFolderL
+      SET SECTION 'PELLES'      ENTRY "BIN"           TO ::cPellFolderB
+      SET SECTION 'PELLES'      ENTRY "INCLUDE"       TO ::cPellFolderI
+      SET SECTION 'PELLES'      ENTRY "LIB"           TO ::cPellFolderL
       // MODE
       SET SECTION 'WHATCOMP'    ENTRY "XBASECOMP"     TO LTrim( Str( ::nCompxBase, 1, 0 ) )
       SET SECTION 'WHATCOMP'    ENTRY "CCOMPILER"     TO LTrim( Str( ::nCompilerC, 1, 0 ) )
@@ -1122,9 +1267,10 @@ METHOD SaveINI( cFile ) CLASS THMI
       SET SECTION 'POSITION'    ENTRY "FORM_LIST_ROW" TO LTrim( Str( ::aPositions[3, 1], 6, 0 ) )
       SET SECTION 'POSITION'    ENTRY "FORM_LIST_COL" TO LTrim( Str( ::aPositions[3, 2], 6, 0 ) )
       // OTHER
+      SET SECTION "SETTINGS"    ENTRY "ADDLIBCC"      TO ::cLibCC
+      SET SECTION "SETTINGS"    ENTRY "ADDLIBXH"      TO ::cLibXH
       SET SECTION 'SETTINGS'    ENTRY "LINESKIP"      TO LTrim( Str( ::nLineSkip, 2, 0 ) )
       SET SECTION "SETTINGS"    ENTRY "BUILD"         TO LTrim( Str( ::lTBuild, 1, 0 ) )
-      SET SECTION "SETTINGS"    ENTRY "LIB"           TO ::cLib
       SET SECTION "SETTINGS"    ENTRY "SAVEDEFAULTS"  TO iif( ::lSaveDefaultValues, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SNAP"          TO iif( ::lSnap, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SYNTAX"        TO LTrim( Str( ::nSyntax, 1, 0 ) )
@@ -1410,26 +1556,71 @@ LOCAL aFont := { ::cFormDefFontName, ;
 
    ::Form_Prefer := GetFormObject( "Form_prefer" )
 
-   ::Form_Prefer:Backcolor := ::aSystemColor
-   ::Form_Prefer:Title := "Preferences from " + ::cProjFolder + '\hmi.ini'
-
+   ::Form_Prefer:Backcolor          := ::aSystemColor
+   ::Form_Prefer:Title              := "Preferences from " + ::cProjFolder + '\hmi.ini'
    ::Form_Prefer:text_3:value       := ::cProjFolder
    ::Form_Prefer:text_4:value       := ::cOutFile
    ::Form_Prefer:text_12:value      := ::cGuiHbMinGW
+   ::Form_Prefer:text_12_2:value    := ::cGuiHbMinGWI
+   ::Form_Prefer:text_12_3:value    := ::cGuiHbMinGWL
+   ::Form_Prefer:text_12_4:value    := ::cGuiHbMinGWR
    ::Form_Prefer:text_9:value       := ::cGuiHbBCC
+   ::Form_Prefer:text_9_2:value     := ::cGuiHbBCCI
+   ::Form_Prefer:text_9_3:value     := ::cGuiHbBCCL
+   ::Form_Prefer:text_9_4:value     := ::cGuiHbBCCR
    ::Form_Prefer:text_11:value      := ::cGuiHbPelles
+   ::Form_Prefer:text_11_2:value    := ::cGuiHbPellesI
+   ::Form_Prefer:text_11_3:value    := ::cGuiHbPellesL
+   ::Form_Prefer:text_11_4:value    := ::cGuiHbPellesR
    ::Form_Prefer:text_16:value      := ::cGuixHbMinGW
+   ::Form_Prefer:text_16_2:value    := ::cGuixHbMinGWI
+   ::Form_Prefer:text_16_3:value    := ::cGuixHbMinGWL
+   ::Form_Prefer:text_16_4:value    := ::cGuixHbMinGWR
    ::Form_Prefer:text_17:value      := ::cGuixHbBCC
+   ::Form_Prefer:text_17_2:value    := ::cGuixHbBCCI
+   ::Form_Prefer:text_17_3:value    := ::cGuixHbBCCL
+   ::Form_Prefer:text_17_4:value    := ::cGuixHbBCCR
    ::Form_Prefer:text_18:value      := ::cGuixHbPelles
+   ::Form_Prefer:text_18_2:value    := ::cGuixHbPellesI
+   ::Form_Prefer:text_18_3:value    := ::cGuixHbPellesL
+   ::Form_Prefer:text_18_4:value    := ::cGuixHbPellesR
    ::Form_Prefer:text_8:value       := ::cHbMinGWFolder
    ::Form_Prefer:text_2:value       := ::cHbBCCFolder
    ::Form_Prefer:text_7:value       := ::cHbPellFolder
+   ::Form_Prefer:text_8_2:value     := ::cHbMinGWFolderB
+   ::Form_Prefer:text_2_2:value     := ::cHbBCCFolderB
+   ::Form_Prefer:text_7_2:value     := ::cHbPellFolderB
+   ::Form_Prefer:text_8_3:value     := ::cHbMinGWFolderI
+   ::Form_Prefer:text_2_3:value     := ::cHbBCCFolderI
+   ::Form_Prefer:text_7_3:value     := ::cHbPellFolderI
+   ::Form_Prefer:text_8_4:value     := ::cHbMinGWFolderL
+   ::Form_Prefer:text_2_4:value     := ::cHbBCCFolderL
+   ::Form_Prefer:text_7_4:value     := ::cHbPellFolderL
    ::Form_Prefer:text_13:value      := ::cxHbMinGWFolder
    ::Form_Prefer:text_14:value      := ::cxHbBCCFolder
    ::Form_Prefer:text_15:value      := ::cxHbPellFolder
+   ::Form_Prefer:text_13_2:value    := ::cxHbMinGWFolderB
+   ::Form_Prefer:text_14_2:value    := ::cxHbBCCFolderB
+   ::Form_Prefer:text_15_2:value    := ::cxHbPellFolderB
+   ::Form_Prefer:text_13_3:value    := ::cxHbMinGWFolderI
+   ::Form_Prefer:text_14_3:value    := ::cxHbBCCFolderI
+   ::Form_Prefer:text_15_3:value    := ::cxHbPellFolderI
+   ::Form_Prefer:text_13_4:value    := ::cxHbMinGWFolderL
+   ::Form_Prefer:text_14_4:value    := ::cxHbBCCFolderL
+   ::Form_Prefer:text_15_4:value    := ::cxHbPellFolderL
+   ::Form_Prefer:text_libXH:value   := ::cLibXH
    ::Form_Prefer:text_10:value      := ::cMinGWFolder
+   ::Form_Prefer:text_10_2:value    := ::cMinGWFolderB
+   ::Form_Prefer:text_10_3:value    := ::cMinGWFolderI
+   ::Form_Prefer:text_10_4:value    := ::cMinGWFolderL
    ::Form_Prefer:text_5:value       := ::cBCCFolder
+   ::Form_Prefer:text_5_2:value     := ::cBCCFolderB
+   ::Form_Prefer:text_5_3:value     := ::cBCCFolderI
+   ::Form_Prefer:text_5_4:value     := ::cBCCFolderL
    ::Form_Prefer:text_6:value       := ::cPellFolder
+   ::Form_Prefer:text_6_2:value     := ::cPellFolderB
+   ::Form_Prefer:text_6_3:value     := ::cPellFolderI
+   ::Form_Prefer:text_6_4:value     := ::cPellFolderL
    ::Form_Prefer:radiogroup_1:value := ::nCompxBase
    ::Form_Prefer:radiogroup_2:value := ::nCompilerC
    ::Form_Prefer:text_19:value      := ::nLabelHeight
@@ -1444,7 +1635,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
                                        iif( ::cFormDefFontColor # "NIL", ", Color " + ::cFormDefFontColor, ;
                                        iif( _OOHG_DefaultFontColor # NIL, ", Color " + ::ColorToStr( _OOHG_DefaultFontColor ), "" ) )
    ::Form_Prefer:radiogroup_3:value := ::lTBuild
-   ::Form_Prefer:text_lib:value     := ::cLib
+   ::Form_Prefer:text_libCC:value   := ::cLibCC
    ::Form_Prefer:chk_HideTT:value   := ::lHideTT
    ::Form_Prefer:chk_Snap:value     := ::lSnap
    ::Form_Prefer:combo_26:value     := ::nSyntax
@@ -1455,6 +1646,192 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:tab_1:value        := 1
 
    ACTIVATE WINDOW Form_Prefer
+
+RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+METHOD Form_Prefer_OnChange()
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+
+                                        // Harbour                                    MinGW
+   ::Form_Prefer:label_6:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_6_1:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_8:visible      := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:button_11:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_6_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_8_2:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_6_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_8_3:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_6_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_8_4:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+
+                                        // Harbour                                    BCC
+   ::Form_Prefer:label_5:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_5_1:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_2:visible      := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:button_3:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_5_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_2_2:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_5_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_2_3:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_5_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_2_4:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+
+                                        // Harbour                                    Pelles
+   ::Form_Prefer:label_4:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_4_1:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_7:visible      := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:button_2:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_4_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_7_2:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_4_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_7_3:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_4_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_7_4:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+
+                                        // xHarbour                                   MinGW
+   ::Form_Prefer:label_14:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_14_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_13:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:button_8:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_14_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_13_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_14_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_13_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_14_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_13_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+
+                                        // xHarbour                                   BCC
+   ::Form_Prefer:label_15:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_15_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_14:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:button_12:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_15_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_14_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_15_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_14_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_15_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_14_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+
+                                        // xHarbour                                   Pelles
+   ::Form_Prefer:label_16:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_16_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_15:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:button_13:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_16_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_15_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_16_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_15_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_16_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_15_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+
+                                        // MinGW
+   ::Form_Prefer:label_8:visible     := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_8_1:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_10:visible     := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:button_10:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_8_2:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_10_2:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_8_3:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_10_3:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_8_4:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_10_4:visible   := ( ::Form_Prefer:radiogroup_2:value == 1 )
+
+                                        // BCC
+   ::Form_Prefer:label_11:visible    := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_11_1:visible  := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_5:visible      := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:button_4:visible    := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_11_2:visible  := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_5_2:visible    := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_11_3:visible  := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_5_3:visible    := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_11_4:visible  := ( ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_5_4:visible    := ( ::Form_Prefer:radiogroup_2:value == 2 )
+
+                                        // Pelles
+   ::Form_Prefer:label_13:visible    := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_13_1:visible  := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_6:visible      := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:button_5:visible    := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_13_2:visible  := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_6_2:visible    := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_13_3:visible  := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_6_3:visible    := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_13_4:visible  := ( ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_6_4:visible    := ( ::Form_Prefer:radiogroup_2:value == 3 )
+
+                                        // Harbour                                    MinGW
+   ::Form_Prefer:label_10:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_10_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_12:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:button_9:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_10_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_12_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_10_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_12_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_10_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_12_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+
+                                        // Harbour                                    BCC
+   ::Form_Prefer:label_7:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_7_1:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_9:visible      := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:button_6:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_7_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_9_2:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_7_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_9_3:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_7_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_9_4:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+
+                                        // Harbour                                    Pelles
+   ::Form_Prefer:label_9:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_9_1:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_11:visible     := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:button_7:visible    := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_9_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_11_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_9_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_11_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_9_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_11_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 1 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+
+                                        // xHarbour                                   MinGW
+   ::Form_Prefer:label_17:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_17_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_16:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:button_14:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_17_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_16_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_17_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_16_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:label_17_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+   ::Form_Prefer:text_16_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 1 )
+
+                                        // xHarbour                                   BCC
+   ::Form_Prefer:label_18:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_18_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_17:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:button_15:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_18_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_17_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_18_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_17_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:label_18_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+   ::Form_Prefer:text_17_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 2 )
+
+                                        // xHarbour                                   Pelles
+   ::Form_Prefer:label_19:visible    := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_19_1:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_18:visible     := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:button_16:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_19_2:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_18_2:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_19_3:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_18_3:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:label_19_4:visible  := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
+   ::Form_Prefer:text_18_4:visible   := ( ::Form_Prefer:radiogroup_1:value == 2 .AND. ::Form_Prefer:radiogroup_2:value == 3 )
 
 RETURN NIL
 
@@ -1565,25 +1942,71 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::cExtEditor         := AllTrim( ::Form_Prefer:text_1:Value )
    ::cGuiHbMinGW        := ::Form_Prefer:text_12:Value
    ::cGuiHbBCC          := ::Form_Prefer:text_9:Value
+   ::cGuiHbBCCI         := ::Form_Prefer:text_9_2:value
+   ::cGuiHbBCCL         := ::Form_Prefer:text_9_3:value
+   ::cGuiHbBCCR         := ::Form_Prefer:text_9_4:value
+   ::cGuiHbMinGWI       := ::Form_Prefer:text_12_2:value
+   ::cGuiHbMinGWL       := ::Form_Prefer:text_12_3:value
+   ::cGuiHbMinGWR       := ::Form_Prefer:text_12_4:value
    ::cGuiHbPelles       := ::Form_Prefer:text_11:Value
-   ::cGuixHbMinGW       := ::Form_Prefer:text_16:Value
+   ::cGuiHbPellesI      := ::Form_Prefer:text_11_2:value
+   ::cGuiHbPellesL      := ::Form_Prefer:text_11_3:value
+   ::cGuiHbPellesR      := ::Form_Prefer:text_11_4:value
    ::cGuixHbBCC         := ::Form_Prefer:text_17:Value
+   ::cGuixHbBCCI        := ::Form_Prefer:text_17_2:value
+   ::cGuixHbBCCL        := ::Form_Prefer:text_17_3:value
+   ::cGuixHbBCCR        := ::Form_Prefer:text_17_4:value
+   ::cGuixHbMinGW       := ::Form_Prefer:text_16:Value
+   ::cGuixHbMinGWI      := ::Form_Prefer:text_16_2:value
+   ::cGuixHbMinGWL      := ::Form_Prefer:text_16_3:value
+   ::cGuixHbMinGWR      := ::Form_Prefer:text_16_4:value
    ::cGuixHbPelles      := ::Form_Prefer:text_18:Value
+   ::cGuixHbPellesI     := ::Form_Prefer:text_18_2:value
+   ::cGuixHbPellesL     := ::Form_Prefer:text_18_3:value
+   ::cGuixHbPellesR     := ::Form_Prefer:text_18_4:value
    ::cHbMinGWFolder     := ::Form_Prefer:text_8:Value
    ::cHbBCCFolder       := ::Form_Prefer:text_2:Value
    ::cHbPellFolder      := ::Form_Prefer:text_7:Value
+   ::cHbMinGWFolderB    := ::Form_Prefer:text_8_2:Value
+   ::cHbBCCFolderB      := ::Form_Prefer:text_2_2:Value
+   ::cHbPellFolderB     := ::Form_Prefer:text_7_2:Value
+   ::cHbMinGWFolderI    := ::Form_Prefer:text_8_3:Value
+   ::cHbBCCFolderI      := ::Form_Prefer:text_2_3:Value
+   ::cHbPellFolderI     := ::Form_Prefer:text_7_3:Value
+   ::cHbMinGWFolderL    := ::Form_Prefer:text_8_4:Value
+   ::cHbBCCFolderL      := ::Form_Prefer:text_2_4:Value
+   ::cHbPellFolderL     := ::Form_Prefer:text_7_4:Value
    ::cxHbMinGWFolder    := ::Form_Prefer:text_13:Value
    ::cxHbBCCFolder      := ::Form_Prefer:text_14:Value
    ::cxHbPellFolder     := ::Form_Prefer:text_15:Value
+   ::cxHbMinGWFolderB   := ::Form_Prefer:text_13_2:Value
+   ::cxHbBCCFolderB     := ::Form_Prefer:text_14_2:Value
+   ::cxHbPellFolderB    := ::Form_Prefer:text_15_2:Value
+   ::cxHbMinGWFolderI   := ::Form_Prefer:text_13_3:Value
+   ::cxHbBCCFolderI     := ::Form_Prefer:text_14_3:Value
+   ::cxHbPellFolderI    := ::Form_Prefer:text_15_3:Value
+   ::cxHbMinGWFolderL   := ::Form_Prefer:text_13_4:Value
+   ::cxHbBCCFolderL     := ::Form_Prefer:text_14_4:Value
+   ::cxHbPellFolderL    := ::Form_Prefer:text_15_4:Value
    ::cMinGWFolder       := ::Form_Prefer:text_10:Value
+   ::cMinGWFolderB      := ::Form_Prefer:text_10_2:Value
+   ::cMinGWFolderI      := ::Form_Prefer:text_10_3:Value
+   ::cMinGWFolderL      := ::Form_Prefer:text_10_4:Value
    ::cBCCFolder         := ::Form_Prefer:text_5:Value
+   ::cBCCFolderB        := ::Form_Prefer:text_5_3:Value
+   ::cBCCFolderI        := ::Form_Prefer:text_5_3:Value
+   ::cBCCFolderL        := ::Form_Prefer:text_5_4:Value
    ::cPellFolder        := ::Form_Prefer:text_6:Value
+   ::cPellFolderB       := ::Form_Prefer:text_6_2:Value
+   ::cPellFolderI       := ::Form_Prefer:text_6_3:Value
+   ::cPellFolderL       := ::Form_Prefer:text_6_4:Value
    ::nCompxBase         := ::Form_Prefer:radiogroup_1:Value
    ::nCompilerC         := ::Form_Prefer:radiogroup_2:Value
    ::lTBuild            := ::Form_Prefer:radiogroup_3:Value
    ::lHideTT            := ::Form_Prefer:chk_HideTT:Value
    ::lSnap              := ::Form_Prefer:chk_Snap:Value
-   ::cLib               := AllTrim( ::Form_Prefer:text_lib:Value )
+   ::cLibCC             := AllTrim( ::Form_Prefer:text_libCC:Value )
+   ::cLibXH             := AllTrim( ::Form_Prefer:text_libXH:Value )
    ::cFormDefFontName   := iif( Empty( aFont[1] ), '', aFont[1] )
    ::nFormDefFontSize   := iif( aFont[2] > 0, Int( aFont[2] ), 0 )
    ::cFormDefFontColor  := iif( Empty( aFont[5] ), "NIL", iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, "NIL", ::ColorToStr( aFont[5] ) ) )
@@ -1633,19 +2056,29 @@ METHOD BldMinGW( nOption ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cMinGWFolder + '\'
+   LOCAL cCompFolder  := ::cMinGWFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cMinGWFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cMinGWFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cMinGWFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
-   LOCAL cHarbourFolder := ::cHbMinGWFolder + '\'
-   LOCAL cMiniGuiFolder := ::cGUIHbMinGW + '\'
+   LOCAL cHarbourFolder  := ::cHbMinGWFolder + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cHbMinGWFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cHbMinGWFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cHbMinGWFolderL
+   LOCAL cMiniGuiFolder  := ::cGUIHbMinGW + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGUIHbMinGWI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGUIHbMinGWL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGUIHbMinGWR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -1669,15 +2102,57 @@ METHOD BldMinGW( nOption ) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\MINGW32-MAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "MinGW's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MINGW32-MAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-Hb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\LIBOOHG.A" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The Harbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\LIBHBRTL.A" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBHBRTL.A", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -1726,7 +2201,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
          // Build make script
          // Variables
          cOut := ''
-         cOut += 'PATH          = ' + cCompFolder + 'BIN' + CRLF
+         cOut += 'PATH          = ' + cCompFolderB + CRLF
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
          cOut += 'APP_NAME      = ' + cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
@@ -1734,35 +2209,34 @@ METHOD BldMinGW( nOption ) CLASS THMI
          FOR i := 1 TO nPrgFiles
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.o '
          NEXT i
-         IF Len( aRcFiles ) > 0
-            cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
-         ENDIF
+         cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
          cOut += CRLF
          cOut += 'LINK_EXE      = GCC.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Wall -mwindows -O3 -Wl,--allow-multiple-definition' + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
-                                ' -L' + cCompFolder + 'LIB' + ;
-                                ' -L' + cHarbourFolder + iif( File( cHarbourFolder + 'LIB\WIN\MINGW\LIBHBRTL.A' ), 'LIB\WIN\MINGW', 'LIB' ) + ;
-                                ' -L' + cMiniGUIFolder + iif( File( cMiniGUIFolder + 'LIB\HB\MINGW\LIBOOHG.A' ), 'LIB\HB\MINGW', 'LIB' ) + CRLF
-         cOut += 'LINK_LIBS     = -Wl,--start-group -looHG -lhbprinter -lminiprint -lgtgui ' + ;
+                                ' -L' + cCompFolderL + ;
+                                ' -L' + cHarbourFolderL + ;
+                                ' -L' + cMiniGUIFolderL + CRLF
+         cOut += 'LINK_LIBS     = -Wl,--start-group -lhbprinter -lminiprint -lbostaurus -lgtgui ' + ;
                                   '-lhbsix -lhbvm -lhbrdd -lhbmacro -lhbmemio -lhbpp -lhbrtl -lhbzebra -lhbziparc ' + ;
                                   '-lhblang -lhbcommon -lhbnulrdd -lrddntx -lrddcdx -lrddfpt -lhbct -lhbmisc -lrddsql -lsddodbc ' + ;
                                   '-lodbc32 -lhbwin -lhbcpage -lhbmzip -lminizip -lhbzlib -lhbtip -lhbpcre -luser32 -lwinspool -lcomctl32 ' + ;
                                   '-lcomdlg32 -lgdi32 -lole32 -loleaut32 -luuid -lwinmm -lvfw32 -lwsock32 -lws2_32 -lmsimg32 ' + ;
                                   iif( nOption == 2, '-lgtwin ', '' ) + ;
-                                  iif( ! Empty( ::cLib ), ::cLib + ' ', '' ) + ;
+                                  iif( ! Empty( ::cLibXH ), ::cLibXH + ' ', '' ) + ;
+                                  iif( ! Empty( ::cLibCC ), ::cLibCC + ' ', '' ) + ;
                                   '-Wl,--end-group' + CRLF
          cOut += 'CC_EXE        = GCC.EXE' + CRLF
          cOut += 'CC_FLAGS      = -Wall -mwindows -O3' + CRLF
          cOut += 'CC_SEARCH     = -I' + DelSlash( cFolder ) + ;
-                                ' -I' + cCompFolder + 'INCLUDE' + ;
-                                ' -I' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -I' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + iif( File( cHarbourFolder + 'BIN\WIN\MINGW\HARBOUR.EXE' ), 'BIN\WIN\MINGW', 'BIN' ) + '\HARBOUR.EXE' + CRLF
+                                ' -I' + cCompFolderI + ;
+                                ' -I' + cHarbourFolderI + ;
+                                ' -I' + cMiniGUIFolderI + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
-                                ' -i' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -i' + cMiniGUIFolder + 'INCLUDE' + CRLF
+                                ' -i' + cHarbourFolderI + ;
+                                ' -i' + cMiniGUIFolderI + CRLF
          cOut += 'RC_COMP       = WINDRES.EXE' + CRLF
          cOut += CRLF
          // Rule for .exe building
@@ -1774,34 +2248,31 @@ METHOD BldMinGW( nOption ) CLASS THMI
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.o : $(OBJ_DIR)\' + aPrgFiles[i] + '.c' + CRLF
             cOut += HTAB + '$(CC_EXE) $(CC_FLAGS) $(CC_SEARCH) -c $^ -o $@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
-         cOut += CRLF
+            cOut += CRLF
          NEXT i
-         cOut += CRLF
          // Rule for .prg compiling
          For i := 1 To nPrgFiles
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.c : $(PROJECTFOLDER)\' + aPrgFiles[i] + '.prg' + CRLF
             cOut += HTAB + '$(HRB_EXE) $^ $(HRB_FLAGS) $(HRB_SEARCH) -o$@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
+            cOut += CRLF
          NEXT i
-         cOut += CRLF
          // Rule for .rc compiling
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
          hb_MemoWrit( 'makefile.gcc', cOut )
 
-         // Build batch to create RC temp file
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += 'echo #define oohgpath ' + cMiniGUIFolder + 'resources > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'copy /b ' + cMiniGUIFolder + 'resources\oohg.rc _temp.rc > NUL' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
             cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
          NEXT i
-
-         // Build batch to launch make utility
-         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
+         cOut += cCompFolderB + '\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -1853,7 +2324,8 @@ METHOD BldMinGW( nOption ) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' ERROR:', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "MINGW32-MAKE:", cError1 ) ) > 0 .AND. ( At( " STOP.", SubStr( cError1, nPos ) ) > 0 .OR. At( " ERROR ", SubStr( cError1, nPos ) ) > 0 ) )
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -1880,7 +2352,7 @@ METHOD BldMinGW( nOption ) CLASS THMI
       ENDIF
 
       // Cleanup
-      //BorraTemp( cFolder )
+      BorraTemp( cFolder )
       ::Form_Wait:Hide()
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
@@ -1925,19 +2397,29 @@ METHOD xBldMinGW( nOption ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cMinGWFolder + '\'
+   LOCAL cCompFolder  := ::cMinGWFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cMinGWFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cMinGWFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cMinGWFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
-   LOCAL cHarbourFolder := ::cxHbMinGWFolder + '\'
-   LOCAL cMiniGuiFolder := ::cGUIxHbMinGW + '\'
+   LOCAL cHarbourFolder  := ::cxHbMinGWFolder + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbMinGWFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cxHbMinGWFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cxHbMinGWFolderL
+   LOCAL cMiniGuiFolder  := ::cGUIxHbMinGW + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGUIxHbMinGWI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGUIxHbMinGWL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGUIxHbMinGWR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -1961,15 +2443,57 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\MINGW32-MAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "MinGW's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MINGW32-MAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-xHb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\LIBOOHG.A" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The xHarbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\LIBRTL.A" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBRTL.A", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2018,7 +2542,7 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          // Build make script
          // Variables
          cOut := ''
-         cOut += 'PATH          = ' + cCompFolder + 'BIN' + CRLF
+         cOut += 'PATH          = ' + cCompFolderB + CRLF
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
          cOut += 'APP_NAME      = ' + cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
@@ -2026,35 +2550,34 @@ METHOD xBldMinGW( nOption ) CLASS THMI
          FOR i := 1 TO nPrgFiles
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.o '
          NEXT i
-         IF Len( aRcFiles ) > 0
-            cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
-         ENDIF
+         cOut += '\' + CRLF + '$(OBJ_DIR)\_temp.o'
          cOut += CRLF
          cOut += 'LINK_EXE      = GCC.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Wall -mwindows -O3 -Wl,--allow-multiple-definition' + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
-                                ' -L' + cCompFolder + 'LIB' + ;
-                                ' -L' + cHarbourFolder + iif( File( cHarbourFolder + 'LIB\WIN\MINGW\LIBHBRTL.A' ), 'LIB\WIN\MINGW', 'LIB' ) + ;
-                                ' -L' + cMiniGUIFolder + iif( File( cMiniGUIFolder + 'LIB\XHB\MINGW\LIBOOHG.A' ), 'LIB\XHB\MINGW', 'LIB' ) + CRLF
-         cOut += 'LINK_LIBS     = -Wl,--start-group -looHG -lhbprinter -lminiprint -lgtgui ' + ;
+                                ' -L' + cCompFolderL + ;
+                                ' -L' + cHarbourFolderL + ;
+                                ' -L' + cMiniGUIFolderL + CRLF
+         cOut += 'LINK_LIBS     = -Wl,--start-group -looHG -lhbprinter -lminiprint -lbostaurus -lgtgui ' + ;
                                   '-lhbsix -lhbvm -lhbrdd -lhbmacro -lhbmemio -lhbpp -lhbrtl -lhbzebra -lhbziparc ' + ;
                                   '-lhblang -lhbcommon -lhbnulrdd -lrddntx -lrddcdx -lrddfpt -lhbct -lhbmisc -lrddsql -lsddodbc ' + ;
                                   '-lodbc32 -lhbwin -lhbcpage -lhbmzip -lminizip -lhbzlib -lhbtip -lhbpcre -luser32 -lwinspool -lcomctl32 ' + ;
                                   '-lcomdlg32 -lgdi32 -lole32 -loleaut32 -luuid -lwinmm -lvfw32 -lwsock32 -lws2_32 -lmsimg32 ' + ;
                                   iif( nOption == 2, '-lgtwin ', '' ) + ;
-                                  iif( ! Empty( ::cLib ), ::cLib + ' ', '' ) + ;
+                                  iif( ! Empty( ::cLibXH ), ::cLibXH + ' ', '' ) + ;
+                                  iif( ! Empty( ::cLibCC ), ::cLibCC + ' ', '' ) + ;
                                   '-Wl,--end-group' + CRLF
          cOut += 'CC_EXE        = GCC.EXE' + CRLF
          cOut += 'CC_FLAGS      = -Wall -mwindows -O3' + CRLF
          cOut += 'CC_SEARCH     = -I' + DelSlash( cFolder ) + ;
-                                ' -I' + cCompFolder + 'INCLUDE' + ;
-                                ' -I' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -I' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + iif( File( cHarbourFolder + 'BIN\WIN\MINGW\HARBOUR.EXE' ), 'BIN\WIN\MINGW', 'BIN' ) + '\HARBOUR.EXE' + CRLF
+                                ' -I' + cCompFolderI + ;
+                                ' -I' + cHarbourFolderI + ;
+                                ' -I' + cMiniGUIFolderI + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
-                                ' -i' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -i' + cMiniGUIFolder + 'INCLUDE' + CRLF
+                                ' -i' + cHarbourFolderI + ;
+                                ' -i' + cMiniGUIFolderI + CRLF
          cOut += 'RC_COMP       = WINDRES.EXE' + CRLF
          cOut += CRLF
          // Rule for .exe building
@@ -2066,34 +2589,31 @@ METHOD xBldMinGW( nOption ) CLASS THMI
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.o : $(OBJ_DIR)\' + aPrgFiles[i] + '.c' + CRLF
             cOut += HTAB + '$(CC_EXE) $(CC_FLAGS) $(CC_SEARCH) -c $^ -o $@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
-         cOut += CRLF
+            cOut += CRLF
          NEXT i
-         cOut += CRLF
          // Rule for .prg compiling
          For i := 1 To nPrgFiles
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.c : $(PROJECTFOLDER)\' + aPrgFiles[i] + '.prg' + CRLF
             cOut += HTAB + '$(HRB_EXE) $^ $(HRB_FLAGS) $(HRB_SEARCH) -o$@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
+            cOut += CRLF
          NEXT i
-         cOut += CRLF
          // Rule for .rc compiling
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
          hb_MemoWrit( 'makefile.gcc', cOut )
 
-         // Build batch to create RC temp file
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += 'echo #define oohgpath ' + cMiniGUIFolder + 'resources > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'copy /b ' + cMiniGUIFolder + 'resources\oohg.rc _temp.rc > NUL' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
             cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
          NEXT i
-
-         // Build batch to launch make utility
-         cOut += cCompFolder + 'BIN\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
+         cOut += cCompFolderB + '\mingw32-make.exe -f makefile.gcc > error.lst 2>&1' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -2145,7 +2665,8 @@ METHOD xBldMinGW( nOption ) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "MINGW32-MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -2196,19 +2717,29 @@ METHOD BuildBCC( nOption ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cBCCFolder + '\'
+   LOCAL cCompFolder  := ::cBCCFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cBCCFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cBCCFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cBCCFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
-   LOCAL cHarbourFolder := ::cHbBCCFolder + '\'
-   LOCAL cMiniGuiFolder := ::cGuiHbBCC + '\'
+   LOCAL cHarbourFolder  := ::cHbBCCFolder + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cHbBCCFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cHbBCCFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cHbBCCFolderL
+   LOCAL cMiniGuiFolder  := ::cGuiHbBCC + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGUIHbBCCI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGUIHbBCCL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGUIHbBCCR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -2232,15 +2763,57 @@ METHOD BuildBCC( nOption ) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\MAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "BCC's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-Hb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG_BCC.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The Harbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\HBRTL.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2301,27 +2874,22 @@ METHOD BuildBCC( nOption ) CLASS THMI
          For i := 1 to Len( aRcFiles )
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aRcFiles[i] + '.res '
          NEXT i
-         cOut += '\' + CRLF + cMiniGUIFolder + 'RESOURCES\oohg.res' + CRLF
-         cOut += 'LINK_EXE      = ' + cCompFolder + 'BIN\ILINK32.EXE' + CRLF
+         cOut += '\' + CRLF + cMiniGUIFolderR + '\oohg.res' + CRLF
+         cOut += 'LINK_EXE      = ' + cCompFolderB + '\ILINK32.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Gn -Tpe -x' + iif( nOption == 2, "-ap", "-aa" ) + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
-                                ' -L' + cCompFolder + 'LIB' + ;
-                                ' -L' + cHarbourFolder + iif( File( cHarbourFolder + 'LIB\WIN\BCC\rtl.lib' ), 'LIB\WIN\BCC', 'LIB' ) + ;
-                                ' -L' + cMiniGUIFolder + iif( File( cMiniGUIFolder + 'LIB\HB\BCC\oohg.lib' ), 'LIB\HB\BCC', 'LIB' ) + CRLF
+                                ' -L' + cCompFolderL + ;
+                                ' -L' + cHarbourFolderL + ;
+                                ' -L' + cMiniGUIFolderL + CRLF
          cOut += 'LINK_LIBS     = '
-         IF File( cMiniGuiFolder + 'LIB\HB\BCC\oohg.lib' )
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\HB\BCC\oohg.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\HB\BCC\hbprinter.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\HB\BCC\miniprint.lib'
-         ELSE
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\oohg.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\hbprinter.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\miniprint.lib'
-         ENDIF
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\oohg.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\hbprinter.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\miniprint.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\bostaurus.lib'
          IF nOption == 2
-            cOut += '\' + CRLF + cHarbourFolder + 'LIB\gtwin.lib'
+            cOut += '\' + CRLF + cHarbourFolderL + '\gtwin.lib'
          ENDIF
-         cOut += '\' + CRLF + cHarbourFolder + 'LIB\gtgui.lib'
+         cOut += '\' + CRLF + cHarbourFolderL + '\gtgui.lib'
          For Each i In { "ace32.lib", ;
                          "codepage.lib", ;
                          "common.lib", ;
@@ -2365,31 +2933,32 @@ METHOD BuildBCC( nOption ) CLASS THMI
                          "vm.lib", ;
                          "ziparchive.lib", ;
                          "zlib1.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
-               cOut += '\' + CRLF + cHarbourFolder + 'LIB\' + i
+            IF File( cHarbourFolderL + '\' + i )
+               cOut += '\' + CRLF + cHarbourFolderL + '\' + i
             ENDIF
          NEXT
-         IF ! Empty( ::cLib )
-            cOut += '\' + CRLF + ::cLib
+         IF ! Empty( ::cLibXH )
+            cOut += '\' + CRLF + ::cLibXH
          ENDIF
          cOut += CRLF
-         cOut += 'CC_EXE        = ' + cCompFolder + 'BIN\BCC32.EXE' + CRLF
+         cOut += 'CC_EXE        = ' + cCompFolderB + '\BCC32.EXE' + CRLF
          cOut += 'CC_FLAGS      = -c -O2 -tW -M' + CRLF
          cOut += 'CC_SEARCH     = -I' + DelSlash( cFolder ) + ';' + ;
-                                        cCompFolder + 'INCLUDE;' + ;
-                                        cHarbourFolder + 'INCLUDE;' + ;
-                                        cMiniGUIFolder + 'INCLUDE;' + ;
-                                 '-L' + cCompFolder + 'LIB;' + cCompFolder + 'LIB\PSDK;' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
+                                        cCompFolderI + ';' + ;
+                                        cHarbourFolderI + ';' + ;
+                                        cMiniGUIFolderI + ';' + ;
+                                 '-L' + cCompFolderL + ';' + cCompFolderL + '\PSDK;' + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
-                                ' -i' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -i' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'RC_COMP       = ' + cCompFolder + 'BIN\BRC32.EXE' + CRLF
+                                ' -i' + cHarbourFolderI + ;
+                                ' -i' + cMiniGUIFolderI + CRLF
+         cOut += 'RC_COMP       = ' + cCompFolderB + '\BRC32.EXE' + CRLF
          cOut += CRLF
          // Rule for .exe building
          cOut += '$(APP_NAME) : $(OBJECTS) $(RESFILES)' + CRLF
-         cOut += HTAB + '$(LINK_EXE) $(LINK_SEARCH) $(LINK_FLAGS) c0w32.obj $(OBJECTS),$(APP_NAME),,$(LINK_LIBS) cw32.lib import32.lib msimg32.lib,,$(RESFILES)' + CRLF
+         cOut += HTAB + '$(LINK_EXE) $(LINK_SEARCH) $(LINK_FLAGS) c0w32.obj $(OBJECTS),$(APP_NAME),,$(LINK_LIBS) cw32.lib import32.lib msimg32.lib' + ;
+                        iif( ! Empty( ::cLibCC ), ' ' + ::cLibCC, '' ) +',,$(RESFILES)' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          cOut += CRLF
          // Rule for .c compiling
@@ -2412,7 +2981,7 @@ METHOD BuildBCC( nOption ) CLASS THMI
             cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
             cOut += HTAB + '@echo.' + CRLF
          NEXT i
-         cOut += cMiniGUIFolder + 'RESOURCES\oohg.res : ' + cMiniGUIFolder + 'RESOURCES\oohg_bcc.rc' + CRLF
+         cOut += cMiniGUIFolderR + '\oohg.res : ' + cMiniGUIFolderR + '\oohg_bcc.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          // Write make script
@@ -2421,7 +2990,7 @@ METHOD BuildBCC( nOption ) CLASS THMI
          // Build batch to launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolder + 'BIN\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
+         cOut += cCompFolderB + '\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -2473,7 +3042,8 @@ METHOD BuildBCC( nOption ) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -2516,7 +3086,7 @@ METHOD BuildBCC( nOption ) CLASS THMI
 RETURN NIL
 
 *-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._-._.-._.-._.-._.-._.-._.-._
-*                  COMPILING CON BORLAND C Y XHARBOUR
+*                  COMPILING WITH BORLAND C Y XHARBOUR
 *-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._.-._-._.-._.-._.-._.-._.-._.-._
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -2524,19 +3094,29 @@ METHOD xBuildBCC( nOption ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cBCCFolder + '\'
+   LOCAL cCompFolder  := ::cBCCFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cBCCFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cBCCFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cBCCFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder := ::cxHbBCCFolder + '\'
-   LOCAL cMiniGuiFolder := ::cGuixHbBCC + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbBCCFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cxHbBCCFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cxHbBCCFolderL
+   LOCAL cMiniGuiFolder  := ::cGuixHbBCC + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGUIxHbBCCI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGUIxHbBCCL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGUIxHbBCCR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -2560,15 +3140,57 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\MAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "BCC's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-xHb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG_BCC.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The xHarbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\RTL.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2630,27 +3252,22 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          For i := 1 to Len( aRcFiles )
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aRcFiles[i] + '.res '
          NEXT i
-         cOut += '\' + CRLF + cMiniGUIFolder + 'RESOURCES\oohg.res' + CRLF
-         cOut += 'LINK_EXE      = ' + cCompFolder + 'BIN\ILINK32.EXE' + CRLF
+         cOut += '\' + CRLF + cMiniGUIFolderR + '\oohg.res' + CRLF
+         cOut += 'LINK_EXE      = ' + cCompFolderB + '\ILINK32.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Gn -Tpe -x ' + iif( nOption == 2, "-ap", "-aa" ) + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
-                                ' -L' + cCompFolder + 'LIB' + ;
-                                ' -L' + cHarbourFolder + iif( File( cHarbourFolder + 'LIB\WIN\BCC\rtl.lib' ), 'LIB\WIN\BCC', 'LIB' ) + ;
-                                ' -L' + cMiniGUIFolder + iif( File( cMiniGUIFolder + 'LIB\XHB\BCC\oohg.lib' ), 'LIB\XHB\BCC', 'LIB' ) + CRLF
+                                ' -L' + cCompFolderL + ;
+                                ' -L' + cHarbourFolderL + ;
+                                ' -L' + cMiniGUIFolderL + CRLF
          cOut += 'LINK_LIBS     = '
-         IF File( cMiniGuiFolder + 'LIB\XHB\BCC\oohg.lib' )
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\XHB\BCC\oohg.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\XHB\BCC\hbprinter.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\XHB\BCC\miniprint.lib'
-         ELSE
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\oohg.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\hbprinter.lib'
-           cOut += '\' + CRLF + cMiniGuiFolder + 'LIB\miniprint.lib'
-         ENDIF
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\oohg.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\hbprinter.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\miniprint.lib'
+         cOut += '\' + CRLF + cMiniGuiFolderL + '\bostaurus.lib'
          IF nOption == 2
-            cOut += '\' + CRLF + cHarbourFolder + 'LIB\gtwin.lib'
+            cOut += '\' + CRLF + cHarbourFolderL + '\gtwin.lib'
          ENDIF
-         cOut += '\' + CRLF + cHarbourFolder + 'LIB\gtgui.lib'
+         cOut += '\' + CRLF + cHarbourFolderL + '\gtgui.lib'
          For Each i In { "ace32.lib", ;
                          "codepage.lib", ;
                          "common.lib", ;
@@ -2694,31 +3311,32 @@ METHOD xBuildBCC( nOption ) CLASS THMI
                          "vm.lib", ;
                          "ziparchive.lib", ;
                          "zlib1.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
-               cOut += '\' + CRLF + cHarbourFolder + 'LIB\' + i
+            IF File( cHarbourFolderL + '\' + i )
+               cOut += '\' + CRLF + cHarbourFolderL + '\' + i
             ENDIF
          NEXT
-         IF ! Empty( ::cLib )
-            cOut += '\' + CRLF + ::cLib
+         IF ! Empty( ::cLibXH )
+            cOut += '\' + CRLF + ::cLibXH
          ENDIF
          cOut += CRLF
-         cOut += 'CC_EXE        = ' + cCompFolder + 'BIN\BCC32.EXE' + CRLF
+         cOut += 'CC_EXE        = ' + cCompFolderB + '\BCC32.EXE' + CRLF
          cOut += 'CC_FLAGS      = -c -O2 -tW -M' + CRLF
          cOut += 'CC_SEARCH     = -I' + DelSlash( cFolder ) + ';' + ;
-                                        cCompFolder + 'INCLUDE;' + ;
-                                        cHarbourFolder + 'INCLUDE;' + ;
-                                        cMiniGUIFolder + 'INCLUDE;' + ;
-                                 '-L' + cCompFolder + 'LIB;' + cCompFolder + 'LIB\PSDK;' + CRLF
-         cOut += 'HRB_EXE       = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
+                                        cCompFolderI + ';' + ;
+                                        cHarbourFolderI + ';' + ;
+                                        cMiniGUIFolderI + ';' + ;
+                                 '-L' + cCompFolderL + ';' + cCompFolderL + '\PSDK;' + CRLF
+         cOut += 'HRB_EXE       = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
          cOut += 'HRB_FLAGS     = -n -q ' + iif( nOption == 2, "-b ", "" ) + CRLF
          cOut += 'HRB_SEARCH    = -i' + DelSlash( cFolder ) + ;
-                                ' -i' + cHarbourFolder + 'INCLUDE' + ;
-                                ' -i' + cMiniGUIFolder + 'INCLUDE' + CRLF
-         cOut += 'RC_COMP       = ' + cCompFolder + 'BIN\BRC32.EXE' + CRLF
+                                ' -i' + cHarbourFolderI + ;
+                                ' -i' + cMiniGUIFolderI + CRLF
+         cOut += 'RC_COMP       = ' + cCompFolderB + '\BRC32.EXE' + CRLF
          cOut += CRLF
          // Rule for .exe building
          cOut += '$(APP_NAME) : $(OBJECTS) $(RESFILES)' + CRLF
-         cOut += HTAB + '$(LINK_EXE) $(LINK_SEARCH) $(LINK_FLAGS) c0w32.obj $(OBJECTS),$(APP_NAME),,$(LINK_LIBS) cw32.lib import32.lib msimg32.lib,,$(RESFILES)' + CRLF
+         cOut += HTAB + '$(LINK_EXE) $(LINK_SEARCH) $(LINK_FLAGS) c0w32.obj $(OBJECTS),$(APP_NAME),,$(LINK_LIBS) cw32.lib import32.lib msimg32.lib' + ;
+                        iif( ! Empty( ::cLibCC ), ' ' + ::cLibCC, '' ) +',,$(RESFILES)' + CRLF
          cOut += HTAB + '@del $(TDS_NAME)' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          cOut += CRLF
@@ -2742,7 +3360,7 @@ METHOD xBuildBCC( nOption ) CLASS THMI
             cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
             cOut += HTAB + '@echo.' + CRLF
          NEXT i
-         cOut += cMiniGUIFolder + 'RESOURCES\oohg.res : ' + cMiniGUIFolder + 'RESOURCES\oohg_bcc.rc' + CRLF
+         cOut += cMiniGUIFolderR + '\oohg.res : ' + cMiniGUIFolderR + '\oohg_bcc.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          // Write make script
@@ -2751,7 +3369,7 @@ METHOD xBuildBCC( nOption ) CLASS THMI
          // Build batch to launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolder + 'BIN\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
+         cOut += cCompFolderB + '\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create temp folder for objects
@@ -2803,7 +3421,8 @@ METHOD xBuildBCC( nOption ) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -2854,19 +3473,29 @@ METHOD XBldPellC( nOption ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cPellFolder + '\'
+   LOCAL cCompFolder  := ::cPellFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cPellFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cPellFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cPellFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
-   LOCAL cHarbourFolder := ::cxHbPellFolder + '\'
-   LOCAL cMiniGuiFolder := ::cGuixHbPelles + '\'
+   LOCAL cHarbourFolder  := ::cxHbPellFolder + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbPellFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cxHbPellFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cxHbPellFolderL
+   LOCAL cMiniGuiFolder  := ::cGuixHbPelles + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGuixHbPellesI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGuixHbPellesL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGuixHbPellesR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -2890,15 +3519,57 @@ METHOD XBldPellC( nOption ) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\POMAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Pelles's BIN subfolder error: can't find " ) + cHarbourFolderB + "\POMAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-xHb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG_PELLES.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The xHarbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\RTL.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2946,15 +3617,15 @@ METHOD XBldPellC( nOption ) CLASS THMI
 
          // Build make script
          cOut := ''
-         cOut += 'HARBOUR_EXE = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
-         cOut += 'CC = ' + cCompFolder + 'BIN\POCC.EXE' + CRLF
-         cOut += 'ILINK_EXE = ' + cCompFolder + 'BIN\POLINK.EXE' + CRLF
-         cOut += 'BRC_EXE = ' + cCompFolder + 'BIN\PORC.EXE' + CRLF
+         cOut += 'HARBOUR_EXE = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
+         cOut += 'CC = ' + cCompFolderB + '\POCC.EXE' + CRLF
+         cOut += 'ILINK_EXE = ' + cCompFolderB + '\POLINK.EXE' + CRLF
+         cOut += 'BRC_EXE = ' + cCompFolderB + '\PORC.EXE' + CRLF
          cOut += 'APP_NAME = ' + cExe + CRLF
-         cOut += 'INCLUDE_DIR = ' + cHarbourFolder + 'INCLUDE;' + cMiniGuiFolder + 'INCLUDE;' + DelSlash( cFolder ) + CRLF
-         cOut += 'INCLUDE_C_DIR = ' + cHarbourFolder + 'INCLUDE -I' + cMiniGuiFolder + 'INCLUDE -I' + DelSlash( cFolder ) + ' -I' + cCompFolder + 'INCLUDE -I' + cCompFolder + 'INCLUDE\WIN' + CRLF
-         cOut += 'CC_LIB_DIR = ' + cCompFolder + 'LIB' + CRLF
-         cOut += 'HRB_LIB_DIR = ' + cHarbourFolder + 'LIB' + CRLF
+         cOut += 'INCLUDE_DIR = ' + cHarbourFolderI + ';' + cMiniGuiFolderI + ';' + DelSlash( cFolder ) + CRLF
+         cOut += 'INCLUDE_C_DIR = ' + cHarbourFolderI + ' -I' + cMiniGuiFolderI + ' -I' + DelSlash( cFolder ) + ' -I' + cCompFolderI + ' -I' + cCompFolderI + '\WIN' + CRLF
+         cOut += 'CC_LIB_DIR = ' + cCompFolderL + CRLF
+         cOut += 'HRB_LIB_DIR = ' + cHarbourFolderL + CRLF
          cOut += 'OBJ_DIR = ' + cFolder + 'OBJ' + CRLF
          cOut += 'C_DIR = ' + cFolder + 'OBJ' + CRLF
          cOut += 'USER_FLAGS =' + CRLF
@@ -2970,6 +3641,9 @@ METHOD XBldPellC( nOption ) CLASS THMI
          For i := 1 to Len( aRcFiles )
             cOut += '   $(BRC_EXE) /fo' + aRcFiles[i] + '.res ' + aRcFiles[i] + '.rc' + CRLF
          NEXT i
+         IF ! File( cMiniGUIFolderR + '\oohg.res' ) .AND. File( cMiniGUIFolderR + '\oohg_pelles.rc' )
+            cOut += '   $(BRC_EXE) /fo' + cMiniGUIFolderR + '\oohg.res ' + cMiniGUIFolderR + '\oohg_pelles.rc' + CRLF
+         ENDIF
          For i := 1 To nPrgFiles
             cOut += '   echo $(OBJ_DIR)\' + aPrgFiles[i] + '.obj + >' + iif( i > 1, '>', '' ) + ' b32.bc' + CRLF
          NEXT i
@@ -2977,21 +3651,10 @@ METHOD XBldPellC( nOption ) CLASS THMI
          cOut += '   echo /FORCE:MULTIPLE >> b32.bc' + CRLF
          cOut += '   echo /LIBPATH:$(CC_LIB_DIR) >> b32.bc' + CRLF
          cOut += '   echo /LIBPATH:$(CC_LIB_DIR)\WIN >> b32.bc' + CRLF
-         IF File( cMiniGuiFolder + 'LIB\XHB\PCC\oohg.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\XHB\BCC\oohg.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\oohg.lib >> b32.bc' + CRLF
-         ENDIF
-         IF File( cMiniGuiFolder + 'LIB\XHB\PCC\hbprinter.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\XHB\BCC\hbprinter.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\hbprinter.lib >> b32.bc' + CRLF
-         ENDIF
-         IF File( cMiniGuiFolder + 'LIB\XHB\PCC\miniprint.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\XHB\BCC\miniprint.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\miniprint.lib >> b32.bc' + CRLF
-         ENDIF
+         cOut += '   echo ' + cMiniGuiFolderL + '\oohg.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\hbprinter.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\miniprint.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\bostaurus.lib >> b32.bc' + CRLF
          IF nOption == 2
             cOut += '   echo $(HRB_LIB_DIR)\gtwin.lib >> b32.bc' + CRLF
          ENDIF
@@ -3039,35 +3702,43 @@ METHOD XBldPellC( nOption ) CLASS THMI
                          "vm.lib", ;
                          "ziparchive.lib", ;
                          "zlib1.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
+            IF File( cHarbourFolderL + '\' + i )
                cOut += '   echo $(HRB_LIB_DIR)\' + i + ' >> b32.bc' + CRLF
             ENDIF
          NEXT
+         IF ! Empty( ::cLibXH )
+            cOut += '   echo ' + ::cLibXH + ' >> b32.bc' + CRLF
+         ENDIF
          cOut += '   echo $(CC_LIB_DIR)\crt.lib >> b32.bc' + CRLF
-         For Each i In { "kernel32.lib", ;
-                         "winspool.lib", ;
+         For Each i In { "winmm.lib", ;
+                         "kernel32.lib", ;
                          "user32.lib", ;
+                         "ws2_32.lib", ;
+                         "iphlpapi", ;
                          "advapi32.lib", ;
+                         "gdi32.lib", ;
+                         "winspool.lib", ;
                          "ole32.lib", ;
                          "uuid.lib", ;
                          "oleaut32.lib", ;
                          "mpr.lib", ;
                          "comdlg32.lib", ;
                          "comctl32.lib", ;
-                         "gdi32.lib", ;
                          "olepro32.lib", ;
                          "shell32.lib", ;
-                         "winmm.lib", ;
                          "vfw32.lib", ;
                          "wsock32.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
-               cOut += '   echo ' + i + ' >> b32.bc' + CRLF
+            IF File( cCompFolderL + '\' + i )
+               cOut += '   echo $(CC_LIB_DIR)\' + i + ' >> b32.bc' + CRLF
             ENDIF
          NEXT
+         IF ! Empty( ::cLibCC )
+            cOut += '   echo ' + ::cLibCC + ' >> b32.bc' + CRLF
+         ENDIF
          For i := 1 to Len( aRcFiles )
             cOut += '   echo ' + aRcFiles[i] + '.res >> b32.bc' + CRLF
          NEXT i
-         cOut += '   echo ' + cMiniGUIFolder + 'resources\oohg.res >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGUIFolderR + '\oohg.res >> b32.bc' + CRLF
          cOut += '   $(ILINK_EXE)  /SUBSYSTEM:' + iif( nOption == 2, "CONSOLE", "WINDOWS" ) + ' @b32.bc' + CRLF
          cOut += CRLF
          For i := 1 To nPrgFiles
@@ -3083,7 +3754,7 @@ METHOD XBldPellC( nOption ) CLASS THMI
          // Build batch
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolder + 'BIN\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
+         cOut += cCompFolderB + '\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create folder for objects
@@ -3135,7 +3806,8 @@ METHOD XBldPellC( nOption ) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "POMAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -3187,19 +3859,29 @@ METHOD BldPellC(nOption) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    LOCAL aPrgFiles
    LOCAL aRcFiles
-   LOCAL cCompFolder := ::cPellFolder + '\'
+   LOCAL cCompFolder  := ::cPellFolder + '\'
+   LOCAL cCompFolderB := cCompFolder + ::cPellFolderB
+   LOCAL cCompFolderI := cCompFolder + ::cPellFolderI
+   LOCAL cCompFolderL := cCompFolder + ::cPellFolderL
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
    LOCAL cExe
    LOCAL cFile
-   LOCAL cHarbourFolder := ::cHbPellFolder + '\'
+   LOCAL cHarbourFolder  := ::cHbPellFolder + '\'
+   LOCAL cHarbourFolderB := cHarbourFolder + ::cHbPellFolderB
+   LOCAL cHarbourFolderI := cHarbourFolder + ::cHbPellFolderI
+   LOCAL cHarbourFolderL := cHarbourFolder + ::cHbPellFolderL
    LOCAL cMiniGuiFolder := ::cGuiHbPelles + '\'
+   LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGuiHbPellesI
+   LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGuiHbPellesL
+   LOCAL cMiniGuiFolderR := cMiniGuiFolder + ::cGuiHbPellesR
    LOCAL cOut
    LOCAL cPrgName
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
+   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -3223,15 +3905,57 @@ METHOD BldPellC(nOption) CLASS THMI
          Break
       ENDIF
 
+      IF ! File( cCompFolderB + "\POMAKE.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Pelles's BIN subfolder error: can't find " ) + cHarbourFolderB + "\POMAKE.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The ooHG-Hb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
+      IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cMiniGuiFolderR + "\OOHG_PELLES.RC" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
+         Break
+      ENDIF
+
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
          MsgStop( i18n( 'The Harbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderI + "\HBAPI.H" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         Break
+      ENDIF
+
+      IF ! File( cHarbourFolderL + "\HBRTL.LIB" )
+         ::Form_Wait:Hide()
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3279,15 +4003,15 @@ METHOD BldPellC(nOption) CLASS THMI
 
          // Build make script
          cOut := ''
-         cOut += 'HARBOUR_EXE = ' + cHarbourFolder + 'BIN\HARBOUR.EXE' + CRLF
-         cOut += 'CC = ' + cCompFolder + 'BIN\POCC.EXE' + CRLF
-         cOut += 'ILINK_EXE = ' + cCompFolder + 'BIN\POLINK.EXE' + CRLF
-         cOut += 'BRC_EXE = ' + cCompFolder + 'BIN\PORC.EXE' + CRLF
+         cOut += 'HARBOUR_EXE = ' + cHarbourFolderB + '\HARBOUR.EXE' + CRLF
+         cOut += 'CC = ' + cCompFolderB + '\POCC.EXE' + CRLF
+         cOut += 'ILINK_EXE = ' + cCompFolderB + '\POLINK.EXE' + CRLF
+         cOut += 'BRC_EXE = ' + cCompFolderB + '\PORC.EXE' + CRLF
          cOut += 'APP_NAME = ' + cExe + CRLF
-         cOut += 'INCLUDE_DIR = ' + cHarbourFolder + 'INCLUDE;' + cMiniGuiFolder + 'INCLUDE;' + DelSlash( cFolder ) + CRLF
-         cOut += 'INCLUDE_C_DIR = ' + cHarbourFolder + 'INCLUDE -I' + cMiniGuiFolder + 'INCLUDE -I' + DelSlash( cFolder ) + ' -I' + cCompFolder + 'INCLUDE -I' + cCompFolder + 'INCLUDE\WIN' + CRLF
-         cOut += 'CC_LIB_DIR = ' + cCompFolder + 'LIB' + CRLF
-         cOut += 'HRB_LIB_DIR = ' + cHarbourFolder + iif( File( cHarbourFolder + 'LIB\hbwin.lib' ), 'LIB', 'LIB\WIN\POCC' ) + CRLF
+         cOut += 'INCLUDE_DIR = ' + cHarbourFolderI + ';' + cMiniGuiFolderI + ';' + DelSlash( cFolder ) + CRLF
+         cOut += 'INCLUDE_C_DIR = ' + cHarbourFolderI + ' -I' + cMiniGuiFolderI + ' -I' + DelSlash( cFolder ) + ' -I' + cCompFolderI + ' -I' + cCompFolderI + '\WIN' + CRLF
+         cOut += 'CC_LIB_DIR = ' + cCompFolderL + CRLF
+         cOut += 'HRB_LIB_DIR = ' + cHarbourFolderL + CRLF
          cOut += 'OBJ_DIR = ' + cFolder + 'OBJ' + CRLF
          cOut += 'C_DIR = ' + cFolder + 'OBJ' + CRLF
          cOut += 'USER_FLAGS =' + CRLF
@@ -3303,6 +4027,9 @@ METHOD BldPellC(nOption) CLASS THMI
          For i := 1 to Len( aRcFiles )
             cOut += '   $(BRC_EXE) /fo' + aRcFiles[i] + '.res ' + aRcFiles[i] + '.rc' + CRLF
          NEXT i
+         IF ! File( cMiniGUIFolderR + '\oohg.res' ) .AND. File( cMiniGUIFolderR + '\oohg_pelles.rc' )
+            cOut += '   $(BRC_EXE) /fo' + cMiniGUIFolderR + '\oohg.res ' + cMiniGUIFolderR + '\oohg_pelles.rc' + CRLF
+         ENDIF
          For i := 1 To nPrgFiles
             cOut += '   echo $(OBJ_DIR)\' + aPrgFiles[i] + '.obj + >' + iif( i > 1, '>', '' ) + ' b32.bc' + CRLF
          NEXT i
@@ -3310,21 +4037,10 @@ METHOD BldPellC(nOption) CLASS THMI
          cOut += '   echo /FORCE:MULTIPLE >> b32.bc' + CRLF
          cOut += '   echo /LIBPATH:$(CC_LIB_DIR) >> b32.bc' + CRLF
          cOut += '   echo /LIBPATH:$(CC_LIB_DIR)\WIN >> b32.bc' + CRLF
-         IF File( cMiniGuiFolder + 'LIB\HB\PCC\oohg.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\HB\BCC\oohg.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\oohg.lib >> b32.bc' + CRLF
-         ENDIF
-         IF File( cMiniGuiFolder + 'LIB\HB\PCC\hbprinter.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\HB\BCC\hbprinter.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\hbprinter.lib >> b32.bc' + CRLF
-         ENDIF
-         IF File( cMiniGuiFolder + 'LIB\HB\PCC\miniprint.lib' )
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\HB\BCC\miniprint.lib >> b32.bc' + CRLF
-         ELSE
-           cOut += '   echo ' + cMiniGuiFolder  + 'LIB\miniprint.lib >> b32.bc' + CRLF
-         ENDIF
+         cOut += '   echo ' + cMiniGuiFolderL + '\oohg.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\hbprinter.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\miniprint.lib >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGuiFolderL + '\bostaurus.lib >> b32.bc' + CRLF
          IF nOption == 2
             cOut += '   echo $(HRB_LIB_DIR)\gtwin.lib >> b32.bc' + CRLF
          ENDIF
@@ -3378,35 +4094,43 @@ METHOD BldPellC(nOption) CLASS THMI
                          "vm.lib", ;
                          "ziparchive.lib", ;
                          "zlib1.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
+            IF File( cHarbourFolderL + '\' + i )
                cOut += '   echo $(HRB_LIB_DIR)\' + i + ' >> b32.bc' + CRLF
             ENDIF
          NEXT
+         IF ! Empty( ::cLibXH )
+            cOut += '   echo ' + ::cLibXH + ' >> b32.bc' + CRLF
+         ENDIF
          cOut += '   echo $(CC_LIB_DIR)\crt.lib >> b32.bc' + CRLF
-         For Each i In { "kernel32.lib", ;
-                         "winspool.lib", ;
+         For Each i In { "winmm.lib", ;
+                         "kernel32.lib", ;
                          "user32.lib", ;
+                         "ws2_32.lib", ;
+                         "iphlpapi", ;
                          "advapi32.lib", ;
+                         "gdi32.lib", ;
+                         "winspool.lib", ;
                          "ole32.lib", ;
                          "uuid.lib", ;
                          "oleaut32.lib", ;
                          "mpr.lib", ;
                          "comdlg32.lib", ;
                          "comctl32.lib", ;
-                         "gdi32.lib", ;
                          "olepro32.lib", ;
                          "shell32.lib", ;
-                         "winmm.lib", ;
                          "vfw32.lib", ;
                          "wsock32.lib" }
-            IF File( cHarbourFolder + 'LIB\' + i )
-               cOut += '   echo ' + i + ' >> b32.bc' + CRLF
+            IF File( cCompFolderL + '\' + i )
+               cOut += '   echo $(CC_LIB_DIR)\' + i + ' >> b32.bc' + CRLF
             ENDIF
          NEXT
+         IF ! Empty( ::cLibCC )
+            cOut += '   echo ' + ::cLibCC + ' >> b32.bc' + CRLF
+         ENDIF
          For i := 1 to Len( aRcFiles )
             cOut += '   echo ' + aRcFiles[i] + '.res >> b32.bc' + CRLF
          NEXT i
-         cOut += '   echo ' + cMiniGUIFolder + 'resources\oohg.res >> b32.bc' + CRLF
+         cOut += '   echo ' + cMiniGUIFolderR + '\oohg.res >> b32.bc' + CRLF
          cOut += '   $(ILINK_EXE)  /SUBSYSTEM:' + iif( nOption == 2, "CONSOLE", "WINDOWS" ) + ' @b32.bc' + CRLF
          cOut += CRLF
          For i := 1 To nPrgFiles
@@ -3422,7 +4146,7 @@ METHOD BldPellC(nOption) CLASS THMI
          // Build batch
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolder + 'BIN\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
+         cOut += cCompFolderB + '\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.lst' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
 
          // Create folder for objects
@@ -3474,7 +4198,8 @@ METHOD BldPellC(nOption) CLASS THMI
       // Check for errors
       cError := MemoRead( 'error.lst' )
       cError1 := Upper( cError )
-      IF At( 'ERROR', cError1 ) > 0 .or. At( 'FATAL', cError1 ) > 0 .or. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
+         ( ( nPos := At( "POMAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
@@ -3528,8 +4253,6 @@ METHOD ViewErrors( wr ) CLASS THMI
          TITLE 'Error Report' ;
          ICON 'IDE_EDIT' ;
          MODAL ;
-         FONT "Times new Roman" ;
-         SIZE 10 ;
          BACKCOLOR ::aSystemColor ;
          ON INIT ( oButt:Col := Form_Errors:ClientWidth - 40, ;
                    oEdit:Width := Form_Errors:ClientWidth - 45, ;
@@ -3576,8 +4299,6 @@ METHOD ViewSource( wr ) CLASS THMI
       TITLE 'Source code' ;
       ICON 'IDE_EDIT' ;
       MODAL ;
-      FONT "Times new Roman" ;
-      SIZE 10 ;
       BACKCOLOR ::aSystemColor
 
       @ 0,0 EDITBOX edit_1 ;
@@ -4090,8 +4811,6 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
          TITLE APP_FULL_NAME + i18n( ' - Project: ' ) + cFile ;
          ICON 'IDE_EDIT' ;
          CHILD ;
-         FONT "Courier New" ;
-         SIZE 10 ;
          BACKCOLOR ::aSystemColor ;
          ON SIZE { || ::Form_Edit:Edit_1:Width := ::Form_Edit:Width - 15, ::Form_Edit:Edit_1:Height := ::Form_Edit:Height - 90 }
 
@@ -4099,6 +4818,8 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
             WIDTH ::Form_Edit:Width - 15 ;
             HEIGHT ::Form_Edit:Height - 90 ;
             VALUE cTextEdit ;
+            FONT "Courier New" ;
+            SIZE 10 ;
             BACKCOLOR {255, 255, 235} ;
             MAXLENGTH 256000 ;
             ON CHANGE ::lSave := .F. ;
@@ -4123,7 +4844,7 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
          DEFINE TIMER Timit INTERVAL nInterval ACTION ::LookChanges()
 
          DEFINE SPLITBOX
-            DEFINE TOOLBAR 0 BUTTONSIZE 20, 20 FLAT FONT 'Calibri' SIZE 9
+            DEFINE TOOLBAR 0 BUTTONSIZE 20, 20 FLAT
                BUTTON button_2 TOOLTIP i18n( 'Exit (Esc)' )    PICTURE 'IDE_EXIT'  ACTION ::SaveAndExit()
                BUTTON button_1 TOOLTIP i18n( 'Save (F2)' )     PICTURE 'IDE_SAVE'  ACTION ::SaveFile()
                BUTTON button_3 TOOLTIP i18n( 'Find (Ctrl-F)' ) PICTURE 'IDE_FIND'  ACTION ::TxtSearch()
@@ -4686,7 +5407,6 @@ LOCAL l, aResult, i, _iw, ControlRow, cLblName, cCtrlName, oWin, lChange := .F.
       MODAL ;
       NOSIZE ;
       ICON "IDE_EDIT" ;
-      FONT "Courier new" SIZE 9 ;
       BACKCOLOR ::aSystemColor ;
       ON INTERACTIVECLOSE iif( lChange, MsgYesNo( i18n( "Close without saving?" ), "OOHG IDE+" ), .T. )
 
@@ -4708,7 +5428,6 @@ LOCAL l, aResult, i, _iw, ControlRow, cLblName, cCtrlName, oWin, lChange := .F.
          WIDTH _iw:ClientWidth ;
          HEIGHT _iw:ClientHeight ;
          VIRTUAL HEIGHT _iw:ClientHeight ;
-         FONT "Courier new" SIZE 9 ;
          BACKCOLOR ::aSystemColor
 
          ControlRow := Int( 10 * ::nDPIh )
@@ -4728,7 +5447,7 @@ LOCAL l, aResult, i, _iw, ControlRow, cLblName, cCtrlName, oWin, lChange := .F.
                ControlRow := ControlRow + Int( 26 * ::nDPIh )
             CASE ValType( aValues[i] ) == "N"
                IF ValType( aFormats[i] ) == "A"
-                  @ ControlRow, Int( 180 * ::nDPIw ) COMBOBOX &cCtrlName ITEMS aFormats[i] VALUE aValues[i] WIDTH Int( 420 * ::nDPIw ) FONT "Arial" SIZE 9 ON CHANGE lChange := .T.
+                  @ ControlRow, Int( 180 * ::nDPIw ) COMBOBOX &cCtrlName ITEMS aFormats[i] VALUE aValues[i] WIDTH Int( 420 * ::nDPIw ) FONT "Courier new" SIZE 9 ON CHANGE lChange := .T.
                   ControlRow := ControlRow + Int( 26 * ::nDPIh )
                ELSEIF  ValType( aFormats[i] ) == "C"
                   IF AT ( ".", aFormats[i] ) > 0
@@ -5006,12 +5725,10 @@ LOCAL wr
       ON KEY ESCAPE OF FAyuda ACTION FAyuda.Release()
 
       @ 0, 0 EDITBOX EDIT_1 ;
-      WIDTH 613 ;
-      HEIGHT 435 ;
-      VALUE wr ;
-      READONLY ;
-      FONT 'Times new Roman' ;
-      SIZE 12
+         WIDTH 613 ;
+         HEIGHT 435 ;
+         VALUE wr ;
+         READONLY
 
    END WINDOW
 
