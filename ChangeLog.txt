@@ -8,10 +8,22 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-03-08 17:54 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+   * ide\prgs\mgide.prg
+     + Option hbmk2 to build types (only for Harbour).
+     ; The IDE will set PATH to Harbour and C Compiler BIN folders.
+     ; To use this option you must create an hbp file with all the
+       needed options, commands and switches. This file must have
+       the same name than the project and must have .hbp extension.
+     ; In order to use "Run" or "Build and Run" the executable must
+       have the same name than the project, so remember to set in
+       the hbp file the switch -o<project>.exe
+
 2019-03-07 21:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
    * ide\prgs\mgide.prg
-     * Subfolder for (x)Harbour, C compiler and OOHG are now
+     * Subfolders for (x)Harbour, C compiler and OOHG are now
        fully customizable.
 
 2019-03-03 18:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
