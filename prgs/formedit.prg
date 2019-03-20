@@ -648,7 +648,9 @@ CLASS TFormEditor
    METHOD FillListOfGroups
    METHOD FrmEvents
    METHOD FrmFontColors
+   METHOD FrmMoved
    METHOD FrmProperties
+   METHOD FrmSized
    METHOD GlobalVertGapChg
    METHOD GOtherColors
    METHOD IniArray
@@ -1997,8 +1999,8 @@ METHOD New( lWait ) CLASS TFormEditor
       FONTCOLOR ::myIde:StrToColor( ::myIde:cFormDefFontColor ) ;
       NOMAXIMIZE ;
       NOMINIMIZE ;
-      ON INIT { || ::oDesignForm:OnMove := {|| ::lIsFormModified := .T. }, ;
-                   ::oDesignForm:OnSize := {|| ::lIsFormModified := .T. }, ;
+      ON INIT { || ::oDesignForm:OnMove := {|| ::FrmMoved() }, ;
+                   ::oDesignForm:OnSize := {|| ::FrmSized() }, ;
                    ::oDesignForm:SetFocus(), ;
                    BringWindowToTop( ::oDesignForm:hWnd ), ;
                    ::oDesignForm:OnMouseMove := { || ::MouseTrack() } }
@@ -3378,12 +3380,12 @@ METHOD AddControl( lOpenContextMenu ) CLASS TFormEditor
       CASE ::CurrentControl == TYPE_DATEPICKER
 
       CASE ::CurrentControl == TYPE_TEXTBOX
-         ::aFocusedPos[::nControlW] := -2
+         ::aFocusedPos[::nControlW] := "-2"
 
       CASE ::CurrentControl == TYPE_EDITBOX
          nWidth  := 120
          nHeight := 240
-         ::aFocusedPos[::nControlW] := -4
+         ::aFocusedPos[::nControlW] := "-4"
 
       CASE ::CurrentControl == TYPE_LABEL
          ::aVCenter[::nControlW] := .F.
@@ -3398,7 +3400,7 @@ METHOD AddControl( lOpenContextMenu ) CLASS TFormEditor
 
       CASE ::CurrentControl == TYPE_RADIOGROUP
          ::aItems[::nControlW]       := "{ 'option 1', 'option 2' }"
-         ::aSpacing[::nControlW]     := 25
+         ::aSpacing[::nControlW]     := "25"
          ::aTransparent[::nControlW] := .F.
 
       CASE ::CurrentControl == TYPE_SLIDER
@@ -3436,8 +3438,8 @@ METHOD AddControl( lOpenContextMenu ) CLASS TFormEditor
       CASE ::CurrentControl == TYPE_RICHEDITBOX
          nWidth  := 120
          nHeight := 240
-         ::aFocusedPos[::nControlW] := -4
-         ::aMaxLength[::nControlW]  := 0
+         ::aFocusedPos[::nControlW] := "-4"
+         ::aMaxLength[::nControlW]  := "0"
 
       CASE ::CurrentControl == TYPE_TIMEPICKER
 
@@ -5046,8 +5048,7 @@ METHOD EditProperties( aParams ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ManualMoveSize( nOption ) CLASS TFormEditor
 
-   LOCAL oControl, nRow, nCol, nWidth, nHeight, cTitle, aLabels
-   LOCAL ia, aInitValues, aFormats, aResults, lChanged
+   LOCAL aFormats, aInitValues, aLabels, aResults, cMsg, cTitle, ia, lChanged, nCol, nHeight, nRow, nWidth, oControl
 
    lChanged := .F.
    IF nOption == 1
@@ -5114,37 +5115,99 @@ METHOD ManualMoveSize( nOption ) CLASS TFormEditor
          RETURN NIL
       ENDIF
       IF aResults[1] >= 0
-         lChanged := .T.
          ::oDesignForm:Row := aResults[1]
-         ::cFPosition[1] := LTrim( Str( aResults[1] ) )
+         IF Type( ::cFPosition[1] ) == "N"
+            ::cFPosition[1] := LTrim( Str( aResults[1] ) )
+            lChanged := .T.
+         ELSE
+            IF MsgYesNo( i18n( "Form's ROW is set to: " ) + ::cFPosition[1] + CRLF + i18n( "Select [Yes] to overwrite." ), "OOHG IDE+" )
+               ::cFPosition[1] := LTrim( Str( aResults[1] ) )
+               lChanged := .T.
+            ENDIF
+         ENDIF
       ENDIF
       IF aResults[2] >= 0
-         lChanged := .T.
          ::oDesignForm:Col := aResults[2]
-         ::cFPosition[2] := LTrim( Str( aResults[2] ) )
+         IF Type( ::cFPosition[2] ) == "N"
+            ::cFPosition[2] := LTrim( Str( aResults[2] ) )
+            lChanged := .T.
+         ELSE
+            IF MsgYesNo( i18n( "Form's COL is set to: " ) + ::cFPosition[2] + CRLF + i18n( "Select [Yes] to overwrite." ), "OOHG IDE+" )
+               ::cFPosition[2] := LTrim( Str( aResults[2] ) )
+               lChanged := .T.
+            ENDIF
+         ENDIF
       ENDIF
       IF aResults[3] >= 0
-         lChanged := .T.
          IF ::lFClientArea
             ::oDesignForm:ClientWidth := aResults[3]
+            cMsg := i18n( "Form's CLIENTWIDTH is set to: " )
          ELSE
             ::oDesignForm:Width := aResults[3]
+            cMsg := i18n( "Form's WIDTH is set to: " )
          ENDIF
-         ::cFWidth := LTrim( Str( aResults[3] ) )
+         IF Type( ::cFWidth ) == "N"
+            ::cFWidth := LTrim( Str( aResults[3] ) )
+            lChanged := .T.
+         ELSE
+            IF MsgYesNo( cMsg + ::cFWidth + CRLF + i18n( "Select [Yes] to overwrite." ), "OOHG IDE+" )
+               ::cFWidth := LTrim( Str( aResults[3] ) )
+               lChanged := .T.
+            ENDIF
+         ENDIF
       ENDIF
       IF aResults[4] >= 0
-         lChanged := .T.
          IF ::lFClientArea
             ::oDesignForm:ClientHeight := aResults[4]
+            cMsg := i18n( "Form's CLIENTHEIGHT is set to: " )
          ELSE
             ::oDesignForm:Height := aResults[4]
+            cMsg := i18n( "Form's HEIGHT is set to: " )
          ENDIF
-         ::cFHeight := LTrim( Str( aResults[4] ) )
+         IF Type( ::cFHeight ) == "N"
+            ::cFHeight := LTrim( Str( aResults[4] ) )
+            lChanged := .T.
+         ELSE
+            IF MsgYesNo( cMsg + ::cFHeight + CRLF + i18n( "Select [Yes] to overwrite." ), "OOHG IDE+" )
+               ::cFHeight := LTrim( Str( aResults[4] ) )
+               lChanged := .T.
+            ENDIF
+         ENDIF
       ENDIF
       IF lChanged
          ::lIsFormModified := .T.
       ENDIF
       ::oDesignForm:SetFocus()
+   ENDIF
+
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+METHOD FrmMoved CLASS TFormEditor
+
+   IF ::myIde:lSavePosOnDrag
+      ::lIsFormModified := .T.
+      ::cFPosition[1] := LTrim( Str( ::oDesignForm:Row ) )
+      ::cFPosition[2] := LTrim( Str( ::oDesignForm:Col ) )
+   ENDIF
+
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+METHOD FrmSized CLASS TFormEditor
+
+   IF ::myIde:lSaveSizeOnRed
+      ::lIsFormModified := .T.
+      IF ::lFClientArea
+         ::cFWidth := LTrim( Str( ::oDesignForm:ClientWidth ) )
+      ELSE
+         ::cFWidth := LTrim( Str( ::oDesignForm:Width ) )
+      ENDIF
+      IF ::lFClientArea
+         ::cFHeight := LTrim( Str( ::oDesignForm:ClientHeight ) )
+      ELSE
+         ::cFHeight := LTrim( Str( ::oDesignForm:Height ) )
+      ENDIF
    ENDIF
 
    RETURN NIL
@@ -7005,8 +7068,8 @@ METHOD pForm() CLASS TFormEditor
    ::oDesignForm:MaxHeight     := nFMaxHeight
    ::oDesignForm:MinWidth      := nFMinWidth
    ::oDesignForm:MinHeight     := nFMinHeight
-   ::oDesignForm:OnMove        := {|| ::lIsFormModified := .T. }
-   ::oDesignForm:OnSize        := {|| ::lIsFormModified := .T. }
+   ::oDesignForm:OnMove        := {|| ::FrmMoved() }
+   ::oDesignForm:OnSize        := {|| ::FrmSized() }
    IF ::lFClientArea
       ClientAreaResize( ::oDesignForm )
    ENDIF
@@ -13917,7 +13980,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aNoBorder[j]
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOBORDER"
          ENDIF
-         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> -4 )
+         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> "-4" )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FOCUSEDPOS " + AllTrim( ::aFocusedPos[j] )
          ENDIF
          IF NOTEMPTY( ::aOnVScroll[j] )

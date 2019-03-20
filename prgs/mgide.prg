@@ -197,6 +197,8 @@ CLASS THMI
    DATA lPsave             INIT .T.
    DATA lSave              INIT .T.
    DATA lSaveDefaultValues INIT .T.
+   DATA lSavePosOnDrag     INIT .T.
+   DATA lSaveSizeonRed     INIT .T.
    DATA lSnap              INIT .F.
    DATA lTBuild            INIT 1
    DATA MainHeight         INIT NIL
@@ -1001,7 +1003,7 @@ RETURN uRet
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadINI( cFile ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
+LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1
 
    IF Left( cFile, 1 ) == "\"
       cFile := SubStr( cFile, 2 )
@@ -1159,6 +1161,10 @@ LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
       ENDIF
       GET lSaveDefaultValues  SECTION 'SETTINGS'    ENTRY "SAVEDEFAULTS"  DEFAULT 1
       ::lSaveDefaultValues := ( lSaveDefaultValues == 1 )
+      GET lSavePosOnDrag      SECTION 'SETTINGS'    ENTRY "SAVEPOSONDRAG" DEFAULT 1
+      ::lSavePosOnDrag := ( lSavePosOnDrag == 1 )
+      GET lSaveSizeonRed      SECTION 'SETTINGS'    ENTRY "SAVESIZEONRED" DEFAULT 1
+      ::lSaveSizeonRed := ( lSaveSizeonRed == 1 )
       GET lSnap               SECTION 'SETTINGS'    ENTRY "SNAP"          DEFAULT 0
       ::lSnap := ( lSnap == 1 )
       GET ::cLibCC            SECTION 'SETTINGS'    ENTRY "ADDLIBCC"      DEFAULT ''
@@ -1279,6 +1285,8 @@ METHOD SaveINI( cFile ) CLASS THMI
       ENDIF
       SET SECTION "SETTINGS"    ENTRY "BUILD"         TO LTrim( Str( ::lTBuild, 1, 0 ) )
       SET SECTION "SETTINGS"    ENTRY "SAVEDEFAULTS"  TO iif( ::lSaveDefaultValues, "1", "0" )
+      SET SECTION "SETTINGS"    ENTRY "SAVEPOSONDRAG" TO iif( ::lSavePosOnDrag, "1", "0" )
+      SET SECTION "SETTINGS"    ENTRY "SAVESIZEONRED" TO iif( ::lSaveSizeonRed, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SNAP"          TO iif( ::lSnap, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SYNTAX"        TO LTrim( Str( ::nSyntax, 1, 0 ) )
       SET SECTION "SETTINGS"    ENTRY "HIDETT"        TO iif( ::lHideTT, "1", "0" )
@@ -1669,15 +1677,17 @@ LOCAL aFont := { ::cFormDefFontName, ;
       // xHarbour
       ::Form_Prefer:radiogroup_3:value := ::lTBuild
    ENDIF
-   ::Form_Prefer:text_libCC:value   := ::cLibCC
-   ::Form_Prefer:chk_HideTT:value   := ::lHideTT
-   ::Form_Prefer:chk_Snap:value     := ::lSnap
-   ::Form_Prefer:combo_26:value     := ::nSyntax
-   ::Form_Prefer:text_31:value      := ::nColBorder
-   ::Form_Prefer:text_32:value      := ::nRowBorder
-   ::Form_Prefer:text_33:value      := ::nLineSkip
-   ::Form_Prefer:chk_SaveDefs:value := ::lSaveDefaultValues
-   ::Form_Prefer:tab_1:value        := 1
+   ::Form_Prefer:text_libCC:value    := ::cLibCC
+   ::Form_Prefer:chk_HideTT:value    := ::lHideTT
+   ::Form_Prefer:chk_Snap:value      := ::lSnap
+   ::Form_Prefer:combo_26:value      := ::nSyntax
+   ::Form_Prefer:text_31:value       := ::nColBorder
+   ::Form_Prefer:text_32:value       := ::nRowBorder
+   ::Form_Prefer:text_33:value       := ::nLineSkip
+   ::Form_Prefer:chk_SaveDefs:value  := ::lSaveDefaultValues
+   ::Form_Prefer:chk_SaveDrag:value  := ::lSavePosOnDrag
+   ::Form_Prefer:chk_SaveRedim:value := ::lSaveSizeonRed
+   ::Form_Prefer:tab_1:value         := 1
 
    ACTIVATE WINDOW Form_Prefer
 
@@ -2101,6 +2111,8 @@ METHOD OkPrefer( aFont ) CLASS THMI
       ::nLineSkip := 1
    ENDIF
    ::lSaveDefaultValues := ::Form_Prefer:chk_SaveDefs:value
+   ::lSavePosOnDrag     := ::Form_Prefer:chk_SaveDrag:value
+   ::lSaveSizeonRed     := ::Form_Prefer:chk_SaveRedim:value
 
    ::Form_Prefer:Release()
 

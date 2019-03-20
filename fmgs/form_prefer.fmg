@@ -1236,6 +1236,13 @@ DEFINE WINDOW TEMPLATE ;
             NUMERIC ;
             MAXLENGTH 4
 
+         @ 85, 320 CHECKBOX chk_SaveDrag ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Save form's position on drag" ) ;
+            TOOLTIP "Uncheck to avoid replacing variable-based row/col values with numbers when the form is moved interactively." ;
+            VALUE .T.
+
          @ 120, 20 LABEL label_30 ;
             WIDTH 140 ;
             HEIGHT 24 ;
@@ -1248,6 +1255,13 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             NUMERIC ;
             MAXLENGTH 2
+
+         @ 120, 320 CHECKBOX chk_SaveRedim ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Save form's dimensions on size" ) ;
+            TOOLTIP "Uncheck to avoid replacing variable-based width/height values with numbers when the form is sized interactively." ;
+            VALUE .T.
 
       END PAGE
 
