@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-03-21 13:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! TEXTBOX controls alwarys shows it's action buttons.
+
 2019-03-20 20:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
      + Added new option at Preferences menu (IDE2 tab) to control
