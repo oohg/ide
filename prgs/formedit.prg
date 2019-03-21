@@ -4743,8 +4743,8 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
                   ::aReadOnly[i], ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, ;
                   NIL, NIL, .F., .F., ::aRTL[i], ::aAutoSkip[i], ::aNoBorder[i], ::StrToValueCtrl( ::aFocusedPos[i], "N", NIL ), ;
                   .F., NIL, ::aDate[i], ::aNumeric[i], ::StrToValueCtrl( ::aInputMask[i], "C", NIL ), ;
-                  ::StrToValueCtrl( ::aFormat[i], "C", NIL ), NIL, { || ::DrawOutline( oCtrl ) }, aImages, ;
-                  ::StrToValueCtrl( ::aButtonWidth[i], "N", NIL ), { || ::DrawOutline( oCtrl ) }, NIL, ::aCenterAlign[i], ;
+                  ::StrToValueCtrl( ::aFormat[i], "C", NIL ), NIL, NIL, aImages, ;
+                  ::StrToValueCtrl( ::aButtonWidth[i], "N", NIL ), NIL, NIL, ::aCenterAlign[i], ;
                   ::aDefaultYear[i], NIL, ::StrToValueCtrl( ::aInsertType[i], "N", NIL ), ::aCtrlsLeft[i], .F. )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
