@@ -8,6 +8,24 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-03-29 00:26 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! RTE when adding a SCROLLBAR control.
+     ! Right click stops working after clicking on TEXTBOX control.
+     ! RICHEDITBOX is saved with "FILETYPE F" clause.
+     ! PICCHECKBUTTON is saved with wrong clauses.
+     ! BROWSE is saved with wrong clauses.
+     ! Do not save COMBOBOX's HEIGHT clause when it's the default value.
+     ! XBROWSE is saved with wrong clauses.
+     ! CHECKBUTTON is saved with wrong clauses.
+     ! RTE after modifying a COMBOBOX control.
+     ! RTE after modifying a RADIOGROUP control.
+     ! GRID is saved with wrong CHANGEBEFOREEDIT clause.
+     ! RTE after modifying PROGRESSBAR control.
+     ! RADIOGROUP control is saved with wrong clauses.
+     ! SCROLLBAR control is saved with wrong clauses.
+     ! SLIDER control is saved with wrong clauses.
+
 2019-03-21 13:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! TEXTBOX controls alwarys shows it's action buttons.
