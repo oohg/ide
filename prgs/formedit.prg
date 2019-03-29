@@ -364,7 +364,7 @@
                               { "aStretch",       .F. }, ;
                               { "aSubClass",      "" }, ;
                               { "aSync",          .F. }, ;
-                              { "aTabPage",       { "", "" } }, ;           /* Each item is { cTabName, nTabPage } */
+                              { "aTabPage",       { "", 0 } }, ;           /* Each item is { cTabName, nTabPage } */
                               { "aTabsWidth",     "" }, ;
                               { "aTarget",        "" }, ;
                               { "aTextHeight",    "" }, ;
@@ -1897,7 +1897,6 @@ METHOD Open( cFMG, lWait )  CLASS TFormEditor
       ICON "IDE_VD" ;
       CHILD ;
       NOSHOW ;
-      ON RCLICK ::AddControl( .T. ) ;
       ON MOUSECLICK ::AddControl( .F. ) ;
       ON DBLCLICK ::PropertiesClick() ;
       ON MOUSEDRAG ::MouseMoveSize() ;
@@ -1986,7 +1985,6 @@ METHOD New( lWait ) CLASS TFormEditor
       ICON "IDE_VD" ;
       CHILD ;
       NOSHOW ;
-      ON RCLICK ::AddControl( .T. ) ;
       ON MOUSECLICK ::AddControl( .F. ) ;
       ON DBLCLICK ::PropertiesClick() ;
       ON MOUSEDRAG ::MouseMoveSize() ;
@@ -3500,12 +3498,13 @@ METHOD AddControl( lOpenContextMenu ) CLASS TFormEditor
    RETURN oNewCtrl
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD AddCtrlToContainer( oNewCtrl, i, cContainerName, cContainerPage, nContainerRow, nContainerCol ) CLASS TFormEditor
+METHOD AddCtrlToContainer( oNewCtrl, i, cContainerName, nContainerPage, nContainerRow, nContainerCol ) CLASS TFormEditor
 
    LOCAL j, oTab
 
    DO WHILE i < ::nControlW
-      IF ::aCtrlType[i] == "TAB" .AND. ::aTabPage[i, 1] == Lower( cContainerName ) .AND. ::aTabPage[i, 2] == cContainerPage
+
+      IF ::aCtrlType[i] == "TAB" .AND. ::aTabPage[i, 1] == Lower( cContainerName ) .AND. ::aTabPage[i, 2] == nContainerPage
          IF ( j := AScan( ::oDesignForm:aControls, { |c| Lower( c:Name ) == ::aControlW[i] } ) ) > 0
             oTab := ::oDesignForm:aControls[j]
             IF ( oNewCtrl:Row > oTab:Row + nContainerRow ) .AND. ( oNewCtrl:Row < oTab:Row + oTab:Height + nContainerRow ) .AND. ;
@@ -4517,7 +4516,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
                   ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), NIL, NIL, NIL, .T., .F., NIL, .F., .F., ;
                   ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, NIL, ::aRTL[i], .F., NIL, NIL, ;
                   ::aNoHideSel[i], ::StrToValueCtrl( ::aFocusedPos[i], "N", NIL ), ::aNoVScroll[i], ::aNoHScroll[i], NIL, ;
-                  iif( ::aPlainText[i], 1, ::aFileType[i] ), NIL, NIL, NIL )
+                  iif( ::aPlainText[i], 1, ::StrToValueCtrl( ::aFileType[i], "N", NIL ) ), NIL, NIL, NIL )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -4755,6 +4754,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:FontColor   := ::myIde:StrToColor( ::aFontColor[i] )
       oCtrl:BackColor   := ::myIde:StrToColor( ::aBackColor[i] )
       oCtrl:OnClick     := { || ::DrawOutline( oCtrl ) }
+      oCtrl:OnRClick   := { || ::DrawOutline( oCtrl ) }
       oCtrl:OnDblClick  := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
       oCtrl:OnChange    := { || oCtrl:ContextMenu := ::oDesignFormMenu, ::DrawOutline( oCtrl ) }
       oCtrl:OnGotFocus  := { || oCtrl:ContextMenu := ::oDesignFormMenu, ::DrawOutline( oCtrl ) }
@@ -9958,7 +9958,7 @@ METHOD pPicCheckButt( i ) CLASS TFormEditor
    cObj                := ::ReadStringData( i, "OBJECT", cObj )
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TButtonCheck():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TButtonCheck():nHeight ) ) ) )
-   uValue              := ::ReadLogicalData( i, "VALUE", "" )
+   uValue              := ::ReadStringData( i, "VALUE", "" )
    cToolTip            := ::ReadStringData( i, "TOOLTIP", "" )
    cToolTip            := ::ReadOopData( i, "TOOLTIP", cToolTip )
    cOnGotFocus         := ::ReadStringData( i, "ON GOTFOCUS", "" )
@@ -10482,7 +10482,7 @@ METHOD pRichedit( i ) CLASS TFormEditor
    cField              := ::ReadStringData( i, "FIELD", "" )
    cFile               := ::ReadStringData( i, "FILE", "" )
    lPlainText          := ( ::ReadLogicalData( i, "PLAINTEXT", "F" ) == "T" )
-   cFileType           := ::ReadLogicalData( i, "FILETYPE", "" )
+   cFileType           := ::ReadStringData( i, "FILETYPE", "" )
    cValue              := ::ReadStringData( i, "VALUE", "" )
    lReadonly           := ( ::ReadLogicalData( i, "READONLY", "F" ) == "T" )
    uFontName           := ::ReadStringData( i, "FONT", "" )
@@ -11883,7 +11883,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    ::aCheckBoxes[i]    := lCheckBoxes
    ::aOnCheckChg[i]    := cOnCheckChg
    ::aOnRowRefresh[i]  := cOnRowRefresh
-   ::aDefaultYear[i]   := cDefVal
+   ::aDefaultValues[i] := cDefVal
    ::aOnEditCellEnd[i] := cOnEditEnd
    ::aEditFirstVis[i]  := lEditFV
    ::aOnBfrEdtCell[i]  := cOnBfrEdtCell
@@ -13145,7 +13145,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON ROWREFRESH " + AllTrim( ::aOnRowRefresh[j] )
          ENDIF
          IF NOTEMPTY( ::aDefaultValues[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULTVALUES " + AllTrim( ::aDefaultYear[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULTVALUES " + AllTrim( ::aDefaultValues[j] )
          ENDIF
          IF NOTEMPTY( ::aOnEditCellEnd[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON EDITCELLEND " + AllTrim( ::aOnEditCellEnd[j] )
@@ -13669,7 +13669,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "OBJ " + AllTrim( ::aCObj[j] )
          ENDIF
          Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "WIDTH " + LTrim( Str( nWidth ) )
-         Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEIGHT " + LTrim( Str( nHeight ) )
+         IF nHeight # TCombo():nHeight
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEIGHT " + LTrim( Str( nHeight ) )
+         ENDIF
          IF NOTEMPTY( ::aItems[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ITEMS " + AllTrim( ::aItems[j] )
          ENDIF
@@ -16845,7 +16847,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON ROWREFRESH " + AllTrim( ::aOnRowRefresh[j] )
          ENDIF
          IF NOTEMPTY( ::aDefaultValues[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULTVALUES " + AllTrim( ::aDefaultYear[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULTVALUES " + AllTrim( ::aDefaultValues[j] )
          ENDIF
          IF NOTEMPTY( ::aOnEditCellEnd[j] ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON EDITCELLEND " + AllTrim( ::aOnEditCellEnd[j] )
@@ -17359,7 +17361,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aBuffer[j]           := aResults[03]
       ::aCaption[j]          := aResults[04]
       ::aDIBSection[j]       := aResults[05]
-      ::aDisabled[j]         := aResults[07]
+      ::aDisabled[j]         := aResults[06]
       ::aDrawBy[j]           := { "NIL", "OOHGDRAW", "WINDRAW" } [ aResults[07] ]
       ::aField[j]            := aResults[08]
       ::aFitImg[j]           := aResults[09]
@@ -17431,7 +17433,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aImage[j]            := aResults[07]
       ::aInvisible[j]        := aResults[08]
       ::aItems[j]            := aResults[09]
-      ::aJustify[j]          := aResults[08]
+      ::aJustify[j]          := aResults[10]
       ::aNoTabStop[j]        := aResults[11]
       ::aRTL[j]              := aResults[12]
       ::aSelColor[j]         := aResults[13]
@@ -17449,7 +17451,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "DelayedLoad",        ::aDelayedLoad[j],                                                             .F.  }, ;
                        { "Disabled",           ::aDisabled[j],                                                                .F.  }, ;
                        { "DisplayEdit",        ::aDisplayEdit[j],                                                             .F.  }, ;
-                       { "EditHeight",         ::aEditHeight,                                                                 1000 }, ;
+                       { "EditHeight",         ::aEditHeight[j],                                                               1000 }, ;
                        { "FirstItem",          ::aFirstItem[j],                                                               .F.  }, ;
                        { "Fit",                ::aFit[j],                                                                     .F.  }, ;
                        { "GripperText",        ::aGripperText[j],                                                             1000 }, ;
@@ -17465,7 +17467,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "ListWidth",          ::aListWidth[j],                                                               1000 }, ;
                        { "MaxLength",          ::aMaxLength[j],                                                               1000 }, ;
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
-                       { "OptionsHeight",      ::aOptHeight,                                                                  1000 }, ;
+                       { "OptionsHeight",      ::aOptHeight[j],                                                               1000 }, ;
                        { "Refresh",            AScan( { ".T.", ".F."}, ::aRefresh[j] ) + 1,                                   { "NIL", ".T.", ".F."} }, ;
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SearchLapse",        ::aSearchLapse[j],                                                             1000 }, ;
@@ -17492,7 +17494,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aDelayedLoad[j]      := aResults[04]
       ::aDisabled[j]         := aResults[05]
       ::aDisplayEdit[j]      := aResults[06]
-      ::aEditHeight          := aResults[07]
+      ::aEditHeight[j]       := aResults[07]
       ::aFirstItem[j]        := aResults[08]
       ::aFit[j]              := aResults[09]
       ::aGripperText[j]      := aResults[10]
@@ -17508,7 +17510,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aListWidth[j]        := aResults[20]
       ::aMaxLength[j]        := aResults[21]
       ::aNoTabStop[j]        := aResults[22]
-      ::aOptHeight           := aResults[23]
+      ::aOptHeight[j]        := aResults[23]
       ::aRefresh[j]          := { "NIL", ".T.", ".F."} [ aResults[24] ]
       ::aRTL[j]              := aResults[25]
       ::aSearchLapse[j]      := aResults[26]
@@ -17738,7 +17740,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aAppend[j]           := aResults[03]
       ::aBreak[j]            := aResults[04]
       ::aCellToolTip[j]      := aResults[05]
-      ::aChgBefEdit[j]       := aResults[03]
+      ::aChgBefEdit[j]       := aResults[06]
       ::aCheckBoxes[j]       := aResults[07]
       ::aColumnCtrls[j]      := aResults[08]
       ::aDelete[j]           := aResults[09]
@@ -18381,7 +18383,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Obj",                ::aCObj[j],                                                                    1000 }, ;
                        { "HelpID",             ::aHelpID[j],                                                                  1000 }, ;
                        { "Invisible",          ::aInvisible[j],                                                               .F.  }, ;
-                       { "Marquee",            ::aMarquee[j],                                                                 .F.  }, ;
+                       { "Marquee",            ::aMarquee[j],                                                                 1000 }, ;
                        { "Range",              ::aRange[j],                                                                   1000 }, ;
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "Smooth",             ::aSmooth[j],                                                                  .F.  }, ;
@@ -18488,10 +18490,10 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aHelpID[j]           := aResults[07]
       ::aHorizontal[j]       := aResults[08]
       ::aInvisible[j]        := aResults[09]
-      ::aNoFocusRect[j]      := aResults[10]
-      ::aOptions[j]          := aResults[11]
-      ::aLeftJust[j]         := aResults[12]
-      ::aNoTabStop[j]        := aResults[13]
+      ::aLeftJust[j]         := aResults[10]
+      ::aNoFocusRect[j]      := aResults[11]
+      ::aNoTabStop[j]        := aResults[12]
+      ::aOptions[j]          := aResults[13]
       ::aReadOnlyArray[j]    := aResults[14]
       ::aRTL[j]              := aResults[15]
       ::aSpacing[j]          := aResults[16]
@@ -18586,21 +18588,21 @@ METHOD PropertiesClick() CLASS TFormEditor
          RETURN NIL
       ENDIF
       ::aName[j]             := iif( ! ::IsUnique( aResults[01], j ), ::aName[j], AllTrim( aResults[01] ) )
-      ::aCObj[j]             := aResults[08]
-      ::aAttached[j]         := aResults[14]
-      ::aAutoMove[j]         := aResults[13]
-      ::aDisabled[j]         := aResults[06]
-      ::aHelpID[j]           := aResults[05]
-      ::aHorizontal[j]       := aResults[11]
-      ::aInvisible[j]        := aResults[07]
-      ::aLineSkip[j]         := aResults[15]
-      ::aPageSkip[j]         := aResults[16]
-      ::aRange[j]            := aResults[02]
-      ::aRTL[j]              := aResults[10]
-      ::aSubClass[j]         := aResults[09]
-      ::aToolTip[j]          := aResults[04]
-      ::aValue[j]            := aResults[03]
-      ::aVertical[j]         := aResults[12]
+      ::aCObj[j]             := aResults[02]
+      ::aAttached[j]         := aResults[03]
+      ::aAutoMove[j]         := aResults[04]
+      ::aDisabled[j]         := aResults[05]
+      ::aHelpID[j]           := aResults[06]
+      ::aHorizontal[j]       := aResults[07]
+      ::aInvisible[j]        := aResults[08]
+      ::aLineSkip[j]         := aResults[09]
+      ::aPageSkip[j]         := aResults[10]
+      ::aRange[j]            := aResults[11]
+      ::aRTL[j]              := aResults[12]
+      ::aSubClass[j]         := aResults[13]
+      ::aToolTip[j]          := aResults[14]
+      ::aValue[j]            := aResults[15]
+      ::aVertical[j]         := aResults[16]
       EXIT
 
    CASE TYPE_SLIDER
@@ -18808,7 +18810,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aLowerCase[j]        := aResults[18]
       ::aMaxLength[j]        := aResults[19]
       ::aNoBorder[j]         := aResults[20]
-      ::aNoContext           := aResults[21]
+      ::aNoContext[j]        := aResults[21]
       ::aNoTabStop[j]        := aResults[22]
       ::aNumeric[j]          := aResults[23]
       ::aPassword[j]         := aResults[24]
@@ -19017,7 +19019,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "NoLines",            ::aNoLines[j],                                                                 .F.  }, ;
                        { "NoModalEdit",        ::aNoModalEdit[j],                                                             .F.  }, ;
                        { "NoShowAlways",       ::aNoShowAlways[j],                                                            .F.  }, ;
-                       { "NoShowEmptyRow",     ::aNoShowAlways[j],                                                            .F.  }, ;
+                       { "NoShowEmptyRow",     ::aShowNone[j],                                                                .F.  }, ;
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
                        { "NoVScroll",          ::aNoVScroll[j],                                                               .F.  }, ;
                        { "PaintLeftMargin",    ::aPLM[j],                                                                     .F.  }, ;
@@ -19056,7 +19058,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aCheckBoxes[j]       := aResults[06]
       ::aColumnCtrls[j]      := aResults[07]
       ::aColumnInfo[j]       := aResults[08]
-      ::aDefaultYear[j]      := aResults[09]
+      ::aDefaultValues[j]    := aResults[09]
       ::aDelete[j]           := aResults[10]
       ::aDeleteMsg[j]        := aResults[11]
       ::aDeleteWhen[j]       := aResults[12]
@@ -19078,8 +19080,8 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aFixedWidths[j]      := aResults[28]
       ::aFocusRect[j]        := { "NIL", ".T.", ".F." } [ aResults[29] ]
       ::aFullMove[j]         := aResults[30]
-      ::aHdrImgAlign[j]      := aResults[31]
-      ::aHeaderImages[j]     := aResults[32]
+      ::aHeaderImages[j]     := aResults[31]
+      ::aHdrImgAlign[j]      := aResults[32]
       ::aHeaders[j]          := aResults[33]
       ::aHelpID[j]           := aResults[34]
       ::aImage[j]            := aResults[35]
@@ -19096,15 +19098,15 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aNoLines[j]          := aResults[46]
       ::aNoModalEdit[j]      := aResults[47]
       ::aNoShowAlways[j]     := aResults[48]
-      ::aNoTabStop[j]        := aResults[49]
-      ::aNoVScroll[j]        := aResults[50]
-      ::aPLM[j]              := aResults[51]
-      ::aReadOnlyArray[j]    := aResults[52]
-      ::aRecCount[j]         := aResults[53]
-      ::aReplaceField[j]     := aResults[54]
-      ::aRTL[j]              := aResults[55]
-      ::aSelColor[j]         := aResults[56]
-      ::aShowNone[j]         := aResults[57]
+      ::aShowNone[j]         := aResults[49]
+      ::aNoTabStop[j]        := aResults[50]
+      ::aNoVScroll[j]        := aResults[51]
+      ::aPLM[j]              := aResults[52]
+      ::aReadOnlyArray[j]    := aResults[53]
+      ::aRecCount[j]         := aResults[54]
+      ::aReplaceField[j]     := aResults[55]
+      ::aRTL[j]              := aResults[56]
+      ::aSelColor[j]         := aResults[57]
       ::aSilent[j]           := aResults[58]
       ::aSingleBuffer[j]     := aResults[59]
       ::aSubClass[j]         := aResults[60]
@@ -19630,7 +19632,7 @@ METHOD EventsClick() CLASS TFormEditor
                        { "On Insert",             ::aOnInsert[j],                                                                1000 }, ;
                        { "On LostFocus",          ::aOnLostFocus[j],                                                             1000 }, ;
                        { "On QueryData",          ::aOnQueryData[j],                                                             1000 }, ;
-                       { "On RClick",          ::aOnRClick[j],                                                                1000 } }
+                       { "On RClick",             ::aOnRClick[j],                                                                1000 } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
       aFormats    := Array( Len( aData ) )
