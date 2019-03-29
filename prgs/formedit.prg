@@ -88,8 +88,8 @@
                               { "aAddress",       "" }, ;
                               { "aAfterColMove",  "" }, ;
                               { "aAfterColSize",  "" }, ;
-                              { "aAlignH",        "" }, ;
-                              { "aAlignV",        "" }, ;
+                              { "aAlignH",        "NIL" }, ;
+                              { "aAlignV",        "NIL" }, ;
                               { "aAppend",        .F. }, ;
                               { "aAttached",      .F. }, ;
                               { "aAutoMove",      .F. }, ;
@@ -164,9 +164,9 @@
                               { "aFit",           .F. }, ;
                               { "aFitImg",        .F. }, ;
                               { "aFitTxt",        .F. }, ;
-                              { "aFixBlocks",     .F. }, ;
+                              { "aFixBlocks",     "NIL" }, ;
                               { "aFixedCols",     .F. }, ;
-                              { "aFixedCtrls",    .F. }, ;
+                              { "aFixedCtrls",    "NIL" }, ;
                               { "aFixedWidths",   .F. }, ;
                               { "aFlat",          .F. }, ;
                               { "aFocusedPos",    "" }, ;
@@ -197,7 +197,7 @@
                               { "aHScroll",       .F. }, ;
                               { "aIconLeft",      .F. }, ;
                               { "aImage",         "" }, ;
-                              { "aImageAlign",    "" }, ;
+                              { "aImageAlign",    "NIL" }, ;
                               { "aImageMargin",   "" }, ;
                               { "aImageSize",     .F. }, ;
                               { "aImageSource",   "" }, ;
@@ -337,7 +337,7 @@
                               { "aReadOnly",      .F. }, ;
                               { "aReadOnlyArray", "" }, ;
                               { "aRecCount",      .F. }, ;
-                              { "aRefresh",       .F. }, ;
+                              { "aRefresh",       "NIL" }, ;
                               { "aReplaceField",  "" }, ;
                               { "aRightAlign",    .F. }, ;
                               { "aRightJust",     .F. }, ;
@@ -363,7 +363,7 @@
                               { "aSpeed",         1 }, ;                   /* Start line of control's definition in FMG file */
                               { "aStretch",       .F. }, ;
                               { "aSubClass",      "" }, ;
-                              { "aSync",          .F. }, ;
+                              { "aSync",          "NIL" }, ;
                               { "aTabPage",       { "", 0 } }, ;           /* Each item is { cTabName, nTabPage } */
                               { "aTabsWidth",     "" }, ;
                               { "aTarget",        "" }, ;
@@ -15617,7 +15617,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aNoHideSel[j]
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOHIDESEL"
          ENDIF
-         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> -4 )
+         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> "-4" )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FOCUSEDPOS " + AllTrim( ::aFocusedPos[j] )
          ENDIF
          IF ::aNoVScroll[j]
@@ -16212,7 +16212,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aNoBorder[j]
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOBORDER"
          ENDIF
-         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> -2 )
+         IF NOTEMPTY( ::aFocusedPos[j] ) .AND. ( Type( ::aFocusedPos[j] ) # "N" .OR. ::aFocusedPos[j] <> "-2" )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FOCUSEDPOS " + AllTrim( ::aFocusedPos[j] )
          ENDIF
          IF ::aDisabled[j]
