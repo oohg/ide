@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-06-15 18:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! Events of Checkbox control.
+
 2019-03-29 17:49 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! RTE when saving newly created controls.

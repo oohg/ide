@@ -19472,9 +19472,9 @@ METHOD EventsClick() CLASS TFormEditor
       EXIT
 
    CASE TYPE_CHECKBOX
-      aData       := { { "On GotFocus",           ::aOnGotFocus[j],                                                              1000 }, ;
-                       { "On LostFocus",          ::aOnLostFocus[j],                                                             1000 }, ;
-                       { "On MouseMove",          ::aOnMouseMove[j],                                                             1000 } }
+      aData       := { { "On Change",             ::aOnChange[j],                                                                1000 }, ;
+                       { "On GotFocus",           ::aOnGotFocus[j],                                                              1000 }, ;
+                       { "On LostFocus",          ::aOnLostFocus[j],                                                             1000 } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
       aFormats    := Array( Len( aData ) )
