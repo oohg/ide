@@ -8,6 +8,11 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-07-10 19:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Validation to prevent a RTE caused by wrong format clause
+       entered by user in Textbox control.
+
 2019-06-15 18:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! Events of Checkbox control.
@@ -36,7 +41,7 @@
 
 2019-03-21 13:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
-     ! TEXTBOX controls alwarys shows it's action buttons.
+     ! TEXTBOX controls always shows it's action buttons.
 
 2019-03-20 20:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg

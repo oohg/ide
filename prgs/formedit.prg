@@ -3530,7 +3530,7 @@ METHOD AddCtrlToContainer( oNewCtrl, i, cContainerName, nContainerPage, nContain
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEditor
 
-   LOCAL aCaptions, aHeaders, aImages, aItems, aWidths, cName, cPicture, j, lRed, nCnt, nMax, nMin, oCtrl, oPage, uRO
+   LOCAL aCaptions, aHeaders, aImages, aItems, aWidths, cFormat, cName, cPicture, j, lRed, nCnt, nMax, nMin, oCtrl, oPage, uRO
 
    cName := ::aControlW[i]
    oCtrl := NIL
@@ -4736,13 +4736,19 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       ELSE
          aImages := NIL
       ENDIF
+
+      cFormat := ::StrToValueCtrl( ::aFormat[i], "C", NIL )
+      IF ! IsFormatValid( cFormat )
+         cFormat := ""
+      ENDIF
+
       oCtrl := DefineTextBox( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, NIL, NIL, ;
                   NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), ;
                   ::aUpperCase[i], ::aLowerCase[i], ::aPassword[i], NIL, NIL, NIL, NIL, ::aRightAlign[i], NIL, ;
                   ::aReadOnly[i], ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, ;
                   NIL, NIL, .F., .F., ::aRTL[i], ::aAutoSkip[i], ::aNoBorder[i], ::StrToValueCtrl( ::aFocusedPos[i], "N", NIL ), ;
                   .F., NIL, ::aDate[i], ::aNumeric[i], ::StrToValueCtrl( ::aInputMask[i], "C", NIL ), ;
-                  ::StrToValueCtrl( ::aFormat[i], "C", NIL ), NIL, NIL, aImages, ;
+                  cFormat, NIL, NIL, aImages, ;
                   ::StrToValueCtrl( ::aButtonWidth[i], "N", NIL ), NIL, NIL, ::aCenterAlign[i], ;
                   ::aDefaultYear[i], NIL, ::StrToValueCtrl( ::aInsertType[i], "N", NIL ), ::aCtrlsLeft[i], .F. )
       IF ! Empty( ::aFontName[i] )
@@ -4919,6 +4925,85 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
    ENDIF
 
    RETURN oCtrl
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+STATIC FUNCTION IsFormatValid( cFormat )
+
+   LOCAL lResult, nPos
+
+   IF Empty( cFormat )
+      lResult := .T.
+   ELSEIF Left( cFormat, 1 ) == "@"
+      lResult := .F.
+   ELSEIF " " $ cFormat
+      lResult := .F.
+   ELSE
+      cFormat := Upper( cFormat )
+
+      DO WHILE "S" $ cFormat
+         nPos := At( "S", cFormat )
+         cFormat := Left( cFormat, nPos - 1 ) + SubStr( cFormat, nPos + 1 )
+         DO WHILE Len( cFormat ) >= nPos .AND. SubStr( cFormat, nPos, 1 ) $ "0123456789"
+            cFormat := Left( cFormat, nPos - 1 ) + SubStr( cFormat, nPos + 1 )
+         ENDDO
+      ENDDO
+
+      IF "A" $ cFormat
+         cFormat := StrTran( cFormat, "A", "" )
+      ENDIF
+
+      IF "2" $ cFormat
+         cFormat := StrTran( cFormat, "2", "" )
+      ENDIF
+
+      IF "4" $ cFormat
+         cFormat := StrTran( cFormat, "4", "" )
+      ENDIF
+
+      IF "C" $ cFormat
+         cFormat := StrTran( cFormat, "C", "" )
+      ENDIF
+
+      IF "D" $ cFormat
+         cFormat := StrTran( cFormat, "D", "" )
+      ENDIF
+
+      IF "E" $ cFormat
+         cFormat := StrTran( cFormat, "E", "" )
+      ENDIF
+
+      IF "K" $ cFormat
+         cFormat := StrTran( cFormat, "K", "" )
+      ENDIF
+
+      IF "R" $ cFormat
+         cFormat := StrTran( cFormat, "R", "" )
+      ENDIF
+
+      IF "X" $ cFormat
+         cFormat := StrTran( cFormat, "X", "" )
+      ENDIF
+
+      IF "Z" $ cFormat
+         cFormat := StrTran( cFormat, "Z", "" )
+      ENDIF
+
+      IF "(" $ cFormat
+         cFormat := StrTran( cFormat, "(", "" )
+      ENDIF
+
+      IF ")" $ cFormat
+         cFormat := StrTran( cFormat, ")", "" )
+      ENDIF
+
+      IF "!" $ cFormat
+         cFormat := StrTran( cFormat, "!", "" )
+      ENDIF
+
+      lResult := Empty( cFormat )
+   ENDIF
+
+   RETURN lResult
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD DrawOutline( oControl, lNoRefresh, lNoErase ) CLASS TFormEditor
@@ -18823,6 +18908,10 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aValid[j]            := aResults[31]
       ::aValue[j]            := aResults[32]
       ::aWhen[j]             := aResults[33]
+
+      IF ! IsFormatValid( ::StrToValueCtrl( ::aFormat[j], "C", NIL ) )
+         MsgInfo( i18n( "Format is not valid !!!" ) + CRLF + i18n( "Beware that OOHG will abort with a RTE !!!" ), "OOHG IDE+" )
+      ENDIF
       EXIT
 
    CASE TYPE_TIMEPICKER
