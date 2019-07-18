@@ -521,6 +521,7 @@ CLASS TFormEditor
    DATA lFModalSize          INIT .F.
    DATA lFNoAutoRelease      INIT .F.
    DATA lFNoCaption          INIT .F.
+   DATA lFNoDefWinProc       INIT .F.
    DATA lFNoMaximize         INIT .F.
    DATA lFNoMinimize         INIT .F.
    DATA lFNoShow             INIT .F.
@@ -6841,7 +6842,7 @@ METHOD DrawPoints() CLASS TFormEditor
 METHOD PreProcessDefineWindow() CLASS TFormEditor
 
    LOCAL zi, zf, i, cData := "", j, k, c
-   LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL" }
+   LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL", "NODWP" }
    LOCAL aTokens1 := { "AT", "TITLE", "WIDTH", "HEIGHT", "OBJ", "PARENT", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
    LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECLOSE", "LOSTFOCUS", "MAXIMIZE", "MCLICK", "MDBLCLICK", "MINIMIZE", "MOUSECLICK", "MOUSEDRAG", "MOUSEMOVE", "MOVE", "NOTIFYCLICK", "PAINT", "RCLICK", "RDBLCLICK", "RELEASE", "RESTORE", "SCROLLDOWN", "SCROLLLEFT", "SCROLLRIGHT", "SCROLLUP", "SIZE", "VSCROLLBOX" }
 
@@ -7107,6 +7108,7 @@ METHOD pForm() CLASS TFormEditor
    ::lFModalSize          := ::ReadFormLogicalData( "MODALSIZE" )
    ::lFNoAutoRelease      := ::ReadFormLogicalData( "NOAUTORELEASE" )
    ::lFNoCaption          := ::ReadFormLogicalData( "NOCAPTION" )
+   ::lFNoDefWinProc       := ::ReadFormLogicalData( "NODWP" )
    ::lFNoMaximize         := ::ReadFormLogicalData( "NOMAXIMIZE" )
    ::lFNoMinimize         := ::ReadFormLogicalData( "NOMINIMIZE" )
    ::lFNoShow             := ::ReadFormLogicalData( "NOSHOW" )
@@ -12419,6 +12421,7 @@ METHOD Save( lSaveAs ) CLASS TFormEditor
    Output += iif( ::lFnoautorelease, " ;" + CRLF + Space( nSpacing ) + "NOAUTORELEASE", "" )
    Output += iif( ::lFNoMinimize, " ;" + CRLF + Space( nSpacing ) + "NOMINIMIZE", "" )
    Output += iif( ::lFNoMaximize, " ;" + CRLF + Space( nSpacing ) + "NOMAXIMIZE", "" )
+   Output += iif( ::lFNoDefWinProc, " ;" + CRLF + Space( nSpacing ) + "NODWP", "" )
    Output += iif( ::lFnosize, " ;" + CRLF + Space( nSpacing ) + "NOSIZE", "" )
    Output += iif( ::lFnosysmenu, " ;" + CRLF + Space( nSpacing ) + "NOSYSMENU", "" )
    Output += iif( ::lFnocaption, " ;" + CRLF + Space( nSpacing ) + "NOCAPTION", "" )
@@ -20328,6 +20331,7 @@ METHOD FrmProperties() CLASS TFormEditor
                        { "ModalSize",     ::lFModalSize,     .F.  }, ;
                        { "NoAutoRelease", ::lFNoAutoRelease, .F.  }, ;
                        { "NoCaption",     ::lFNoCaption,     .F.  }, ;
+                       { "NODWP",         ::lFNoDefWinProc,  .F.  }, ;
                        { "NoMaximize",    ::lFNoMaximize,    .F.  }, ;
                        { "NoMinimize",    ::lFNoMinimize,    .F.  }, ;
                        { "NoShow",        ::lFNoShow,        .F.  }, ;
@@ -20388,37 +20392,38 @@ METHOD FrmProperties() CLASS TFormEditor
       ::lFModalSize     := aResults[28]
       ::lFNoAutoRelease := aResults[29]
       ::lFNoCaption     := aResults[30]
-      ::lFNoMaximize    := aResults[31]
-      ::lFNoMinimize    := aResults[32]
-      ::lFNoShow        := aResults[33]
-      ::lFNoSize        := aResults[34]
-      ::lFNoSysMenu     := aResults[35]
-      ::cFNotifyIcon    := aResults[36]
-      ::cFNotifyTooltip := aResults[37]
-      ::cFParent        := aResults[38]
-      ::cFPosition[1]   := iif( NOTEMPTY( aResults[39] ), aResults[39], LTrim( Str( ::oDesignForm:Row ) ) )
-      ::lFRTL           := aResults[40]
-      ::lFSplitchild    := aResults[41]
-      ::lFStretch       := aResults[42]
-      ::cFSubClass      := aResults[43]
-      ::cFTitle         := aResults[44]
-      ::lFTopmost       := aResults[45]
-      ::cFVirtualH      := aResults[46]
-      ::cFVirtualW      := aResults[47]
-      ::cFWidth         := aResults[48]
+      ::lFNoDefWinProc  := aResults[31]
+      ::lFNoMaximize    := aResults[32]
+      ::lFNoMinimize    := aResults[33]
+      ::lFNoShow        := aResults[34]
+      ::lFNoSize        := aResults[35]
+      ::lFNoSysMenu     := aResults[36]
+      ::cFNotifyIcon    := aResults[37]
+      ::cFNotifyTooltip := aResults[38]
+      ::cFParent        := aResults[39]
+      ::cFPosition[1]   := iif( NOTEMPTY( aResults[40] ), aResults[40], LTrim( Str( ::oDesignForm:Row ) ) )
+      ::lFRTL           := aResults[41]
+      ::lFSplitchild    := aResults[42]
+      ::lFStretch       := aResults[43]
+      ::cFSubClass      := aResults[44]
+      ::cFTitle         := aResults[45]
+      ::lFTopmost       := aResults[46]
+      ::cFVirtualH      := aResults[47]
+      ::cFVirtualW      := aResults[48]
+      ::cFWidth         := aResults[49]
       ::lIsFormModified := .T.
 
       // Process #defines
-      IF ! HB_ISSTRING( aResults[49] )
-         aResults[49] := ""
+      IF ! HB_ISSTRING( aResults[50] )
+         aResults[50] := ""
       ELSE
-         aResults[49] := StrTran( aResults[49], HTAB, " " )
+         aResults[50] := StrTran( aResults[50], HTAB, " " )
       ENDIF
-      nLineCount  := MLCount( aResults[49] )
+      nLineCount  := MLCount( aResults[50] )
       aNewDefines := {}
       lAgain := .F.
       FOR i := 1 TO nLineCount
-         cLine := AllTrim( MemoLine( aResults[49], 1200, i ) )
+         cLine := AllTrim( MemoLine( aResults[50], 1200, i ) )
          IF Upper( Left( cLine, 8 ) ) == "#DEFINE "
             cLine     := LTrim( SubStr( cLine, 9 ) )
             nPos      := At( " ", cLine + " " )
@@ -20428,7 +20433,7 @@ METHOD FrmProperties() CLASS TFormEditor
                j         := i
                DO WHILE i < nLineCount .AND. Right( cValue, 1 ) == ";"
                   i ++
-                  cValue += ( CRLF + RTrim( MemoLine( aResults[49], 1200, i ) ) )
+                  cValue += ( CRLF + RTrim( MemoLine( aResults[50], 1200, i ) ) )
                ENDDO
                IF Right( cValue, 3 ) == ";" + CRLF
                   cValue := RTrim( Left( cValue, Len( cValue ) - 3 ) )
@@ -20453,7 +20458,7 @@ METHOD FrmProperties() CLASS TFormEditor
             j := i
             DO WHILE Right( cLine, 1 ) == ";"
                i ++
-               cLine := RTrim( MemoLine( aResults[49], 1200, i ) )
+               cLine := RTrim( MemoLine( aResults[50], 1200, i ) )
             ENDDO
             IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                lAgain := .T.
@@ -20464,15 +20469,15 @@ METHOD FrmProperties() CLASS TFormEditor
 
       IF ! lAgain
          // Process #undefs
-         IF ! HB_ISSTRING( aResults[50] )
-            aResults[50] := ""
+         IF ! HB_ISSTRING( aResults[51] )
+            aResults[51] := ""
          ELSE
-            aResults[50] := StrTran( aResults[50], HTAB, " " )
+            aResults[51] := StrTran( aResults[51], HTAB, " " )
          ENDIF
-         nLineCount := MLCount( aResults[50] )
+         nLineCount := MLCount( aResults[51] )
          aNewUndefs := {}
          FOR i := 1 TO nLineCount
-            cLine := AllTrim( MemoLine( aResults[50], 1200, i ) )
+            cLine := AllTrim( MemoLine( aResults[51], 1200, i ) )
             IF Upper( Left( cLine, 7 ) ) == "#UNDEF "
                cLine     := LTrim( SubStr( cLine, 8 ) )
                nPos      := At( " ", cLine + " " )
@@ -20482,7 +20487,7 @@ METHOD FrmProperties() CLASS TFormEditor
                   j         := i
                   DO WHILE i < nLineCount .AND. Right( cValue, 1 ) == ";"
                      i ++
-                     cValue += ( CRLF + RTrim( MemoLine( aResults[50], 1200, i ) ) )
+                     cValue += ( CRLF + RTrim( MemoLine( aResults[51], 1200, i ) ) )
                   ENDDO
                   IF Right( cValue, 3 ) == ";" + CRLF
                      cValue := RTrim( Left( cValue, Len( cValue ) - 3 ) )
@@ -20512,7 +20517,7 @@ METHOD FrmProperties() CLASS TFormEditor
                j := i
                DO WHILE i < nLineCount .AND. Right( cLine, 1 ) == ";"
                   i ++
-                  cLine := RTrim( MemoLine( aResults[50], 1200, i ) )
+                  cLine := RTrim( MemoLine( aResults[51], 1200, i ) )
                ENDDO
                IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                   lAgain := .T.

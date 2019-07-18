@@ -8,6 +8,10 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-07-18 08:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for DWP clause.
+
 2019-07-10 19:32 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Validation to prevent a RTE caused by wrong format clause
