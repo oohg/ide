@@ -8,6 +8,11 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-08-07 18:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\compile.bat
+   * ide\prgs\mgide.prg
+     ! Path is not properly restored if it contains & chars.
+
 2019-07-18 08:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Support for DWP clause.
