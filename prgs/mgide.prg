@@ -2266,11 +2266,11 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          // Build batch to launch HBMK2 utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += 'set HG_TPATH=%PATH%' + CRLF
-         cOut += 'set PATH=' + cHarbourFolderB + ";" + cCompFolderB + ";%PATH%" + CRLF
+         cOut += 'set "HG_TPATH=%PATH%"' + CRLF
+         cOut += 'set "PATH=' + cHarbourFolderB + ";" + cCompFolderB + ';%PATH%"' + CRLF
          cOut += cHBMK2 + ' ' + cHBP + ' > error.txt 2>&1' + CRLF
          cOut += 'if errorlevel 1 echo ERROR BUILDING ' + cHBP + ' >> error.txt' + CRLF
-         cOut += 'set PATH=%HG_TPATH%' + CRLF
+         cOut += 'set "PATH=%HG_TPATH%"' + CRLF
          cOut += 'set HG_TPATH=' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link
@@ -2915,11 +2915,11 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          // Build batch to launch HBMK2 utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += 'set HG_TPATH=%PATH%' + CRLF
-         cOut += 'set PATH=' + cHarbourFolderB + ";" + cCompFolderB + ";%PATH%" + CRLF
+         cOut += 'set "HG_TPATH=%PATH%"' + CRLF
+         cOut += 'set "PATH=' + cHarbourFolderB + ";" + cCompFolderB + ';%PATH%"' + CRLF
          cOut += cHBMK2 + ' ' + cHBP + ' > error.txt 2>&1' + CRLF
          cOut += 'if errorlevel 1 echo ERROR BUILDING ' + cHBP + ' >> error.txt' + CRLF
-         cOut += 'set PATH=%HG_TPATH%' + CRLF
+         cOut += 'set "PATH=%HG_TPATH%"' + CRLF
          cOut += 'set HG_TPATH=' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link
@@ -3676,10 +3676,10 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'set HG_TPATH=%PATH%' + CRLF
-         cOut += 'set PATH=' + cHarbourFolderB + ";" + cCompFolderB + ";%PATH%" + CRLF
+         cOut += 'set "PATH=' + cHarbourFolderB + ";" + cCompFolderB + ';%PATH%"' + CRLF
          cOut += cHBMK2 + ' ' + cHBP + ' > error.txt 2>&1' + CRLF
          cOut += 'if errorlevel 1 echo ERROR BUILDING ' + cHBP + ' >> error.txt' + CRLF
-         cOut += 'set PATH=%HG_TPATH%' + CRLF
+         cOut += 'set "PATH=%HG_TPATH%"' + CRLF
          cOut += 'set HG_TPATH=' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link

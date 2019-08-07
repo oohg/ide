@@ -158,8 +158,8 @@ rem
    if exist oide.exe del oide.exe
    if exist oide.exe goto ERROR2
 
-   set HG_PATH=%PATH%
-   set PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%
+   set "HG_PATH=%PATH%"
+   set "PATH=%HG_MINGW%\bin;%HG_HRB%\%BIN_HRB%"
 
    echo xHarbour: Compiling sources...
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\mgide    -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n1 -w3 -gc0 -es2 -q0
@@ -212,7 +212,7 @@ rem
    del menued.c
    del toolbed.o
    del toolbed.c
-   set PATH=%HG_PATH%
+   set "PATH=%HG_PATH%"
    set HG_PATH=
    set HG_OBJS=
    set HG_LIBS=
