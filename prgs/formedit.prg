@@ -279,6 +279,7 @@
                               { "aOnAbortEdit",   "" }, ;
                               { "aOnAppend",      "" }, ;
                               { "aOnBfrEdtCell",  "" }, ;
+                              { "aOnBfrInsert",   "" }, ;
                               { "aOnChange",      "" }, ;
                               { "aOnCheckChg",    "" }, ;
                               { "aOnDblClick",    "" }, ;
@@ -5762,6 +5763,9 @@ METHOD PrintBrief() CLASS TFormEditor
             IF ! Empty( ::aOnHScroll[nIndice] )
                oPrint:PrintData( ++ ContLin, 005, "ONHSCROLL     : " + AllTrim( CStr( ::aOnHScroll[nIndice] ) ) )
             ENDIF
+            IF ! Empty( ::aOnBfrInsert[nIndice] )
+               oPrint:PrintData( ++ ContLin, 005, "ONBEFOREINSERT: " + AllTrim( CStr( ::aOnBfrInsert[nIndice] ) ) )
+            ENDIF
             IF ! Empty( ::aOnInsert[nIndice] )
                oPrint:PrintData( ++ ContLin, 005, "ONINSERT      : " + AllTrim( CStr( ::aOnInsert[nIndice] ) ) )
             ENDIF
@@ -8928,13 +8932,14 @@ METHOD pGrid( i ) CLASS TFormEditor
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
    LOCAL cColControls, cDeleteMsg, cDeleteWhen, cDynamicCtrls, cDynBackColor, cDynForecolor, cEditCell, cEditKeys, cFixedCtrls
    LOCAL cFocusRect, cFontName, cHdrImgAlign, cHeaderImages, cHeaders, cHelpId, cImage, cInputMask, cItemCount, cItems, cJustify
-   LOCAL cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBFREdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell
-   LOCAL cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadRClick, cOnInsert, cOnLostFocus, cOnQueryData, cOnRClick, cReadOnly
-   LOCAL cSubClass, cToolTip, cVal, cValid, cValidMess, cValue, cWhen, cWidths, lAppend, lBold, lBreak, lButtons, lByCell, lCBE
-   LOCAL lCellTT, lCheckBoxes, lDelete, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove
-   LOCAL lInPlace, lItalic, lKeysLkClp, lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines
-   LOCAL lNoModalEdit, lNoneUnsels, lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent, lSingleBuffer, lStrikeout
-   LOCAL lUnderline, lVirtual, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBeforeIns, cOnBFREdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete
+   LOCAL cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadRClick, cOnInsert, cOnLostFocus, cOnQueryData
+   LOCAL cOnRClick, cReadOnly, cSubClass, cToolTip, cVal, cValid, cValidMess, cValue, cWhen, cWidths, lAppend, lBold, lBreak
+   LOCAL lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols
+   LOCAL lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoHeaders
+   LOCAL lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels, lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent
+   LOCAL lSingleBuffer, lStrikeout, lUnderline, lVirtual, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -9074,6 +9079,8 @@ METHOD pGrid( i ) CLASS TFormEditor
    lCBE                := ( ::ReadLogicalData( i, "CHANGEBEFOREEDIT", "F" ) == "T" )
    cOnRClick           := ::ReadStringData( i, "ON RCLICK", "" )
    cOnRClick           := ::ReadStringData( i, "ONRCLICK", cOnRClick )
+   cOnBeforeIns        := ::ReadStringData( i, "ON BEFOREINSERT", "" )
+   cOnBeforeIns        := ::ReadStringData( i, "ONBEFOREINSERT", cOnBeforeIns )
    cOnInsert           := ::ReadStringData( i, "ON INSERT", "" )
    cOnInsert           := ::ReadStringData( i, "ONINSERT", cOnInsert )
    cOnEditEnd          := ::ReadStringData( i, "ON EDITCELLEND", "" )
@@ -9180,6 +9187,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    ::aNoneUnsels[i]    := lNoneUnsels
    ::aChgBefEdit[i]    := lCBE
    ::aOnRClick[i]      := cOnRClick
+   ::aOnBfrInsert[i]   := cOnBeforeIns
    ::aOnInsert[i]      := cOnInsert
    ::aOnEditCellEnd[i] := cOnEditEnd
    ::aEditFirstVis[i]  := lEditFV
@@ -14421,6 +14429,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF NOTEMPTY( ::aOnRClick[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON RCLICK " + AllTrim( ::aOnRClick[j] )
+         ENDIF
+         IF NOTEMPTY( ::aOnBfrInsert[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON BEFOREINSERT " + AllTrim( ::aOnBfrInsert[j] )
          ENDIF
          IF NOTEMPTY( ::aOnInsert[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON INSERT " + AllTrim( ::aOnInsert[j] )
@@ -19711,6 +19722,7 @@ METHOD EventsClick() CLASS TFormEditor
                        { "On AbortEdit",          ::aOnAbortEdit[j],                                                             1000 }, ;
                        { "On Append",             ::aOnAppend[j],                                                                1000 }, ;
                        { "On BeforeEditCell",     ::aOnBfrEdtCell[j],                                                            1000 }, ;
+                       { "On BeforeInsert",       ::aOnBfrInsert[j],                                                             1000 }, ;
                        { "On Change",             ::aOnChange[j],                                                                1000 }, ;
                        { "On CheckChange",        ::aOnCheckChg[j],                                                              1000 }, ;
                        { "On DblClick",           ::aOnDblClick[j],                                                              1000 }, ;
@@ -19744,20 +19756,21 @@ METHOD EventsClick() CLASS TFormEditor
       ::aOnAbortEdit[j]     := aResults[07]
       ::aOnAppend[j]        := aResults[08]
       ::aOnBfrEdtCell[j]    := aResults[09]
-      ::aOnChange[j]        := aResults[10]
-      ::aOnCheckChg[j]      := aResults[11]
-      ::aOnDblClick[j]      := aResults[12]
-      ::aOnDelete[j]        := aResults[13]
-      ::aOnEditCell[j]      := aResults[14]
-      ::aOnEditCellEnd[j]   := aResults[15]
-      ::aOnEnter[j]         := aResults[16]
-      ::aOnGotFocus[j]      := aResults[17]
-      ::aOnHeadClick[j]     := aResults[18]
-      ::aOnHeadRClick[j]    := aResults[19]
-      ::aOnInsert[j]        := aResults[20]
-      ::aOnLostFocus[j]     := aResults[21]
-      ::aOnQueryData[j]     := aResults[22]
-      ::aOnRClick[j]        := aResults[23]
+      ::aOnBfrInsert[j]     := aResults[10]
+      ::aOnChange[j]        := aResults[11]
+      ::aOnCheckChg[j]      := aResults[12]
+      ::aOnDblClick[j]      := aResults[13]
+      ::aOnDelete[j]        := aResults[14]
+      ::aOnEditCell[j]      := aResults[15]
+      ::aOnEditCellEnd[j]   := aResults[16]
+      ::aOnEnter[j]         := aResults[17]
+      ::aOnGotFocus[j]      := aResults[18]
+      ::aOnHeadClick[j]     := aResults[19]
+      ::aOnHeadRClick[j]    := aResults[20]
+      ::aOnInsert[j]        := aResults[21]
+      ::aOnLostFocus[j]     := aResults[22]
+      ::aOnQueryData[j]     := aResults[23]
+      ::aOnRClick[j]        := aResults[24]
       EXIT
 
    CASE TYPE_HOTKEYBOX
