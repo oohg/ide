@@ -282,6 +282,7 @@
                               { "aOnBfrInsert",   "" }, ;
                               { "aOnChange",      "" }, ;
                               { "aOnCheckChg",    "" }, ;
+                              { "aOnCollapse",    "" }, ;
                               { "aOnDblClick",    "" }, ;
                               { "aOnDelete",      "" }, ;
                               { "aOnDispChange",  "" }, ;
@@ -289,6 +290,7 @@
                               { "aOnEditCell",    "" }, ;
                               { "aOnEditCellEnd", "" }, ;
                               { "aOnEnter",       "" }, ;
+                              { "aOnExpand",      "" }, ;
                               { "aOnGotFocus",    "" }, ;
                               { "aOnHeadClick",   "" }, ;
                               { "aOnHeadRClick",  "" }, ;
@@ -11568,10 +11570,11 @@ METHOD pTimer( i ) CLASS TFormEditor
 METHOD pTree( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, aTarget, cFontName, cHelpId, cIndent, cItemImages, cNodeimages, cObj, cOnChange
-   LOCAL cOnCheckChg, cOnDblClick, cOnDrop, cOnEnter, cOnGotFocus, cOnLabelEdit, cOnLostFocus, cSubClass, cToolTip, cVal, cValid
-   LOCAL cValue, lBold, lBreak, lCheckBoxes, lEditLabels, lEnabled, lEnableDrag, lEnableDrop, lFullRowSel, lHotTrack, lItalic
-   LOCAL lItemIds, lNoBorder, lNoButtons, lNoHScroll, lNoLines, lNoRootButton, lNoScroll, lNoTabStop, lOwnTT, lRTL, lSelBold
-   LOCAL lSingleExpand, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cOnCheckChg, cOnCollapse, cOnDblClick, cOnDrop, cOnEnter, cOnExpand, cOnGotFocus, cOnLabelEdit, cOnLostFocus, cSubClass
+   LOCAL cToolTip, cVal, cValid, cValue, lBold, lBreak, lCheckBoxes, lEditLabels, lEnabled, lEnableDrag, lEnableDrop, lFullRowSel
+   LOCAL lHotTrack, lItalic, lItemIds, lNoBorder, lNoButtons, lNoHScroll, lNoLines, lNoRootButton, lNoScroll, lNoTabStop, lOwnTT
+   LOCAL lRTL, lSelBold, lSingleExpand, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    cObj                := ::ReadStringData( i, "OBJ", "" )
@@ -11655,6 +11658,10 @@ METHOD pTree( i ) CLASS TFormEditor
    cIndent             := ::ReadStringData( i, "INDENT", "" )
    cOnDrop             := ::ReadStringData( i, "ON DROP", "" )
    cOnDrop             := ::ReadStringData( i, "ONDROP", cOnDrop )
+   cOnExpand           := ::ReadStringData( i, "ON EXPAND", "" )
+   cOnExpand           := ::ReadStringData( i, "ONEXPAND", cOnExpand )
+   cOnCollapse         := ::ReadStringData( i, "ON COLLAPSE", "" )
+   cOnCollapse         := ::ReadStringData( i, "ONCOLLAPSE", cOnCollapse )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_TREE ]
@@ -11708,6 +11715,8 @@ METHOD pTree( i ) CLASS TFormEditor
    ::aOnCheckChg[i]    := cOnCheckChg
    ::aIndent[i]        := cIndent
    ::aOnDrop[i]        := cOnDrop
+   ::aOnExpand[i]      := cOnExpand
+   ::aOnCollapse[i]    := cOnCollapse
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, nWidth, nHeight, NIL )
@@ -16512,6 +16521,12 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aOwnTT[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "OWNTOOLTIP"
          ENDIF
+         IF NOTEMPTY( ::aOnCollapse[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON COLLAPSE " + AllTrim( ::aOnCollapse[j] )
+         ENDIF
+         IF NOTEMPTY( ::aOnExpand[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON EXPAND " + AllTrim( ::aOnExpand[j] )
+         ENDIF
          IF NOTEMPTY( ::aOnGotFocus[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON GOTFOCUS " + AllTrim( ::aOnGotFocus[j] )
          ENDIF
@@ -20196,9 +20211,11 @@ METHOD EventsClick() CLASS TFormEditor
    CASE TYPE_TREE
       aData       := { { "On Change",             ::aOnChange[j],                                                                1000 }, ;
                        { "On CheckChange",        ::aOnCheckChg[j],                                                              1000 }, ;
+                       { "On Collapse",           ::aOnCollapse[j],                                                              1000 }, ;
                        { "On DblClick",           ::aOnDblClick[j],                                                              1000 }, ;
                        { "On Drop",               ::aOnDrop[j],                                                                  1000 }, ;
                        { "On Enter",              ::aOnEnter[j],                                                                 1000 }, ;
+                       { "On Expand",             ::aOnExpand[j],                                                                1000 }, ;
                        { "On GotFocus",           ::aOnGotFocus[j],                                                              1000 }, ;
                        { "On LabelEdit",          ::aOnLabelEdit[j],                                                             1000 }, ;
                        { "On LostFocus",          ::aOnLostFocus[j],                                                             1000 } }
@@ -20214,12 +20231,14 @@ METHOD EventsClick() CLASS TFormEditor
       ENDIF
       ::aOnChange[j]        := aResults[01]
       ::aOnCheckChg[j]      := aResults[02]
-      ::aOnDblClick[j]      := aResults[03]
-      ::aOnDrop[j]          := aResults[04]
-      ::aOnEnter[j]         := aResults[05]
-      ::aOnGotFocus[j]      := aResults[06]
-      ::aOnLabelEdit[j]     := aResults[07]
-      ::aOnLostFocus[j]     := aResults[08]
+      ::aOnCollapse[j]      := aResults[03]
+      ::aOnDblClick[j]      := aResults[04]
+      ::aOnDrop[j]          := aResults[05]
+      ::aOnEnter[j]         := aResults[06]
+      ::aOnExpand[j]        := aResults[07]
+      ::aOnGotFocus[j]      := aResults[08]
+      ::aOnLabelEdit[j]     := aResults[09]
+      ::aOnLostFocus[j]     := aResults[10]
       EXIT
 
    CASE TYPE_XBROWSE
