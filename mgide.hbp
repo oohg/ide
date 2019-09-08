@@ -28,6 +28,9 @@ ${HG_ROOT}\oohg.hbc
 # path to fmg files
 -ifmgs
 
+#gt
+-gui
+
 # files to compile and link
 prgs\mgide.prg
 prgs\dbucvc.prg
