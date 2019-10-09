@@ -8,6 +8,14 @@
  * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
  */
 
+2019-09-08 22:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Textbox's TOOLTIP sub-clauses to ACTION and ACTION2 clauses.
+     + Button's NODESTROY clause.
+     + RichEditBox's VERSION clause.
+     + Timer's ONCE clause.
+     + Form's INTERACTIVECLOSE ON|OFF|QUERY clause.
+
 2019-09-08 12:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    ! Console window is opened because of missing -gui flag.
 
