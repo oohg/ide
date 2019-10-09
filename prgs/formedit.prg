@@ -245,6 +245,7 @@
                               { "aNoContext",     .F. }, ;
                               { "aNodeImages",    "" }, ;
                               { "aNoDelMsg",      .F. }, ;
+                              { "aNoDestroy",     .F. }, ;
                               { "aNoDIBSection",  .F. }, ;
                               { "aNoErrorDlg",    .F. }, ;
                               { "aNoFocusRect",   .F. }, ;
@@ -280,6 +281,7 @@
                               { "aOnAppend",      "" }, ;
                               { "aOnBfrEdtCell",  "" }, ;
                               { "aOnBfrInsert",   "" }, ;
+                              { "aOnce",         .F. }, ;
                               { "aOnChange",      "" }, ;
                               { "aOnCheckChg",    "" }, ;
                               { "aOnCollapse",    "" }, ;
@@ -374,6 +376,8 @@
                               { "aTitleBackClr",  "NIL" }, ;
                               { "aTitleFontClr",  "NIL" }, ;
                               { "aToolTip",       "" }, ;
+                              { "aToolTipAct1",   "" }, ;
+                              { "aToolTipAct2",   "" }, ;
                               { "aTop",           .F. }, ;
                               { "aTrailFontClr",  "NIL" }, ;
                               { "aTransparent",   .F. }, ;
@@ -388,6 +392,7 @@
                               { "aValue",         "" }, ;
                               { "aValueSource",   "" }, ;
                               { "aVCenter",       .F. }, ;
+                              { "aVersion",       "" }, ;
                               { "aVertical",      .F. }, ;
                               { "aVirtual",       .F. }, ;
                               { "aVScroll",       .F. }, ;
@@ -491,6 +496,7 @@ CLASS TFormEditor
    DATA cFGripperText        INIT ""
    DATA cFHeight             INIT ""
    DATA cFIcon               INIT ""
+   DATA cFInterActClose      INIT ""
    DATA cFMaxHeight          INIT ""
    DATA cFMaxWidth           INIT ""
    DATA cFMinHeight          INIT ""
@@ -3692,7 +3698,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
             <aimagemargin>, <{onmousemove}>, <.no3dcolors.>, <.autofit.>, ;
             ! <.ldib.>, <backcolor>, <.nohotlight.>, <.solidbk.>, <fontcolor>, ;
             {<"txth">, <"txtv">}, <.noover.>, <atextmargin>, <.fittxt.>, <.fitimg.>, ;
-            <.imgsize.>, <.ltransp.>, <.lnofocus.>, <.lnoimglst.> )
+            <.imgsize.>, <.ltransp.>, <.lnofocus.>, <.lnoimglst.>, <.nodestroy.> )
 */
       oCtrl := TButton():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aCaption[i], "C", cName ), NIL, nWidth, nHeight, NIL, NIL, ;
@@ -3705,7 +3711,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
                   ! ::aDIBSection[i], NIL, ::aNoHotLight[i], ::aSolid[i], NIL, ;
                   { ::StrToValueCtrl( ::aAlignH[i], "C", NIL ), ::StrToValueCtrl( ::aAlignV[i], "C", NIL ) }, ;
                   ::aNoPrint[i], ::StrToValueCtrl( ::aTxtMrgn[i], "A", NIL, 4, 0, "N" ), ::aFitTxt[i], ::aFitImg[i], ;
-                  ::aImageSize[i], ::aTransparent[i], ::aNoFocusRect[i], ::aNoImgList[i] )
+                  ::aImageSize[i], ::aTransparent[i], ::aNoFocusRect[i], ::aNoImgList[i], .F. )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -4513,14 +4519,14 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
             <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, <(field)>, ;
             <backcolor>, <.rtl.>, <.disabled.>, <{selchange}>, <fontcolor>, ;
             <.nohidesel.>, <focusedpos>, <.novscroll.>, <.nohscroll.>, <(file)>, ;
-            iif( <.plain.>, 1, <type> ), <{hscroll}>, <{vscroll}>
+            iif( <.plain.>, 1, <type> ), <{hscroll}>, <{vscroll}>, <nInsType>, <nVer> )
 */
       oCtrl := TEditRich():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, ;
                   ::StrToValueCtrl( ::aValue[i], "N", cName ), NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ;
                   ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), NIL, NIL, NIL, .T., .F., NIL, .F., .F., ;
                   ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, NIL, ::aRTL[i], .F., NIL, NIL, ;
                   ::aNoHideSel[i], ::StrToValueCtrl( ::aFocusedPos[i], "N", NIL ), ::aNoVScroll[i], ::aNoHScroll[i], NIL, ;
-                  iif( ::aPlainText[i], 1, ::StrToValueCtrl( ::aFileType[i], "N", NIL ) ), NIL, NIL, NIL )
+                  iif( ::aPlainText[i], 1, ::StrToValueCtrl( ::aFileType[i], "N", NIL ) ), NIL, NIL, NIL, NIL )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -4725,7 +4731,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
             <.date.>, <.numeric.>, <inputmask>, <format>, [ <subclass>() ], ;
             <{action}>, <abitmap>, <btnwidth>, <{action2}>, <{bWhen}>, ;
             <.centeralign.>, <year>, <{textfilled}>, <nInsType>, <.place.>, ;
-            <.nocm.> )
+            <.nocm.>, <tb1>, <tb2> )
 */
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
@@ -4754,7 +4760,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
                   .F., NIL, ::aDate[i], ::aNumeric[i], ::StrToValueCtrl( ::aInputMask[i], "C", NIL ), ;
                   cFormat, NIL, NIL, aImages, ;
                   ::StrToValueCtrl( ::aButtonWidth[i], "N", NIL ), NIL, NIL, ::aCenterAlign[i], ;
-                  ::aDefaultYear[i], NIL, ::StrToValueCtrl( ::aInsertType[i], "N", NIL ), ::aCtrlsLeft[i], .F. )
+                  ::aDefaultYear[i], NIL, ::StrToValueCtrl( ::aInsertType[i], "N", NIL ), ::aCtrlsLeft[i], .F., NIL, NIL )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -4800,12 +4806,12 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
    CASE nControlType == TYPE_TIMER
 /*
       [ <obj> := ] _OOHG_SelectSubClass( TTimer(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <interval>, <{action}>, <.disabled.> )
+            Define( <(name)>, <(parent)>, <interval>, <{action}>, <.disabled.>, <.once.> )
 */
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, cName, nWidth, nHeight, ;
                   NIL, NIL, .F., .F., .F., ;
                   .F., .F., .F., WHITE, NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ;
-                  .F., .F., .F., .F., .F., .F., .F., .F., .F., NIL, .F. )
+                  .F., .F., .F., .F., .F., .F., .F., .F., .F., NIL, .F., .F. )
       oCtrl:OnClick    := { || ::DrawOutline( oCtrl ) }
       oCtrl:OnRClick   := { || ::DrawOutline( oCtrl ) }
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
@@ -6507,14 +6513,17 @@ METHOD ReadOopData( i, cProp, cDefault ) CLASS TFormEditor
    RETURN cDefault
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD ReadStringData( i, cProp, cDefault ) CLASS TFormEditor
+METHOD ReadStringData( i, cProp, cDefault, nLine ) CLASS TFormEditor
 
    LOCAL j, nFrom, nTo, nPos, cLine
 
-   nFrom := iif( i > 0, ::aSpeed[i], ::cSSpeed ) + 1
+   DEFAULT nLine TO 0
+
+   nFrom := iif( nLine > 0, nLine, iif( i > 0, ::aSpeed[i], ::cSSpeed ) ) + 1
    nTo   := iif( i > 0, ::aNumber[i], ::cSNumber )
    FOR j := nFrom TO nTo
       IF Empty( ::aLine[j] )
+         nLine := 0
          RETURN cDefault
       ENDIF
       IF ( nPos := At( " " + Upper( cProp ) + " ", Upper( ::aLine[j] ) ) ) > 0 .AND. Empty( Left( ::aLine[j], nPos ) )
@@ -6524,14 +6533,18 @@ METHOD ReadStringData( i, cProp, cDefault ) CLASS TFormEditor
          ENDIF
          cLine := LTrim( cLine )
          IF Len( cLine ) == 0
+            nLine := 0
             RETURN cDefault
          ELSEIF Upper( cLine ) == "NIL"
+            nLine := 0
             RETURN cDefault
          ELSE
+            nLine := j
             RETURN cLine
          ENDIF
       ENDIF
    NEXT j
+   nLine := 0
 
    RETURN cDefault
 
@@ -6847,9 +6860,9 @@ METHOD DrawPoints() CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD PreProcessDefineWindow() CLASS TFormEditor
 
-   LOCAL zi, zf, i, cData := "", j, k, c
+   LOCAL zi, zf, i, cData := "", j, k, c, lOnIsOk
    LOCAL aTokens0 := { "MAIN", "CHILD", "MODAL", "NOSHOW", "TOPMOST", "NOMINIMIZE", "NOMAXIMIZE", "NOSIZE", "NOSYSMENU", "NOCAPTION", "NOAUTORELEASE", "HELPBUTTON", "FOCUSED", "BREAK", "SPLITCHILD", "RTL", "CLIENTAREA", "MODALSIZE", "MDI", "MDICHILD", "MDICLIENT", "INTERNAL", "NODWP" }
-   LOCAL aTokens1 := { "AT", "TITLE", "WIDTH", "HEIGHT", "OBJ", "PARENT", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH" }
+   LOCAL aTokens1 := { "AT", "TITLE", "WIDTH", "HEIGHT", "OBJ", "PARENT", "ICON", "GRIPPERTEXT", "SUBCLASS", "CURSOR", "BACKCOLOR", "BACKIMAGE", "FONT", "FONTCOLOR", "MAXHEIGHT", "MAXWIDTH", "MINHEIGHT", "MINWIDTH", "NOTIFYICON", "NOTIFYTOOLTIP", "SIZE", "STRETCH", "INTERACTIVECLOSE" }
    LOCAL aTokens2 := { "DBLCLICK", "GOTFOCUS", "HSCROLLBOX", "INIT", "INTERACTIVECLOSE", "LOSTFOCUS", "MAXIMIZE", "MCLICK", "MDBLCLICK", "MINIMIZE", "MOUSECLICK", "MOUSEDRAG", "MOUSEMOVE", "MOVE", "NOTIFYCLICK", "PAINT", "RCLICK", "RDBLCLICK", "RELEASE", "RESTORE", "SCROLLDOWN", "SCROLLLEFT", "SCROLLRIGHT", "SCROLLUP", "SIZE", "VSCROLLBOX" }
 
    /* Concatenate lines */
@@ -6937,11 +6950,12 @@ METHOD PreProcessDefineWindow() CLASS TFormEditor
          i ++
       CASE AScan( aTokens1, ::aFormData[i] ) > 0
          /* Properties with 1 parameter */
+         lOnIsOk := ( ::aFormData[i] == "INTERACTIVECLOSE" )
          i ++
          j := i
          c := " "
          DO WHILE ::aFormData[j] # ";" .AND. ;
-                  ! ::aFormData[j] == "ON" .AND. ;
+                  ( lOnIsOk .OR. ! ::aFormData[j] == "ON" ) .AND. ;
                   ! ::aFormData[j] == "VIRTUAL" .AND. ;
                   ! AScan( aTokens0, ::aFormData[j] ) > 0 .AND. ;
                   ! AScan( aTokens1, ::aFormData[j] ) > 0
@@ -7026,7 +7040,8 @@ METHOD pForm() CLASS TFormEditor
    ::cFTitle              := ::ReadFormStringData( "TITLE", "" )
    ::cFObj                := ::ReadFormStringData( "OBJ", "" )
    ::cFIcon               := ::ReadFormStringData( "ICON", "" )
-   ::cFGripperText        := ::ReadFormStringData( "GRIPPERTEXT", "" )
+   ::cFGripperText        := ::ReadFormStringData( "GRIPPERTEXT", "NIL" )
+   ::cFInterActClose      := ::ReadFormStringData( "INTERACTIVECLOSE", "NIL" )
    ::cFBackColor          := ::ReadFormStringData( "BACKCOLOR", "" )
    ::cFCursor             := ::ReadFormStringData( "CURSOR", "" )
    ::cFFontName           := ::ReadFormStringData( "FONT", "" )             /* Do not force a font when the form has none, use OOHG default */
@@ -7906,9 +7921,9 @@ METHOD pButton( i ) CLASS TFormEditor
    LOCAL aBackColor, aFontColor, cAction, cAlign, cBuffer, cCaption, cFocusRect, cFontName, cHBitmap, cHelpId, cImgMargin
    LOCAL cNoFocusRect, cObj, cOnGotFocus, cOnLostFocus, cOnMouseMove, cOOHGDraw, cPicture, cSubClass, cToolTip, cTxtAlignH
    LOCAL cTxtAlignV, cVal, cWinDraw, lBold, lBottom, lCancel, lCenter, lDIBSection, lEnabled, lFitImg, lFitTxt, lFlat, lForceScale
-   LOCAL lHCenter, lHLeft, lHRight, lImgSize, lItalic, lLeft, lMultiLine, lNo3DColors, lNoHotLight, lNoImgList, lNoLoadTrans
-   LOCAL lNoPrefix, lNoPrint, lNoTabStop, lRight, lRTL, lSolid, lStretch, lStrikeout, lTop, lTransp, lUnderline, lVisible, lVBottom
-   LOCAL lVCenter, lVTop, nCol, nFontSize, nHeight, nRow, cTxtMrgn, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lHCenter, lHLeft, lHRight, lImgSize, lItalic, lLeft, lMultiLine, lNo3DColors, lNoDestroy, lNoHotLight, lNoImgList
+   LOCAL lNoLoadTrans, lNoPrefix, lNoPrint, lNoTabStop, lRight, lRTL, lSolid, lStretch, lStrikeout, lTop, lTransp, lUnderline
+   LOCAL lVisible, lVBottom, lVCenter, lVTop, nCol, nFontSize, nHeight, nRow, cTxtMrgn, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8012,6 +8027,7 @@ METHOD pButton( i ) CLASS TFormEditor
    cFocusRect          := ::ReadLogicalData( i, "FOCUSRECT", "N" )
    cNoFocusRect        := ::ReadLogicalData( i, "NOFOCUSRECT", "N" )
    lNoImgList          := ( ::ReadLogicalData( i, "NOIMAGELIST", "F" ) == "T" )
+   lNoDestroy          := ( ::ReadLogicalData( i, "NODESTROY", "F" ) == "T" )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_BUTTON ]
@@ -8065,6 +8081,7 @@ METHOD pButton( i ) CLASS TFormEditor
    ::aTransparent[i]   := lTransp
    ::aNoFocusRect[i]   := ( cFocusRect == "F" .AND. cNoFocusRect == "T" )
    ::aNoImgList[i]     := lNoImgList
+   ::aNoDestroy[i]     := lNoDestroy
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, nWidth, nHeight, NIL )
@@ -10567,7 +10584,7 @@ METHOD pRichedit( i ) CLASS TFormEditor
    LOCAL aBackColor, aFontColor, cField, cFile, cFileType, cFocusedPos, cFontName, cHelpID, cInsertType, cMaxLength, cObj, cOnChange
    LOCAL cOnGotFocus, cOnHScroll, cOnLostFocus, cOnSelChange, cOnVScroll, cSubClass, cToolTip, cVal, cValue, lBold, lBreak
    LOCAL lEnabled, lItalic, lNoHideSel, lNoHScroll, lNoTabStop, lNoVScroll, lPlainText, lReadonly, lRTL, lStrikeout, lUnderline
-   LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize, uVersion
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -10637,6 +10654,7 @@ METHOD pRichedit( i ) CLASS TFormEditor
    cOnHScroll          := ::ReadStringData( i, "ON HSCROLL", "" )
    cOnHScroll          := ::ReadStringData( i, "ONHSCROLL", cOnHScroll )
    cInsertType         := ::ReadStringData( i, "INSERTTYPE", "" )
+   uVersion            := ::ReadStringData( i, "VERSION", "" )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_RICHEDITBOX ]
@@ -10677,6 +10695,7 @@ METHOD pRichedit( i ) CLASS TFormEditor
    ::aOnVScroll[i]     := cOnVScroll
    ::aOnHScroll[i]     := cOnHScroll
    ::aInsertType[i]    := cInsertType
+   ::aVersion[i]       := uVersion
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, nWidth, nHeight, NIL )
@@ -11281,11 +11300,11 @@ METHOD pTextArray( i ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD pTextBox( i ) CLASS TFormEditor
 
-   LOCAL aBackColor, aFontColor, cAction, cAction2, cButtonWidth, cDefaultYear, cField, cFocusedPos, cFontName, cFormat, cHelpID
+   LOCAL aBackColor, aFontColor, cAction1, cAction2, cButtonWidth, cDefaultYear, cField, cFocusedPos, cFontName, cFormat, cHelpID
    LOCAL cImage, cInputMask, cInsertType, cMaxLength, cObj, cOnChange, cOnEnter, cOnGotFocus, cOnLostFocus, cOnTextFill
-   LOCAL cSubClass, cToolTip, cVal, cValid, cValue, cWhen, lAutoSkip, lBold, lCenterAlign, lCtrlsLeft, lDate, lEnabled, lItalic
-   LOCAL lLowerCase, lNoBorder, lNoContext, lNoTabStop, lNumeric, lPassword, lReadonly, lRightAlign, lRTL, lStrikeout, lUnderline
-   LOCAL lUpperCase, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cSubClass, cToolTip, cToolTipA1, cToolTipA2, cVal, cValid, cValue, cWhen, lAutoSkip, lBold, lCenterAlign, lCtrlsLeft
+   LOCAL lDate, lEnabled, lItalic, lLowerCase, lNoBorder, lNoContext, lNoTabStop, lNumeric, lPassword, lReadonly, lRightAlign, lRTL
+   LOCAL lStrikeout, lUnderline, lUpperCase, lVisible, nCol, nFontSize, nHeight, nLine, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -11357,8 +11376,12 @@ METHOD pTextBox( i ) CLASS TFormEditor
    cInputMask          := ::ReadStringData( i, "PICTURE", cInputMask )
    cFormat             := ::ReadStringData( i, "FORMAT", "" )
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
-   cAction             := ::ReadStringData( i, "ACTION", "" )
-   cAction2            := ::ReadStringData( i, "ACTION2", "" )
+   nLine := 0
+   cAction1            := ::ReadStringData( i, "ACTION", "", @nLine )
+   cToolTipA1          := ::ReadStringData( i, "TOOLTIP", "", nLine )
+   nLine := 0
+   cAction2            := ::ReadStringData( i, "ACTION2", "", @nLine )
+   cToolTipA2          := ::ReadStringData( i, "TOOLTIP", "", nLine )
    cImage              := ::ReadStringData( i, "IMAGE", "" )
    cButtonWidth        := ::ReadStringData( i, "BUTTONWIDTH", "" )
    cWhen               := ::ReadStringData( i, "WHEN", "" )
@@ -11418,8 +11441,10 @@ METHOD pTextBox( i ) CLASS TFormEditor
    ::aInputMask[i]     := cInputMask
    ::aFormat[i]        := cFormat
    ::aSubClass[i]      := cSubClass
-   ::aAction[i]        := cAction
+   ::aAction[i]        := cAction1
+   ::aToolTipAct1[i]   := cToolTipA1
    ::aAction2[i]       := cAction2
+   ::aToolTipAct2[i]   := cToolTipA2
    ::aImage[i]         := cImage
    ::aButtonWidth[i]   := cButtonWidth
    ::aWhen[i]          := cWhen
@@ -11536,7 +11561,7 @@ METHOD pTimePicker( i ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD pTimer( i ) CLASS TFormEditor
 
-   LOCAL cAction, cInterval, cObj, cSubClass, lEnabled, nCol, nRow, oCtrl
+   LOCAL cAction, cInterval, cObj, cSubClass, lEnabled, lOnce, nCol, nRow, oCtrl
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -11548,6 +11573,8 @@ METHOD pTimer( i ) CLASS TFormEditor
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
    lEnabled            := ( ::ReadLogicalData( i, "DISABLED", "F" ) == "F" )
    lEnabled            := ( Upper( ::ReadOopData( i, "ENABLED", iif( lEnabled, ".T.", ".F." ) ) ) == ".T." )
+   lOnce               := ( ::ReadLogicalData( i, "ONCE", "F" ) == "T" )
+   lOnce               := ( Upper( ::ReadOopData( i, "ONCE", iif( lOnce, ".T.", ".F." ) ) ) == ".T." )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_TIMER ]
@@ -11556,6 +11583,7 @@ METHOD pTimer( i ) CLASS TFormEditor
    ::aAction[i]        := cAction
    ::aSubClass[i]      := cSubClass
    ::aDisabled[i]      := ! lEnabled
+   ::aOnce[i]          := lOnce
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, NIL, NIL, NIL )
@@ -12404,6 +12432,9 @@ METHOD Save( lSaveAs ) CLASS TFormEditor
    ENDIF
    IF NOTEMPTY( ::cFGripperText )
       Output += " ;" + CRLF + Space( nSpacing ) + "GRIPPERTEXT " + AllTrim( ::cFGripperText )
+   ENDIF
+   IF NOTEMPTY( ::cFInterActClose )
+      Output += " ;" + CRLF + Space( nSpacing ) + "INTERACTIVECLOSE " + AllTrim( ::cFInterActClose )
    ENDIF
    IF NOTEMPTY( ::cFSubClass )
       Output += " ;" + CRLF + Space( nSpacing ) + "SUBCLASS " + AllTrim( ::cFSubClass )
@@ -13425,6 +13456,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aNoImgList[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOIMAGELIST"
+         ENDIF
+         IF ::aNoDestroy[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODESTROY"
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15743,6 +15777,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTZERO( ::aInsertType[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "INSERTTYPE " + AllTrim( ::aInsertType[j] )
          ENDIF
+         IF NOTEMPTY( ::aVersion[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "VERSION " + AllTrim( ::aVersion[j] )
+         ENDIF
          Output += CRLF + CRLF
       ENDIF
 
@@ -16354,8 +16391,16 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aAction[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ACTION " + AllTrim( ::aAction[j] )
          ENDIF
+         // This clause must immediately  follow ACTION
+         IF NOTEMPTY( ::aToolTipAct1[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct1[j] )
+         ENDIF
          IF NOTEMPTY( ::aAction2[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ACTION2 " + AllTrim( ::aAction2[j] )
+         ENDIF
+         // This clause must immediately  follow ACTION2
+         IF NOTEMPTY( ::aToolTipAct2[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct2[j] )
          ENDIF
          IF NOTEMPTY( ::aImage[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "IMAGE " + AllTrim( ::aImage[j] )
@@ -16479,6 +16524,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aDisabled[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
+         ENDIF
+         IF ::aOnce[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ONCE"
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -17305,6 +17353,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Invisible",          ::aInvisible[j],                                                               .F. }, ;
                        { "MultiLine",          ::aMultiLine[j],                                                               .F. }, ;
                        { "No3DColors",         ::aNo3DColors[j],                                                              .F. }, ;
+                       { "NoDestroy",          ::aNoDestroy[j],                                                               .F. }, ;
                        { "NoFocusRect",        ::aNoFocusRect[j],                                                             .F. }, ;
                        { "NoHotLight",         ::aNoHotLight[j],                                                              .F. }, ;
                        { "NoImageList",        ::aNoImgList[j],                                                               .F. }, ;
@@ -17352,23 +17401,24 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aInvisible[j]        := aResults[18]
       ::aMultiLine[j]        := aResults[19]
       ::aNo3DColors[j]       := aResults[20]
-      ::aNoFocusRect[j]      := aResults[21]
-      ::aNoHotLight[j]       := aResults[22]
-      ::aNoImgList[j]        := aResults[23]
-      ::aNoLoadTrans[j]      := aResults[24]
-      ::aNoPrefix[j]         := aResults[25]
-      ::aNoPrint[j]          := aResults[26]
-      ::aNoTabStop[j]        := aResults[27]
-      ::aPicture[j]          := aResults[28]
-      ::aRTL[j]              := aResults[29]
-      ::aSolid[j]            := aResults[30]
-      ::aStretch[j]          := aResults[31]
-      ::aSubClass[j]         := aResults[32]
-      ::aAlignH[j]           := { "NIL", "LEFT", "RIGHT", "CENTER" } [ aResults[33] ]
-      ::aAlignV[j]           := { "NIL", "TOP", "BOTTOM", "VCENTER" } [ aResults[34] ]
-      ::aTxtMrgn[j]          := aResults[35]
-      ::aToolTip[j]          := aResults[36]
-      ::aTransparent[j]      := aResults[37]
+      ::aNoDestroy[j]        := aResults[21]
+      ::aNoFocusRect[j]      := aResults[22]
+      ::aNoHotLight[j]       := aResults[23]
+      ::aNoImgList[j]        := aResults[24]
+      ::aNoLoadTrans[j]      := aResults[25]
+      ::aNoPrefix[j]         := aResults[26]
+      ::aNoPrint[j]          := aResults[27]
+      ::aNoTabStop[j]        := aResults[28]
+      ::aPicture[j]          := aResults[29]
+      ::aRTL[j]              := aResults[30]
+      ::aSolid[j]            := aResults[31]
+      ::aStretch[j]          := aResults[32]
+      ::aSubClass[j]         := aResults[33]
+      ::aAlignH[j]           := { "NIL", "LEFT", "RIGHT", "CENTER" } [ aResults[34] ]
+      ::aAlignV[j]           := { "NIL", "TOP", "BOTTOM", "VCENTER" } [ aResults[35] ]
+      ::aTxtMrgn[j]          := aResults[36]
+      ::aToolTip[j]          := aResults[37]
+      ::aTransparent[j]      := aResults[38]
       EXIT
 
    CASE TYPE_CHECKBOX
@@ -18639,7 +18689,8 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SubClass",           ::aSubClass[j],                                                                1000 }, ;
                        { "ToolTip",            ::aToolTip[j],                                                                 1000 }, ;
-                       { "Value",              ::aValue[j],                                                                   1000 } }
+                       { "Value",              ::aValue[j],                                                                   1000 }, ;
+                       { "Version",            ::aVersion[j],                                                                 1000 } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
       aFormats    := Array( Len( aData ) )
@@ -18672,6 +18723,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aSubClass[j]         := aResults[20]
       ::aToolTip[j]          := aResults[21]
       ::aValue[j]            := aResults[22]
+      ::aVersion[j]          := aResults[23]
       EXIT
 
    CASE TYPE_SCROLLBAR
@@ -18989,6 +19041,7 @@ METHOD PropertiesClick() CLASS TFormEditor
    CASE TYPE_TIMER
       aData       := { { "Name",               ::aName[j],                                                                    1000 }, ;
                        { "Obj",                ::aCObj[j],                                                                    1000 }, ;
+                       { "Once",               ::aOnce[j],                                                                    .F.  }, ;
                        { "Disabled",           ::aDisabled[j],                                                                .F.  }, ;
                        { "Interval",           ::aValue[j],                                                                   1000 }, ;
                        { "SubClass",           ::aSubClass[j],                                                                1000 } }
@@ -19004,9 +19057,10 @@ METHOD PropertiesClick() CLASS TFormEditor
       ENDIF
       ::aName[j]             := iif( ! ::IsUnique( aResults[01], j ), ::aName[j], AllTrim( aResults[01] ) )
       ::aCObj[j]             := aResults[02]
-      ::aDisabled[j]         := aResults[03]
-      ::aValue[j]            := aResults[04]
-      ::aSubClass[j]         := aResults[05]
+      ::aOnce[j]             := aResults[03]
+      ::aDisabled[j]         := aResults[04]
+      ::aValue[j]            := aResults[05]
+      ::aSubClass[j]         := aResults[06]
       EXIT
 
    CASE TYPE_TREE
@@ -20147,7 +20201,9 @@ METHOD EventsClick() CLASS TFormEditor
 
    CASE TYPE_TEXTBOX
       aData       := { { "Action",                ::aAction[j],                                                                  1000 }, ;
+                       { "ToolTip",               ::aToolTipAct1[j],                                                             1000 }, ;
                        { "Action2",               ::aAction2[j],                                                                 1000 }, ;
+                       { "ToolTip",               ::aToolTipAct2[j],                                                             1000 }, ;
                        { "On Change",             ::aOnChange[j],                                                                1000 }, ;
                        { "On Enter",              ::aOnEnter[j],                                                                 1000 }, ;
                        { "On GotFocus",           ::aOnGotFocus[j],                                                              1000 }, ;
@@ -20164,12 +20220,14 @@ METHOD EventsClick() CLASS TFormEditor
          RETURN NIL
       ENDIF
       ::aAction[j]          := aResults[01]
-      ::aAction2[j]         := aResults[02]
-      ::aOnChange[j]        := aResults[03]
-      ::aOnEnter[j]         := aResults[04]
-      ::aOnGotFocus[j]      := aResults[05]
-      ::aOnLostFocus[j]     := aResults[06]
-      ::aOnTextFilled[j]    := aResults[07]
+      ::aToolTipAct1[j]     := aResults[02]
+      ::aAction2[j]         := aResults[03]
+      ::aToolTipAct2[j]     := aResults[04]
+      ::aOnChange[j]        := aResults[05]
+      ::aOnEnter[j]         := aResults[06]
+      ::aOnGotFocus[j]      := aResults[07]
+      ::aOnLostFocus[j]     := aResults[08]
+      ::aOnTextFilled[j]    := aResults[09]
       EXIT
 
    CASE TYPE_TIMEPICKER
@@ -20333,57 +20391,58 @@ METHOD FrmProperties() CLASS TFormEditor
    ENDIF
 
    DO WHILE .T.
-      aData       := { { "Name",          "TEMPLATE",        NIL  }, ;
-                       { "Object",        ::cFObj,           1000 }, ;
-                       { "BackColor",     ::cFBackColor,     1000 }, ;
-                       { "BackImage",     ::cFBackImage,     1000 }, ;
-                       { "Break",         ::lFBreak,         .F.  }, ;
-                       { "Child",         ::lFChild,         .F.  }, ;
-                       { "ClientArea",    ::lFClientArea,    .F.  }, ;
-                       { "Col",           ::cFPosition[2],   1000 }, ;
-                       { "Cursor",        ::cFCursor,        1000 }, ;
-                       { "Focused",       ::lFFocused,       .F.  }, ;
-                       { "Font",          ::cFFontName,      1000 }, ;
-                       { "FontColor",     ::cFFontColor,     1000 }, ;
-                       { "FontSize",      ::cFFontSize,      1000 }, ;
-                       { "GripperText",   ::cFGripperText,   1000 }, ;
-                       { "Height",        ::cFHeight,        1000 }, ;
-                       { "HelpButton",    ::lFHelpButton,    .F.  }, ;
-                       { "Icon",          ::cFIcon,          1000 }, ;
-                       { "Internal",      ::lFInternal,      .F.  }, ;
-                       { "Main",          ::lFMain,          .F.  }, ;
-                       { "MaxHeight",     ::cFMaxHeight,     1000 }, ;
-                       { "MaxWidth",      ::cFMaxWidth,      1000 }, ;
-                       { "MDI",           ::lFMDI,           .F.  }, ;
-                       { "MDIChild",      ::lFMDIChild,      .F.  }, ;
-                       { "MDIClient",     ::lFMDIClient,     .F.  }, ;
-                       { "MinHeight",     ::cFMinHeight,     1000 }, ;
-                       { "MinWidth",      ::cFMinWidth,      1000 }, ;
-                       { "Modal",         ::lFModal,         .F.  }, ;
-                       { "ModalSize",     ::lFModalSize,     .F.  }, ;
-                       { "NoAutoRelease", ::lFNoAutoRelease, .F.  }, ;
-                       { "NoCaption",     ::lFNoCaption,     .F.  }, ;
-                       { "NODWP",         ::lFNoDefWinProc,  .F.  }, ;
-                       { "NoMaximize",    ::lFNoMaximize,    .F.  }, ;
-                       { "NoMinimize",    ::lFNoMinimize,    .F.  }, ;
-                       { "NoShow",        ::lFNoShow,        .F.  }, ;
-                       { "NoSize",        ::lFNoSize,        .F.  }, ;
-                       { "NoSysMenu",     ::lFNoSysMenu,     .F.  }, ;
-                       { "NotifyIcon",    ::cFNotifyIcon,    1000 }, ;
-                       { "NotifyToolTip", ::cFNotifyTooltip, 1000 }, ;
-                       { "Parent",        ::cFParent,        1000 }, ;
-                       { "Row",           ::cFPosition[1],   1000 }, ;
-                       { "RTL",           ::lFRTL,           .F.  }, ;
-                       { "SplitChild",    ::lFSplitchild,    .F.  }, ;
-                       { "Stretch",       ::lFStretch,       .F.  }, ;
-                       { "SubClass",      ::cFSubClass,      1000 }, ;
-                       { "Title",         ::cFTitle,         1000 }, ;
-                       { "Topmost",       ::lFTopmost,       .F.  }, ;
-                       { "VirtualHeight", ::cFVirtualH,      1000 }, ;
-                       { "VirtualWidth",  ::cFVirtualW,      1000 }, ;
-                       { "Width",         ::cFWidth,         1000 }, ;
-                       { "#define",       cDefines,          "M"  }, ;
-                       { "#undef",        cUndefs,           "M"  } }
+      aData       := { { "Name",             "TEMPLATE",                                               NIL  }, ;
+                       { "Object",           ::cFObj,                                                  1000 }, ;
+                       { "BackColor",        ::cFBackColor,                                            1000 }, ;
+                       { "BackImage",        ::cFBackImage,                                            1000 }, ;
+                       { "Break",            ::lFBreak,                                                .F.  }, ;
+                       { "Child",            ::lFChild,                                                .F.  }, ;
+                       { "ClientArea",       ::lFClientArea,                                           .F.  }, ;
+                       { "Col",              ::cFPosition[2],                                          1000 }, ;
+                       { "Cursor",           ::cFCursor,                                               1000 }, ;
+                       { "Focused",          ::lFFocused,                                              .F.  }, ;
+                       { "Font",             ::cFFontName,                                             1000 }, ;
+                       { "FontColor",        ::cFFontColor,                                            1000 }, ;
+                       { "FontSize",         ::cFFontSize,                                             1000 }, ;
+                       { "GripperText",      ::cFGripperText,                                          1000 }, ;
+                       { "Height",           ::cFHeight,                                               1000 }, ;
+                       { "HelpButton",       ::lFHelpButton,                                           .F.  }, ;
+                       { "Icon",             ::cFIcon,                                                 1000 }, ;
+                       { "InteractiveClose", AScan( { "ON", "OFF", "QUERY" }, ::cFInterActClose ) + 1, { "NIL", "ON", "OFF", "QUERY" } }, ;
+                       { "Internal",         ::lFInternal,                                             .F.  }, ;
+                       { "Main",             ::lFMain,                                                 .F.  }, ;
+                       { "MaxHeight",        ::cFMaxHeight,                                            1000 }, ;
+                       { "MaxWidth",         ::cFMaxWidth,                                             1000 }, ;
+                       { "MDI",              ::lFMDI,                                                  .F.  }, ;
+                       { "MDIChild",         ::lFMDIChild,                                             .F.  }, ;
+                       { "MDIClient",        ::lFMDIClient,                                            .F.  }, ;
+                       { "MinHeight",        ::cFMinHeight,                                            1000 }, ;
+                       { "MinWidth",         ::cFMinWidth,                                             1000 }, ;
+                       { "Modal",            ::lFModal,                                                .F.  }, ;
+                       { "ModalSize",        ::lFModalSize,                                            .F.  }, ;
+                       { "NoAutoRelease",    ::lFNoAutoRelease,                                        .F.  }, ;
+                       { "NoCaption",        ::lFNoCaption,                                            .F.  }, ;
+                       { "NODWP",            ::lFNoDefWinProc,                                         .F.  }, ;
+                       { "NoMaximize",       ::lFNoMaximize,                                           .F.  }, ;
+                       { "NoMinimize",       ::lFNoMinimize,                                           .F.  }, ;
+                       { "NoShow",           ::lFNoShow,                                               .F.  }, ;
+                       { "NoSize",           ::lFNoSize,                                               .F.  }, ;
+                       { "NoSysMenu",        ::lFNoSysMenu,                                            .F.  }, ;
+                       { "NotifyIcon",       ::cFNotifyIcon,                                           1000 }, ;
+                       { "NotifyToolTip",    ::cFNotifyTooltip,                                        1000 }, ;
+                       { "Parent",           ::cFParent,                                               1000 }, ;
+                       { "Row",              ::cFPosition[1],                                          1000 }, ;
+                       { "RTL",              ::lFRTL,                                                  .F.  }, ;
+                       { "SplitChild",       ::lFSplitchild,                                           .F.  }, ;
+                       { "Stretch",          ::lFStretch,                                              .F.  }, ;
+                       { "SubClass",         ::cFSubClass,                                             1000 }, ;
+                       { "Title",            ::cFTitle,                                                1000 }, ;
+                       { "Topmost",          ::lFTopmost,                                              .F.  }, ;
+                       { "VirtualHeight",    ::cFVirtualH,                                             1000 }, ;
+                       { "VirtualWidth",     ::cFVirtualW,                                             1000 }, ;
+                       { "Width",            ::cFWidth,                                                1000 }, ;
+                       { "#define",          cDefines,                                                 "M"  }, ;
+                       { "#undef",           cUndefs,                                                  "M"  } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
       aFormats    := Array( Len( aData ) )
@@ -20411,51 +20470,52 @@ METHOD FrmProperties() CLASS TFormEditor
       ::cFHeight        := aResults[15]
       ::lFHelpButton    := aResults[16]
       ::cFIcon          := aResults[17]
-      ::lFInternal      := aResults[18]
-      ::lFMain          := aResults[19]
-      ::cFMaxHeight     := aResults[20]
-      ::cFMaxWidth      := aResults[21]
-      ::lFMDI           := aResults[22]
-      ::lFMDIChild      := aResults[23]
-      ::lFMDIClient     := aResults[24]
-      ::cFMinHeight     := aResults[25]
-      ::cFMinWidth      := aResults[26]
-      ::lFModal         := aResults[27]
-      ::lFModalSize     := aResults[28]
-      ::lFNoAutoRelease := aResults[29]
-      ::lFNoCaption     := aResults[30]
-      ::lFNoDefWinProc  := aResults[31]
-      ::lFNoMaximize    := aResults[32]
-      ::lFNoMinimize    := aResults[33]
-      ::lFNoShow        := aResults[34]
-      ::lFNoSize        := aResults[35]
-      ::lFNoSysMenu     := aResults[36]
-      ::cFNotifyIcon    := aResults[37]
-      ::cFNotifyTooltip := aResults[38]
-      ::cFParent        := aResults[39]
-      ::cFPosition[1]   := iif( NOTEMPTY( aResults[40] ), aResults[40], LTrim( Str( ::oDesignForm:Row ) ) )
-      ::lFRTL           := aResults[41]
-      ::lFSplitchild    := aResults[42]
-      ::lFStretch       := aResults[43]
-      ::cFSubClass      := aResults[44]
-      ::cFTitle         := aResults[45]
-      ::lFTopmost       := aResults[46]
-      ::cFVirtualH      := aResults[47]
-      ::cFVirtualW      := aResults[48]
-      ::cFWidth         := aResults[49]
+      ::cFInterActClose := { "NIL", "ON", "OFF", "QUERY" } [ aResults[18] ]
+      ::lFInternal      := aResults[19]
+      ::lFMain          := aResults[20]
+      ::cFMaxHeight     := aResults[21]
+      ::cFMaxWidth      := aResults[22]
+      ::lFMDI           := aResults[23]
+      ::lFMDIChild      := aResults[24]
+      ::lFMDIClient     := aResults[25]
+      ::cFMinHeight     := aResults[26]
+      ::cFMinWidth      := aResults[27]
+      ::lFModal         := aResults[28]
+      ::lFModalSize     := aResults[29]
+      ::lFNoAutoRelease := aResults[30]
+      ::lFNoCaption     := aResults[31]
+      ::lFNoDefWinProc  := aResults[32]
+      ::lFNoMaximize    := aResults[33]
+      ::lFNoMinimize    := aResults[34]
+      ::lFNoShow        := aResults[35]
+      ::lFNoSize        := aResults[36]
+      ::lFNoSysMenu     := aResults[37]
+      ::cFNotifyIcon    := aResults[38]
+      ::cFNotifyTooltip := aResults[39]
+      ::cFParent        := aResults[40]
+      ::cFPosition[1]   := iif( NOTEMPTY( aResults[41] ), aResults[41], LTrim( Str( ::oDesignForm:Row ) ) )
+      ::lFRTL           := aResults[42]
+      ::lFSplitchild    := aResults[43]
+      ::lFStretch       := aResults[44]
+      ::cFSubClass      := aResults[45]
+      ::cFTitle         := aResults[46]
+      ::lFTopmost       := aResults[47]
+      ::cFVirtualH      := aResults[48]
+      ::cFVirtualW      := aResults[49]
+      ::cFWidth         := aResults[50]
       ::lIsFormModified := .T.
 
       // Process #defines
-      IF ! HB_ISSTRING( aResults[50] )
-         aResults[50] := ""
+      IF ! HB_ISSTRING( aResults[51] )
+         aResults[51] := ""
       ELSE
-         aResults[50] := StrTran( aResults[50], HTAB, " " )
+         aResults[51] := StrTran( aResults[51], HTAB, " " )
       ENDIF
-      nLineCount  := MLCount( aResults[50] )
+      nLineCount  := MLCount( aResults[51] )
       aNewDefines := {}
       lAgain := .F.
       FOR i := 1 TO nLineCount
-         cLine := AllTrim( MemoLine( aResults[50], 1200, i ) )
+         cLine := AllTrim( MemoLine( aResults[51], 1200, i ) )
          IF Upper( Left( cLine, 8 ) ) == "#DEFINE "
             cLine     := LTrim( SubStr( cLine, 9 ) )
             nPos      := At( " ", cLine + " " )
@@ -20465,7 +20525,7 @@ METHOD FrmProperties() CLASS TFormEditor
                j         := i
                DO WHILE i < nLineCount .AND. Right( cValue, 1 ) == ";"
                   i ++
-                  cValue += ( CRLF + RTrim( MemoLine( aResults[50], 1200, i ) ) )
+                  cValue += ( CRLF + RTrim( MemoLine( aResults[51], 1200, i ) ) )
                ENDDO
                IF Right( cValue, 3 ) == ";" + CRLF
                   cValue := RTrim( Left( cValue, Len( cValue ) - 3 ) )
@@ -20490,7 +20550,7 @@ METHOD FrmProperties() CLASS TFormEditor
             j := i
             DO WHILE Right( cLine, 1 ) == ";"
                i ++
-               cLine := RTrim( MemoLine( aResults[50], 1200, i ) )
+               cLine := RTrim( MemoLine( aResults[51], 1200, i ) )
             ENDDO
             IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                lAgain := .T.
@@ -20501,15 +20561,15 @@ METHOD FrmProperties() CLASS TFormEditor
 
       IF ! lAgain
          // Process #undefs
-         IF ! HB_ISSTRING( aResults[51] )
-            aResults[51] := ""
+         IF ! HB_ISSTRING( aResults[52] )
+            aResults[52] := ""
          ELSE
-            aResults[51] := StrTran( aResults[51], HTAB, " " )
+            aResults[52] := StrTran( aResults[52], HTAB, " " )
          ENDIF
-         nLineCount := MLCount( aResults[51] )
+         nLineCount := MLCount( aResults[52] )
          aNewUndefs := {}
          FOR i := 1 TO nLineCount
-            cLine := AllTrim( MemoLine( aResults[51], 1200, i ) )
+            cLine := AllTrim( MemoLine( aResults[52], 1200, i ) )
             IF Upper( Left( cLine, 7 ) ) == "#UNDEF "
                cLine     := LTrim( SubStr( cLine, 8 ) )
                nPos      := At( " ", cLine + " " )
@@ -20519,7 +20579,7 @@ METHOD FrmProperties() CLASS TFormEditor
                   j         := i
                   DO WHILE i < nLineCount .AND. Right( cValue, 1 ) == ";"
                      i ++
-                     cValue += ( CRLF + RTrim( MemoLine( aResults[51], 1200, i ) ) )
+                     cValue += ( CRLF + RTrim( MemoLine( aResults[52], 1200, i ) ) )
                   ENDDO
                   IF Right( cValue, 3 ) == ";" + CRLF
                      cValue := RTrim( Left( cValue, Len( cValue ) - 3 ) )
@@ -20529,18 +20589,18 @@ METHOD FrmProperties() CLASS TFormEditor
                   IF Empty( cValue )
                      AAdd( aNewUndefs, cConstant )
                   ELSEIF Upper( cValue ) == "NIL"
-                     IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
+                     IF MsgYesNo( i18n( "Invalid #undef detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                         lAgain := .T.
                         EXIT
                      ENDIF
                   ELSE
-                     IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
+                     IF MsgYesNo( i18n( "Invalid #undef detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                         lAgain := .T.
                         EXIT
                      ENDIF
                   ENDIF
                ELSE
-                  IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
+                  IF MsgYesNo( i18n( "Invalid #undef detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                      lAgain := .T.
                      EXIT
                   ENDIF
@@ -20549,9 +20609,9 @@ METHOD FrmProperties() CLASS TFormEditor
                j := i
                DO WHILE i < nLineCount .AND. Right( cLine, 1 ) == ";"
                   i ++
-                  cLine := RTrim( MemoLine( aResults[51], 1200, i ) )
+                  cLine := RTrim( MemoLine( aResults[52], 1200, i ) )
                ENDDO
-               IF MsgYesNo( i18n( "Invalid #define detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
+               IF MsgYesNo( i18n( "Invalid #undef detected at line " ) + LTrim( Str( j ) ) + i18n( ". Edit?" ), "OOHG IDE+" )
                   lAgain := .T.
                   EXIT
                ENDIF
@@ -20565,8 +20625,8 @@ METHOD FrmProperties() CLASS TFormEditor
          ENDIF
       ENDIF
 
-      cDefines := aResults[49]
-      cUndefs  := aResults[50]
+      cDefines := aResults[51]
+      cUndefs  := aResults[52]
    ENDDO
 
    /* Derive values that can be used in the design form */
