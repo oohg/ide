@@ -1,18 +1,25 @@
 /*
- * $Id$
+ * $Id: ChangeLog.txt $
+ */
+/*
+ * Use this format for the entry headers:
+ *   YYYY-MM-DD HH:MM UTC[-|+]hhmm [Name|Username|email@address]
+ * Use this marks for file entries:
+ *   '*', '+' or '-' to mean the file was modified, added or deleted.
+ * Use this marks for detail entries:
+ *   '*' Changed: ...           '!' Fixed: ....
+ *   '+' Added: ...             '%' Optimized: ...
+ *   '-' Removed: ...           ';' Comment
  */
 
-/* Use this format for the entry headers:
- * YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Name or Username and/or <your_email@address>
- * For example:
- * 2002-12-01 23:12 UTC+0100 Foo Bar <foo.bar@foobar.org>
- */
+2019-10-13 19:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for ON HEADDBLCLICK to GRID, BROWSE and XBROWSE.
+     + Support for LIMIT and SHIFT to RADIOGROUP.
+     * Support for radiogroup's WIDTH and HEIGHT clauses.
+     ; Radiogroups are now WYSIWYG.
 
-2019-10-11 18:04 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\compile.bat
-     ! Wrong compiler switch.
-
-2019-09-08 22:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2019-10-08 22:12 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Textbox's TOOLTIP sub-clauses to ACTION and ACTION2 clauses.
      + Button's NODESTROY clause.
@@ -20,7 +27,7 @@
      + Timer's ONCE clause.
      + Form's INTERACTIVECLOSE ON|OFF|QUERY clause.
 
-2019-09-08 12:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2019-10-08 12:28 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    ! Console window is opened because of missing -gui flag.
 
 2019-08-12 17:44 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
