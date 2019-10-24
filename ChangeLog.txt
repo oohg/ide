@@ -12,6 +12,10 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2019-10-24 19:07 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\compile.bat
+     ! BCC compilation.
+
 2019-10-13 19:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Support for ON HEADDBLCLICK to GRID, BROWSE and XBROWSE.
