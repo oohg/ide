@@ -103,13 +103,12 @@ rem
    echo oide.exe, + >> b32.bc
    echo oide.map, + >> b32.bc
    echo %HG_ROOT%\%LIB_GUI%\oohg.lib + >> b32.bc
-   for %%a in ( common ct dbffpt dbfntx gtgui hbsix lang macro pcrepos rdd rtl vmmt ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\bostaurus.lib" echo %HG_ROOT%\%LIB_GUI%\bostaurus.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\hbprinter.lib" echo %HG_ROOT%\%LIB_GUI%\hbprinter.lib + >> b32.bc
-   if exist "%HG_ROOT%\%LIB_GUI%\miniprint.lib" echo %HG_ROOT%\%LIB_GUI%\miniprint.lib + >> b32.bc
-   echo cw32mt.lib + >> b32.bc
-   echo msimg32.lib + >> b32.bc
-   echo import32.lib, , + >> b32.bc
+   for %%a in ( gtgui rtl vmmt rdd common hbsix dbffpt dbfntx macro ct lang pcrepos ) do if exist %HG_HRB%\%LIB_HRB%\%%a.lib echo %HG_HRB%\%LIB_HRB%\%%a.lib + >> b32.bc
+   echo %HG_ROOT%\%LIB_GUI%\bostaurus.lib + >> b32.bc
+   echo %HG_ROOT%\%LIB_GUI%\hbprinter.lib + >> b32.bc
+   echo %HG_ROOT%\%LIB_GUI%\miniprint.lib + >> b32.bc
+   for %%a in ( cw32mt import32 user32 winspool gdi32 comctl32 comdlg32 shell32 ole32 oleaut32 uuid mpr wsock32 ws2_32 mapi32 winmm vfw32 msimg32 iphlpapi ) do echo %%a.lib + >> b32.bc
+   echo , , + >> b32.bc
    echo _temp.res + >> b32.bc
    "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc > nul
 
