@@ -317,6 +317,7 @@ CLASS TMyToolBar
    DATA nFontSize                 INIT 0
    DATA nHeight                   INIT 65
    DATA nLastBtn                  INIT 0
+   DATA nToolBarSize              INIT 0
    DATA nWidth                    INIT 65
    DATA oEditor                   INIT NIL
    DATA oTBCtrl                   INIT NIL
@@ -393,7 +394,7 @@ METHOD CreateCtrl() CLASS TMyToolBar
                                    ::oEditor:StrToValueCtrl( ::cCaption, "C" ), NIL, ::cFontName, ::nFontSize, ;
                                    ::oEditor:StrToValueCtrl( ::cToolTip, "C" ), ::lFlat, ::lBottom, ::lRightText, ;
                                    ::lBreak, ::lBold, ::lItalic, ::lUnderline, ::lStrikeout, ::lBorder, ::lRTL, ;
-                                   ::lNoTabStop, ::lVertical, ::lOwnTT )
+                                   ::lNoTabStop, ::lVertical, ::lOwnTT, ::nToolBarSize )
 
    FOR i := 1 TO Len( ::aButtons )
        ::aButtons[ i ]:CreateCtrl()
@@ -463,6 +464,7 @@ METHOD FmgOutput( nSpacing ) CLASS TMyToolBar
 
    cOutput += Space( nSpacing ) + "DEFINE TOOLBAR " + AllTrim( ::Name ) + " ;" + CRLF
    cOutput += Space( nSpacing * 2 ) + "BUTTONSIZE " + LTrim( Str( ::nWidth ) ) + ", " + LTrim( Str( ::nHeight ) )
+   cOutput += iif( ::nToolBarSize > 0, " ;" + CRLF + Space( nSpacing * 2 ) + "TOOLBARSIZE " + LTrim( Str( ::nToolBarSize ) ), "" )
    cOutput += iif( NOTEMPTY( ::cObj ), " ;" + CRLF + Space( nSpacing * 2 ) + "OBJ " + AllTrim( ::cObj ), "" )
    cOutput += iif( NOTEMPTY( ::cFontNameFrm ), " ;" + CRLF + Space( nSpacing * 2 ) + "FONT " + AllTrim( ::cFontNameFrm ), "" )
    cOutput += iif( NOTEMPTY( ::cFontSizeFrm ), " ;" + CRLF + Space( nSpacing * 2 ) + "SIZE " + AllTrim( ::cFontSizeFrm ), "" )
@@ -596,10 +598,11 @@ METHOD OnEditInit() CLASS TMyToolBar
    ::FormEdit:chk_NoTab:Value    := ::lNoTabStop
    ::FormEdit:chk_Break:Value    := ::lBreak
    ::FormEdit:chk_NoBreak:Value  := ::lNoBreak
-   ::FormEdit:txt_Ojb:Value      := ::cObj
+   ::FormEdit:txt_Obj:Value      := ::cObj
    ::FormEdit:txt_Caption:Value  := ::cCaption
    ::FormEdit:txt_Action:Value   := ::cAction
    ::FormEdit:txt_Subclass:Value := ::cSubclass
+   ::FormEdit:txt_TBSize:Value   := ::nToolBarSize
 
    FOR EACH oBut IN ::aButtons
       WITH OBJECT oBut
@@ -664,7 +667,7 @@ METHOD PreProcessDefine() CLASS TMyToolBar
 
    LOCAL nFrom, nTo, i, cData := "", j, c, k
    LOCAL aTokens0 := { "BOLD", "ITALIC", "UNDERLINE", "STRIKEOUT", "OWNTOOLTIP", "FLAT", "BOTTOM", "RIGHTTEXT", "BORDER", "VERTICAL", "BREAK", "RTL", "NOTABSTOP" }
-   LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "ACTION", "SUBCLASS" }
+   LOCAL aTokens1 := { "BUTTONSIZE", "OBJ", "FONT", "SIZE", "TOOLTIP", "CAPTION", "ACTION", "SUBCLASS", "TOOLBARSIZE" }
 
    /* Concatenate lines */
    IF ( i := AScan( ::oEditor:aControlW, Lower( ::Name ) ) ) > 0
@@ -756,6 +759,7 @@ METHOD ReadFromFMG() CLASS TMyToolBar
       ::cFontSizeFrm := ::ReadToolBarStringData( "SIZE", ::cFontSizeFrm )
       ::cFontSizeFrm := ::ReadToolBarStringData( "FONTSIZE", ::cFontSizeFrm )
       ::nFontSize    := ::oEditor:StrToValueCtrl( ::cFontSizeFrm, "N", 0, 1, 9999 )
+      ::nToolBarSize := ::oEditor:StrToValueCtrl( ::ReadToolBarStringData( "TOOLBARSIZE", "" ), "N", 0, 1, 9999 )
       ::lBold        := ::ReadToolBarLogicalData( "BOLD", ::lBold )
       ::lBold        := ::ReadToolBarLogicalData( "FONTBOLD", ::lBold )
       ::lItalic      := ::ReadToolBarLogicalData( "ITALIC", ::lItalic )

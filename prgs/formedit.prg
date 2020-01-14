@@ -244,6 +244,7 @@
                               { "aNoButtons",     .F. }, ;
                               { "aNoChkDepth",    .F. }, ;
                               { "aNoClickOnChk",  .F. }, ;
+                              { "aNoClone",       .F. }, ;
                               { "aNoContext",     .F. }, ;
                               { "aNodeImages",    "" }, ;
                               { "aNoDelMsg",      .F. }, ;
@@ -283,6 +284,7 @@
                               { "aOnAppend",      "" }, ;
                               { "aOnBfrEdtCell",  "" }, ;
                               { "aOnBfrInsert",   "" }, ;
+                              { "aOnCancel",      "" }, ;
                               { "aOnce",         .F. }, ;
                               { "aOnChange",      "" }, ;
                               { "aOnCheckChg",    "" }, ;
@@ -5738,6 +5740,9 @@ METHOD PrintBrief() CLASS TFormEditor
             IF ! Empty( ::aOnAppend[nIndice] )
                oPrint:PrintData( ++ ContLin, 005, "ONAPPEND      : " + AllTrim( CStr( ::aOnAppend[nIndice] ) ) )
             ENDIF
+            IF ! Empty( ::aOnCancel[nIndice] )
+               oPrint:PrintData( ++ ContLin, 005, "ONCANCEL      : " + AllTrim( CStr( ::aOnCancel[nIndice] ) ) )
+            ENDIF
             IF ! Empty( ::aOnChange[nIndice] )
                oPrint:PrintData( ++ ContLin, 005, "ONCHANGE      : " + AllTrim( CStr( ::aOnChange[nIndice] ) ) )
             ENDIF
@@ -8506,11 +8511,11 @@ METHOD pCheckList( i ) CLASS TFormEditor
 METHOD pComboBox( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cEditHeight, cFontName, cGripperText, cHelpId, cImage, cImageSource, cItemImageNumber, cItemSource
-   LOCAL cItems, cListWidth, cMaxLen, cNoRefresh, cObj, cOnChange, cOnDisplayChange, cOnEnter, cOnGotFocus, cOnListClose
+   LOCAL cItems, cListWidth, cMaxLen, cNoRefresh, cObj, cOnCancel, cOnChange, cOnDisplayChange, cOnEnter, cOnGotFocus, cOnListClose
    LOCAL cOnListDisplay, cOnLostFocus, cOnRefresh, cOptHeight, cRefresh, cSearchLapse, cSourceOrder, cSubClass, cTextHeight
    LOCAL cToolTip, cVal, cValue, cValueSource, lBold, lBreak, lDelayedLoad, lDisplayEdit, lEnabled, lFirstItem, lFit, lIncremental
-   LOCAL lIntegralHeight, lItalic, lNoTabStop, lRTL, lSort, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth
-   LOCAL oCtrl, uFontName, uFontSize
+   LOCAL lIntegralHeight, lItalic, lNoClone, lNoHScroll, lNoLoadTrans, lNoTabStop, lRTL, lSort, lStrikeout, lUnderline, lVisible
+   LOCAL nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8520,12 +8525,15 @@ METHOD pComboBox( i ) CLASS TFormEditor
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TCombo():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TCombo():nHeight ) ) ) )
    cItems              := ::ReadStringData( i, "ITEMS", "" )
+   lNoClone            := ( ::ReadLogicalData( i, "NOCLONE", "F" ) == "T" )
    cItemSource         := ::ReadStringData( i, "ITEMSOURCE", "" )
    cItemImageNumber    := ::ReadStringData( i, "ITEMIMAGENUMBER", "" )
    cValue              := ::ReadStringData( i, "VALUE", "" )
    cValueSource        := ::ReadStringData( i, "VALUESOURCE", "" )
    lDisplayEdit        := ( ::ReadLogicalData( i, "DISPLAYEDIT", "F" ) == "T" )
    cMaxLen             := ::ReadStringData( i, "MAXLENGTH", "" )
+   lNoHScroll          := ( ::ReadLogicalData( i, "NOHSCROLL", "F" ) == "T" )
+   lNoLoadTrans        := ( ::ReadLogicalData( i, "NOLOADTRANSPARENT", "F" ) == "T" )
    uFontName           := ::ReadStringData( i, "FONT", "" )
    uFontName           := ::ReadStringData( i, "FONTNAME", uFontName )
    uFontName           := ::ReadOopData( i, "FONTNAME", uFontName )
@@ -8548,6 +8556,8 @@ METHOD pComboBox( i ) CLASS TFormEditor
    lStrikeout          := ( Upper( ::ReadOopData( i, "FONTSTRIKEOUT", iif( lStrikeout, ".T.", ".F." ) ) ) == ".T." )
    cToolTip            := ::ReadStringData( i, "TOOLTIP", "" )
    cToolTip            := ::ReadOopData( i, "TOOLTIP", cToolTip )
+   cOnCancel           := ::ReadStringData( i, "ON CANCEL", "" )
+   cOnCancel           := ::ReadStringData( i, "ONCANCEL", cOnCancel )
    cOnGotFocus         := ::ReadStringData( i, "ON GOTFOCUS", "" )
    cOnGotFocus         := ::ReadStringData( i, "ONGOTFOCUS", cOnGotFocus )
    cOnChange           := ::ReadStringData( i, "ON CHANGE", "" )
@@ -8563,6 +8573,7 @@ METHOD pComboBox( i ) CLASS TFormEditor
    lVisible            := ( ( cVal := ::ReadLogicalData( i, "VISIBLE", "N" ) ) == "T" ) .OR. ( cVal == "N" .AND. ( ::ReadLogicalData( i, "INVISIBLE", "N" ) $ "FN" ) )
    lVisible            := ( Upper( ::ReadOopData( i, "VISIBLE", iif( lVisible, ".T.", ".F." ) ) ) == ".T." )
    cImage              := ::ReadStringData( i, "IMAGE", "" )
+   cImage              := ::ReadStringData( i, "IMAGES", cImage )
    cImageSource        := ::ReadStringData( i, "IMAGESOURCE", "" )
    lFit                := ( ::ReadLogicalData( i, "FIT", "F" ) == "T" )
    lSort               := ( ::ReadLogicalData( i, "SORT", "F" ) == "T" )
@@ -8599,12 +8610,15 @@ METHOD pComboBox( i ) CLASS TFormEditor
    ::aCtrlType[i]      := ::ControlType[ TYPE_COMBOBOX ]
    ::aCObj[i]          := cObj
    ::aItems[i]         := cItems
+   ::aNoClone[i]       := lNoClone
    ::aItemSource[i]    := cItemSource
    ::aItemImgNumber[i] := cItemImageNumber
    ::aValue[i]         := cValue
    ::aValueSource[i]   := cValueSource
    ::aDisplayEdit[i]   := lDisplayEdit
    ::aMaxLength[i]     := cMaxLen
+   ::aNoHScroll[i]     := lNoHScroll
+   ::aNoLoadTrans[i]   := lNoLoadTrans
    ::aFontName[i]      := cFontName
    ::aFontNameFrm[i]   := uFontName
    ::aFontSize[i]      := nFontSize
@@ -8614,6 +8628,7 @@ METHOD pComboBox( i ) CLASS TFormEditor
    ::aFontUnderline[i] := lUnderline
    ::aFontStrikeout[i] := lStrikeout
    ::aToolTip[i]       := cToolTip
+   ::aOnCancel[i]      := cOnCancel
    ::aOnGotFocus[i]    := cOnGotFocus
    ::aOnChange[i]      := cOnChange
    ::aOnLostFocus[i]   := cOnLostFocus
@@ -13840,6 +13855,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF NOTEMPTY( ::aItems[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ITEMS " + AllTrim( ::aItems[j] )
+            IF ::aNoClone[j]
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOCLONE"
+            ENDIF
          ENDIF
          IF NOTEMPTY( ::aItemSource[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ITEMSOURCE " + AllTrim( ::aItemSource[j] )
@@ -13858,6 +13876,12 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             IF NOTZERO( ::aMaxLength[j] )
                Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "MAXLENGTH " + AllTrim( ::aMaxLength[j] )
             ENDIF
+            IF ::aNoHScroll[j]
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOHSCROLL"
+            ENDIF
+         ENDIF
+         IF ::aNoLoadTrans[j]
+           Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOLOADTRANSPARENT"
          ENDIF
          IF NOTEMPTY( ::aFontNameFrm[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FONT " + ::aFontNameFrm[j]
@@ -13879,6 +13903,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF NOTEMPTY( ::aToolTip[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTip[j] )
+         ENDIF
+         IF NOTEMPTY( ::aOnCancel[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON CANCEL " + AllTrim( ::aOnCancel[j] )
          ENDIF
          IF NOTEMPTY( ::aOnGotFocus[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON GOTFOCUS " + AllTrim( ::aOnGotFocus[j] )
@@ -17671,6 +17698,9 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "ItemSource",         ::aItemSource[j],                                                              1000 }, ;
                        { "ListWidth",          ::aListWidth[j],                                                               1000 }, ;
                        { "MaxLength",          ::aMaxLength[j],                                                               1000 }, ;
+                       { "NoClone",            ::aNoClone[j],                                                                 .F.  }, ;
+                       { "NoHScroll",          ::aNoHScroll[j],                                                               .F.  }, ;
+                       { "NoLoadTransparent",  ::aNoLoadTrans[j],                                                             .F.  }, ;
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
                        { "OptionsHeight",      ::aOptHeight[j],                                                               1000 }, ;
                        { "Refresh",            AScan( { ".T.", ".F."}, ::aRefresh[j] ) + 1,                                   { "NIL", ".T.", ".F."} }, ;
@@ -17714,18 +17744,21 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aItemSource[j]       := aResults[19]
       ::aListWidth[j]        := aResults[20]
       ::aMaxLength[j]        := aResults[21]
-      ::aNoTabStop[j]        := aResults[22]
-      ::aOptHeight[j]        := aResults[23]
-      ::aRefresh[j]          := { "NIL", ".T.", ".F."} [ aResults[24] ]
-      ::aRTL[j]              := aResults[25]
-      ::aSearchLapse[j]      := aResults[26]
-      ::aSort[j]             := aResults[27]
-      ::aSourceOrder[j]      := aResults[28]
-      ::aSubClass[j]         := aResults[29]
-      ::aTextHeight[j]       := aResults[30]
-      ::aToolTip[j]          := aResults[31]
-      ::aValue[j]            := aResults[32]
-      ::aValueSource[j]      := aResults[33]
+      ::aNoClone[j]          := aResults[22]
+      ::aNoHScroll[j]        := aResults[23]
+      ::aNoLoadTrans[j]      := aResults[24]
+      ::aNoTabStop[j]        := aResults[25]
+      ::aOptHeight[j]        := aResults[26]
+      ::aRefresh[j]          := { "NIL", ".T.", ".F."} [ aResults[27] ]
+      ::aRTL[j]              := aResults[28]
+      ::aSearchLapse[j]      := aResults[29]
+      ::aSort[j]             := aResults[30]
+      ::aSourceOrder[j]      := aResults[31]
+      ::aSubClass[j]         := aResults[32]
+      ::aTextHeight[j]       := aResults[33]
+      ::aToolTip[j]          := aResults[34]
+      ::aValue[j]            := aResults[35]
+      ::aValueSource[j]      := aResults[36]
       EXIT
 
    CASE TYPE_DATEPICKER
@@ -19756,7 +19789,8 @@ METHOD EventsClick() CLASS TFormEditor
       EXIT
 
    CASE TYPE_COMBOBOX
-      aData       := { { "On Change",             ::aOnChange[j],                                                                1000 }, ;
+      aData       := { { "On Cancel",             ::aOnCancel[j],                                                                1000 }, ;
+                       { "On Change",             ::aOnChange[j],                                                                1000 }, ;
                        { "On DisplayChange",      ::aOnDispChange[j],                                                            1000 }, ;
                        { "On Enter",              ::aOnEnter[j],                                                                 1000 }, ;
                        { "On GotFocus",           ::aOnGotFocus[j],                                                              1000 }, ;
@@ -19774,14 +19808,15 @@ METHOD EventsClick() CLASS TFormEditor
          oControl:SetFocus()
          RETURN NIL
       ENDIF
-      ::aOnChange[j]        := aResults[01]
-      ::aOnDispChange[j]    := aResults[02]
-      ::aOnEnter[j]         := aResults[03]
-      ::aOnGotFocus[j]      := aResults[04]
-      ::aOnListClose[j]     := aResults[05]
-      ::aOnListDisplay[j]   := aResults[06]
-      ::aOnLostFocus[j]     := aResults[07]
-      ::aOnRefresh[j]       := aResults[08]
+      ::aOnCancel[j]        := aResults[01]
+      ::aOnChange[j]        := aResults[02]
+      ::aOnDispChange[j]    := aResults[03]
+      ::aOnEnter[j]         := aResults[04]
+      ::aOnGotFocus[j]      := aResults[05]
+      ::aOnListClose[j]     := aResults[06]
+      ::aOnListDisplay[j]   := aResults[07]
+      ::aOnLostFocus[j]     := aResults[08]
+      ::aOnRefresh[j]       := aResults[09]
       EXIT
 
    CASE TYPE_DATEPICKER
