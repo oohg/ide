@@ -12,6 +12,11 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2020-03-02 18:57 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! The tooltips of the Textbox's buttons is set to control's
+       tooltip when this clause is set.
+
 2020-01-14 17:51 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\mytoolbared.fmg
    * ide\prgs\formedit.prg
