@@ -6527,14 +6527,16 @@ METHOD ReadOopData( i, cProp, cDefault ) CLASS TFormEditor
    RETURN cDefault
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD ReadStringData( i, cProp, cDefault, nLine ) CLASS TFormEditor
+METHOD ReadStringData( i, cProp, cDefault, nLine, nCount ) CLASS TFormEditor
 
    LOCAL j, nFrom, nTo, nPos, cLine
 
    DEFAULT nLine TO 0
-
    nFrom := iif( nLine > 0, nLine, iif( i > 0, ::aSpeed[i], ::cSSpeed ) ) + 1
-   nTo   := iif( i > 0, ::aNumber[i], ::cSNumber )
+
+   DEFAULT nCount TO 0
+   nTo := iif( nCount > 0, nFrom + nCount, iif( i > 0, ::aNumber[i], ::cSNumber ) )
+
    FOR j := nFrom TO nTo
       IF Empty( ::aLine[j] )
          nLine := 0
@@ -11340,7 +11342,8 @@ METHOD pTextBox( i ) CLASS TFormEditor
    LOCAL cImage, cInputMask, cInsertType, cMaxLength, cObj, cOnChange, cOnEnter, cOnGotFocus, cOnLostFocus, cOnTextFill
    LOCAL cSubClass, cToolTip, cToolTipA1, cToolTipA2, cVal, cValid, cValue, cWhen, lAutoSkip, lBold, lCenterAlign, lCtrlsLeft
    LOCAL lDate, lEnabled, lItalic, lLowerCase, lNoBorder, lNoContext, lNoTabStop, lNumeric, lPassword, lReadonly, lRightAlign, lRTL
-   LOCAL lStrikeout, lUnderline, lUpperCase, lVisible, nCol, nFontSize, nHeight, nLine, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lStrikeout, lUnderline, lUpperCase, lVisible, nCol, nFontSize, nHeight, nLinC, nLin1, nLin2, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -11372,8 +11375,6 @@ METHOD pTextBox( i ) CLASS TFormEditor
    lStrikeout          := ( ::ReadLogicalData( i, "STRIKEOUT", "F" ) == "T" )
    lStrikeout          := ( ::ReadLogicalData( i, "FONTSTRIKEOUT", iif( lStrikeout, "T", "F" ) ) == "T" )
    lStrikeout          := ( Upper( ::ReadOopData( i, "FONTSTRIKEOUT", iif( lStrikeout, ".T.", ".F." ) ) ) == ".T." )
-   cToolTip            := ::ReadStringData( i, "TOOLTIP", "" )
-   cToolTip            := ::ReadOopData( i, "TOOLTIP", cToolTip )
    aBackColor          := ::ReadStringData( i, "BACKCOLOR", "NIL" )
    aBackColor          := UpperNIL( ::ReadOopData( i, "BACKCOLOR", aBackColor ) )
    aFontColor          := ::ReadStringData( i, "FONTCOLOR", "NIL" )
@@ -11412,12 +11413,6 @@ METHOD pTextBox( i ) CLASS TFormEditor
    cInputMask          := ::ReadStringData( i, "PICTURE", cInputMask )
    cFormat             := ::ReadStringData( i, "FORMAT", "" )
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
-   nLine := 0
-   cAction1            := ::ReadStringData( i, "ACTION", "", @nLine )
-   cToolTipA1          := ::ReadStringData( i, "TOOLTIP", "", nLine )
-   nLine := 0
-   cAction2            := ::ReadStringData( i, "ACTION2", "", @nLine )
-   cToolTipA2          := ::ReadStringData( i, "TOOLTIP", "", nLine )
    cImage              := ::ReadStringData( i, "IMAGE", "" )
    cButtonWidth        := ::ReadStringData( i, "BUTTONWIDTH", "" )
    cWhen               := ::ReadStringData( i, "WHEN", "" )
@@ -11433,6 +11428,27 @@ METHOD pTextBox( i ) CLASS TFormEditor
    IF lDate .OR. ! Empty( cInputMask )
       cMaxLength := ""
    ENDIF
+   nLin1 := 0
+   cAction1            := ::ReadStringData( i, "ACTION", "", @nLin1 )
+   IF nLin1 > 0
+      cToolTipA1       := ::ReadStringData( i, "TOOLTIP", "", @nLin1, 1 )
+   ELSE
+      cToolTipA1       := ""
+   ENDIF
+   nLin2 := 0
+   cAction2            := ::ReadStringData( i, "ACTION2", "", @nLin2 )
+   IF nLin2 > 0
+      cToolTipA2       := ::ReadStringData( i, "TOOLTIP", "", @nLin2, 1 )
+   ELSE
+      cToolTipA2       := ""
+   ENDIF
+   nLinC := 0
+   DO WHILE .T.
+      cToolTip         := ::ReadStringData( i, "TOOLTIP", "", @nLinC )
+      IF nLinC # nLin1 .AND. nLinC # nLin2
+         EXIT
+      ENDIF
+   ENDDO
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_TEXTBOX ]
@@ -16455,17 +16471,17 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF NOTEMPTY( ::aAction[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ACTION " + AllTrim( ::aAction[j] )
-         ENDIF
-         // This clause must immediately  follow ACTION
-         IF NOTEMPTY( ::aToolTipAct1[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct1[j] )
+            // This clause must immediately  follow ACTION
+            IF NOTEMPTY( ::aToolTipAct1[j] )
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct1[j] )
+            ENDIF
          ENDIF
          IF NOTEMPTY( ::aAction2[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ACTION2 " + AllTrim( ::aAction2[j] )
-         ENDIF
-         // This clause must immediately  follow ACTION2
-         IF NOTEMPTY( ::aToolTipAct2[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct2[j] )
+            // This clause must immediately  follow ACTION2
+            IF NOTEMPTY( ::aToolTipAct2[j] )
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTipAct2[j] )
+            ENDIF
          ENDIF
          IF NOTEMPTY( ::aImage[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "IMAGE " + AllTrim( ::aImage[j] )
