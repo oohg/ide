@@ -11445,7 +11445,7 @@ METHOD pTextBox( i ) CLASS TFormEditor
    nLinC := 0
    DO WHILE .T.
       cToolTip         := ::ReadStringData( i, "TOOLTIP", "", @nLinC )
-      IF nLinC # nLin1 .AND. nLinC # nLin2
+      IF nLinC <= 0 .OR. ( nLinC # nLin1 .AND. nLinC # nLin2 )
          EXIT
       ENDIF
    ENDDO
