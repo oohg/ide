@@ -12,6 +12,14 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2020-04-03 20:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + PARENT property.
+     * Assignment of new properties values is now done using a
+       variable instead of fixed indexes to avoid errors.
+   * ide\fmgs\tabprop.fmg
+     ! Wrong tooltip.
+
 2020-03-10 19:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! Infinite loop when form has a textbox without tooltip.
