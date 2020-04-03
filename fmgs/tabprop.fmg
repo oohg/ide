@@ -88,7 +88,7 @@ DEFINE WINDOW TEMPLATE ;
       HEIGHT 28 ;
       FONT 'Arial' ;
       SIZE 9 ;
-      TOOLTIP i18n( "Adds a new page after the last." ) ;
+      TOOLTIP i18n( "Edits the TAB's properties." ) ;
       CAPTION i18n( 'Edit' )
 
    @ 41, 160 BUTTON Button_2 ;
