@@ -12,6 +12,10 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2020-04-18 21:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Clauses AUTOSIZE, INDEXISVALUE and SOURCEISVALUE to COMBOBOX.
+
 2020-04-03 20:20 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + PARENT property.
