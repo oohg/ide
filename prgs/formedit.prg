@@ -397,6 +397,7 @@
                               { "aValid",         "" }, ;
                               { "aValidMess",     "" }, ;
                               { "aValue",         "" }, ;
+                              { "aValueIs",       "NIL" }, ;
                               { "aValueSource",   "" }, ;
                               { "aVCenter",       .F. }, ;
                               { "aVersion",       "" }, ;
@@ -3870,7 +3871,10 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
             IIF( Upper( #<rfrsh> ) == "NOREFRESH", .F., ;
             IIF( Upper( #<rfrsh> ) == "REFRESH", .T., NIL ) ), ;
             <(sourceorder)>, <{refresh}>, <nLapse>, <max>, <editheight>, ;
-            <optheight> )
+            <optheight>, <.nohscroll.>, <.noclone.>, <.NoTrans.>, <{cancel}>, ;
+            iif( Upper( #<index> ) == "INDEXISVALUE", .T., ;
+            iif( Upper( #<index> ) == "SOURCEISVALUE", .F., NIL ) ), ;
+            <.autosize.> )
 */
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
@@ -3892,12 +3896,13 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       ENDIF
       oCtrl := myTCombo():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, aItems, NIL, NIL, NIL, ;
                   ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, nHeight, NIL,  NIL, NIL, NIL, .F., .F., ::aSort[i], ;
-                  ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i],  NIL, NIL, .F., NIL, .F., ;
+                  ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, NIL, .F., NIL, .F., ;
                   ::StrToValueCtrl( ::aGripperText[i], "C", NIL ),  aImages, ::aRTL[i], ;
                   ::StrToValueCtrl( ::aTextHeight[i], "N", NIL), .F., ::aFirstItem[i], ::aFit[i], NIL, NIL, ;
                   ::StrToValueCtrl( ::aListWidth[i], "N", NIL ), NIL, NIL, NIL, NIL, .F., ::aIncremental[i], ::aIntegHeight[i], ;
                   .F., NIL, NIL, NIL, ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), ;
-                  ::StrToValueCtrl( ::aEditHeight[i], "N", NIL ), ::StrToValueCtrl( ::aOptHeight[i], "N", NIL ) )
+                  ::StrToValueCtrl( ::aEditHeight[i], "N", NIL ), ::StrToValueCtrl( ::aOptHeight[i], "N", NIL ), .F., .F., .F., ;
+                  NIL, NIL, .F. )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -8537,12 +8542,13 @@ METHOD pCheckList( i ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD pComboBox( i ) CLASS TFormEditor
 
-   LOCAL aBackColor, aFontColor, cEditHeight, cFontName, cGripperText, cHelpId, cImage, cImageSource, cItemImageNumber, cItemSource
-   LOCAL cItems, cListWidth, cMaxLen, cNoRefresh, cObj, cOnCancel, cOnChange, cOnDisplayChange, cOnEnter, cOnGotFocus, cOnListClose
-   LOCAL cOnListDisplay, cOnLostFocus, cOnRefresh, cOptHeight, cParent, cRefresh, cSearchLapse, cSourceOrder, cSubClass, cTextHeight
-   LOCAL cToolTip, cVal, cValue, cValueSource, lBold, lBreak, lDelayedLoad, lDisplayEdit, lEnabled, lFirstItem, lFit, lIncremental
-   LOCAL lIntegralHeight, lItalic, lNoClone, lNoHScroll, lNoLoadTrans, lNoTabStop, lRTL, lSort, lStrikeout, lUnderline, lVisible
-   LOCAL nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL aBackColor, aFontColor, cEditHeight, cFontName, cGripperText, cHelpId, cImage, cImageSource, cIsIndex, cIsValue
+   LOCAL cItemImageNumber, cItemSource, cItems, cListWidth, cMaxLen, cNoRefresh, cObj, cOnCancel, cOnChange, cOnDisplayChange
+   LOCAL cOnEnter, cOnGotFocus, cOnListClose, cOnListDisplay, cOnLostFocus, cOnRefresh, cOptHeight, cParent, cRefresh, cSearchLapse
+   LOCAL cSourceOrder, cSubClass, cTextHeight, cToolTip, cVal, cValue, cValueSource, lAutoSize, lBold, lBreak, lDelayedLoad
+   LOCAL lDisplayEdit, lEnabled, lFirstItem, lFit, lIncremental, lIntegralHeight, lItalic, lNoClone, lNoHScroll, lNoLoadTrans
+   LOCAL lNoTabStop, lRTL, lSort, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8634,6 +8640,9 @@ METHOD pComboBox( i ) CLASS TFormEditor
    lBreak              := ( ::ReadLogicalData( i, "BREAK", "F" ) == "T" )
    cParent             := ::ReadStringData( i, "PARENT", "" )
    cParent             := ::ReadStringData( i, "OF", cParent )
+   cIsIndex            := ::ReadLogicalData( i, "INDEXISVALUE", "N" )
+   cIsValue            := ::ReadLogicalData( i, "SOURCEISVALUE", "N" )
+   lAutoSize           := ( ::ReadLogicalData( i, "AUTOSIZE", "F" ) == "T" )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_COMBOBOX ]
@@ -8692,6 +8701,8 @@ METHOD pComboBox( i ) CLASS TFormEditor
    ::aGripperText[i]   := cGripperText
    ::aBreak[i]         := lBreak
    ::aParent[i]        := cParent
+   ::aValueIs[i]       := iif( cIsIndex == cIsValue, "NIL", iif( cIsIndex == "T" .OR. cIsValue == "F", "INDEXISVALUE", "SOURCEISVALUE" ) )
+   ::aAutoSize[i]      := lAutoSize
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, nWidth, nHeight, NIL )
@@ -14166,6 +14177,12 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aGripperText[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "GRIPPERTEXT " + AllTrim( ::aGripperText[j] )
          ENDIF
+         IF ::aAutoSize[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "AUTOSIZE"
+         ENDIF
+         IF NOTEMPTY( ::aValueIs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + AllTrim( ::aValueIs[j] )
+         ENDIF
          Output += CRLF + CRLF
       ENDIF
 
@@ -17948,6 +17965,7 @@ METHOD PropertiesClick() CLASS TFormEditor
    CASE TYPE_COMBOBOX
       aData       := { { "Name",               ::aName[j],                                                                    1000 }, ;
                        { "Obj",                ::aCObj[j],                                                                    1000 }, ;
+                       { "AutoSize",           ::aAutoSize[j],                                                                .F.  }, ;
                        { "Break",              ::aBreak[j],                                                                   .F.  }, ;
                        { "DelayedLoad",        ::aDelayedLoad[j],                                                             .F.  }, ;
                        { "Disabled",           ::aDisabled[j],                                                                .F.  }, ;
@@ -17982,6 +18000,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "TextHeight",         ::aTextHeight[j],                                                              1000 }, ;
                        { "ToolTip",            ::aToolTip[j],                                                                 1000 }, ;
                        { "Value",              ::aValue[j],                                                                   1000 }, ;
+                       { "ValueIs",            AScan( { "INDEXISVALUE", "SOURCEISVALUE" }, ::aValueIs[j] ) + 1,               { "NIL", "INDEXISVALUE", "SOURCEISVALUE" } }, ;
                        { "Valuesource",        ::aValueSource[j],                                                             1000 } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
@@ -17996,6 +18015,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       k := 1
       ::aName[j]             := iif( ! ::IsUnique( aResults[k], j ), ::aName[j], AllTrim( aResults[k] ) )
       ::aCObj[j]             := aResults[ ++k ]
+      ::aAutoSize[j]         := aResults[ ++k ]
       ::aBreak[j]            := aResults[ ++k ]
       ::aDelayedLoad[j]      := aResults[ ++k ]
       ::aDisabled[j]         := aResults[ ++k ]
@@ -18030,6 +18050,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aTextHeight[j]       := aResults[ ++k ]
       ::aToolTip[j]          := aResults[ ++k ]
       ::aValue[j]            := aResults[ ++k ]
+      ::aValueIs[j]          := { "NIL", "INDEXISVALUE", "SOURCEISVALUE" } [ aResults[ ++k ] ]
       ::aValueSource[j]      := aResults[ ++k ]
       EXIT
 
@@ -20872,7 +20893,7 @@ METHOD FrmProperties() CLASS TFormEditor
 
    DO WHILE .T.
       aData       := { { "Name",             "TEMPLATE",                                               NIL  }, ;
-                       { "Object",           ::cFObj,                                                  1000 }, ;
+                       { "Obj",              ::cFObj,                                                  1000 }, ;
                        { "BackColor",        ::cFBackColor,                                            1000 }, ;
                        { "BackImage",        ::cFBackImage,                                            1000 }, ;
                        { "Break",            ::lFBreak,                                                .F.  }, ;
