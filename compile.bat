@@ -99,7 +99,7 @@ rem
 
    echo BRC32: Compiling resources...
    copy /b %HG_ROOT%\resources\oohg_bcc.rc + mgide.rc _temp.rc /y > nul
-   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources _temp.rc > nul
+   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources;%HG_ROOT%\include _temp.rc > nul
    if errorlevel 1 goto ERROR3
 
    echo ILINK32: Linking...
@@ -181,6 +181,7 @@ rem
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
+   echo #include "%HG_ROOT%\INCLUDE\oohgversion.h" >> _oohg_resconfig.h
    copy /b %HG_ROOT%\resources\ooHG.rc + mgide.rc _temp.rc > nul
    windres -i _temp.rc -o _temp.o
 
