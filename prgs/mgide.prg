@@ -81,6 +81,7 @@
 #define DQM( x )              DOUBLE_QUOTATION_MARK + x + DOUBLE_QUOTATION_MARK
 #define SINGLE_QUOTATION_MARK "'"
 #define SQM( x )              ( SINGLE_QUOTATION_MARK + x + SINGLE_QUOTATION_MARK )
+#define BKSLSH                "\"
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 FUNCTION Main( rtl )
@@ -2368,6 +2369,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo #include ' + DOUBLE_QUOTATION_MARK + cMiniGUIFolderI + BKSLSH + 'oohgversion.h' + DOUBLE_QUOTATION_MARK + ' >> ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
@@ -2674,6 +2676,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo #include ' + DOUBLE_QUOTATION_MARK + cMiniGUIFolderI + BKSLSH + 'oohgversion.h' + DOUBLE_QUOTATION_MARK + ' >> ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
@@ -6087,9 +6090,9 @@ CLASS myTCombo FROM TCombo
 ENDCLASS
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD Events_Command( wParam ) CLASS myTCombo
+METHOD Events_Command( wParam  ) CLASS myTCombo
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL Hi_wParam := HIWORD( wParam )
+LOCAL Hi_wParam := HIWORD( wParam  )
 
    IF Hi_wParam == CBN_DROPDOWN
       ::uDisplayTime := hb_MilliSeconds()
@@ -6099,7 +6102,7 @@ LOCAL Hi_wParam := HIWORD( wParam )
          ::DoEvent( ::OnDblClick, "DBLCLICK" )
       ENDIF
    ENDIF
-RETURN ::Super:Events_Command( wParam )
+RETURN ::Super:Events_Command( wParam  )
 
 /*
  * EOF
