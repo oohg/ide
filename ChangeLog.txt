@@ -12,6 +12,18 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2020-05-22 09:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     + Support for oohg version.
+
+2020-05-22 09:37 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\compile.bat
+     + Support for oohg version.
+
+2020-05-22 09:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\build.bat
+     + Support for the new flavors of oohg.
+
 2020-04-18 21:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Clauses AUTOSIZE, INDEXISVALUE and SOURCEISVALUE to COMBOBOX.
@@ -1677,7 +1689,7 @@
      * Format.
      * Method Open of TForm1 to handle lines without a space at the end.
      * Method LeaDato_oop of TForm1 to return default value if an
-       = char is not present in the line.
+       = CHAR is not present in the line.
      * Method LeaDatoStatus of TForm1 to return default value if the
        property value is not present.
      * Method LeaDatoStatus of TForm1 to check if ";" is at the line's end.
