@@ -13,6 +13,10 @@
  */
 
 2020-05-30 08:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     + Info on building tools to About form.
+
+2020-05-30 08:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\fontclrs.fmg
    * ide\fmgs\form_prefer.fmg
    * ide\fmgs\mymenued.fmg
