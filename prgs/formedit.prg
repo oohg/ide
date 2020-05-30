@@ -21318,12 +21318,7 @@ METHOD CtrlIsOfType( ia, cType ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 HB_FUNC( SETPIXEL )
 {
-
-  hb_retnl( (ULONG) SetPixel( (HDC) hb_parnl( 1 ),
-                              hb_parni( 2 )      ,
-                              hb_parni( 3 )      ,
-                              (COLORREF) hb_parnl( 4 )
-                            ) ) ;
+  hb_retnl( (ULONG) SetPixel( HDCparam( 1 ), hb_parni( 2 ), hb_parni( 3 ), (COLORREF) hb_parnl( 4 ) ) ) ;
 }
 
 /*
