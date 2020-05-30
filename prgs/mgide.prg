@@ -1499,8 +1499,8 @@ LOCAL oForm
 
    DEFINE WINDOW about_form OBJ oForm ;
       AT 0,0 ;
-      WIDTH 450 ;
-      HEIGHT 220 ;
+      WIDTH 520 ;
+      HEIGHT 240 ;
       CLIENTAREA ;
       TITLE "About " + APP_FULL_NAME ;
       ICON "IDE_EDIT" ;
@@ -1537,7 +1537,11 @@ LOCAL oForm
          AUTOSIZE ;
          HANDCURSOR
 
-      oForm:ClientWidth := oForm:lbl_3:width + 40
+      @ 200,20 LABEL lbl_5 ;
+         VALUE "Built with " + OOHGVersion() + " " + hb_Compiler() + " " + Version() ;
+         AUTOSIZE
+
+      oForm:ClientWidth := oForm:lbl_5:width + 40
       oForm:img_Photo:col := oForm:ClientWidth - oForm:img_Photo:width - 20
 
       ON KEY ESCAPE ACTION oForm:Release()
