@@ -5,7 +5,7 @@
  * ooHG source code:
  * ooHG IDE+ form generator
  *
- * Copyright 2014-2019 Fernando Yurisich <fyurisich@oohg.org> and contributors of
+ * Copyright 2014-2020 Fernando Yurisich <fyurisich@oohg.org> and contributors of
  * the Object Oriented (x)Harbour GUI (aka OOHG) Project, https://oohg.github.io
  *
  * Based upon:
@@ -14,14 +14,14 @@
  *
  * Portions of this project are based upon:
  *    "Harbour MiniGUI Extended Edition Library"
- *       Copyright 2005-2019 MiniGUI Team, http://hmgextended.com
+ *       Copyright 2005-2020 MiniGUI Team, http://hmgextended.com
  *    "Harbour GUI framework for Win32"
  *       Copyright 2001 Alexander S.Kresin <alex@kresin.ru>
  *       Copyright 2001 Antonio Linares <alinares@fivetech.com>
  *    "Harbour MiniGUI"
  *       Copyright 2002-2016 Roberto Lopez <mail.box.hmg@gmail.com>
  *    "Harbour Project"
- *       Copyright 1999-2019 Contributors, https://harbour.github.io/
+ *       Copyright 1999-2020 Contributors, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file LICENSE.txt. If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1335,USA (or download from http://www.gnu.org/licenses/).
+ * Boston, MA 02110-1335, USA (or download from http://www.gnu.org/licenses/).
  *
  * As a special exception, the ooHG Project gives permission for
  * additional uses of the text contained in its release of ooHG.
