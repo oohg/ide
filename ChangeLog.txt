@@ -12,6 +12,10 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2020-07-11 11:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! Clause NOFOCUSRECT is lost after saving a form.
+
 2020-05-30 14:19 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! Casting at function SetPixel.
