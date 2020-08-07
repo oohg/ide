@@ -72,10 +72,7 @@
 #define NOTEMPTY( cValue )    ( ! Empty( cValue ) .AND. UpperNIL( cValue ) != "NIL" )
 #define NOTZERO( cValue )     ( ! Empty( cValue ) .AND. UpperNIL( cValue ) != "NIL" .AND. UpperNIL( cValue ) != "0" )
 #define DOUBLE_QUOTATION_MARK '"'
-#define DQM( x )              DOUBLE_QUOTATION_MARK + x + DOUBLE_QUOTATION_MARK
 #define SINGLE_QUOTATION_MARK "'"
-#define SQM( x )              ( SINGLE_QUOTATION_MARK + x + SINGLE_QUOTATION_MARK )
-#define BKT( x )              ( "[" + x + "]")
 #define APP_FULL_NAME         ( "ooHG IDE Plus" + " v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 ) )
 #define IDE_LAST_CTRL         39
 #define HTAB                  Chr( 9 )
@@ -464,6 +461,7 @@ CLASS TFormEditor
    DATA aLine                INIT {}
    DATA aTabs                INIT {}
    DATA cFormFullName        INIT ""
+   DATA cFormPathName        INIT ""
    DATA CurrentControl       INIT 1
    DATA Form_List            INIT NIL
    DATA Form_Main            INIT NIL
@@ -1350,12 +1348,14 @@ METHOD EditForm( myIde, cFullName, nEditorIndex, lWait ) CLASS TFormEditor
 
    ::cFormFullName := cFullName
    nPos := RAt( "\", cFullName )
+   ::cFormPathName := Left( ::cFormFullName, nPos )
    cName := SubStr( cFullName, nPos + 1 )
    nPos := RAt( ".", cName )
    IF nPos > 0
       cName := SubStr( cName, 1, nPos - 1 )
    ENDIF
    ::cFName := Lower( cName )
+   ::cFormPathName += ::cFName
 
    ::myTbEditor := TMyToolBarEditor():New( Self )
 
