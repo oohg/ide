@@ -1135,13 +1135,13 @@ LOCAL aDbf[14][4]
 
    DO CASE
    CASE ::nType == 1
-      ::cMnFile := ::oEditor:cFName + '.mnm'
+      ::cMnFile := ::oEditor:cFormPathName + '.mnm'
    CASE ::nType == 2
-      ::cMnFile := ::oEditor:cFName + '.mnc'
+      ::cMnFile := ::oEditor:cFormPathName + '.mnc'
    CASE ::nType == 3
-      ::cMnFile := ::oEditor:cFName + '.mnn'
+      ::cMnFile := ::oEditor:cFormPathName + '.mnn'
    CASE ::nType == 4
-      ::cMnFile := ::oEditor:cFName + '.' + AllTrim( cButton ) + '.mnd'
+      ::cMnFile := ::oEditor:cFormPathName + '.' + AllTrim( cButton ) + '.mnd'
    OTHERWISE
       RETURN NIL
    ENDCASE
