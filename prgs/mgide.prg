@@ -2366,14 +2366,13 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          NEXT i
          // Rule for .rc compiling
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
-         cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
+         cOut += HTAB + '$(RC_COMP) -I $(INCLUDE_DIR) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
          hb_MemoWrit( 'makefile.gcc', cOut )
          // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'echo #include ' + DOUBLE_QUOTATION_MARK + cMiniGUIFolderI + BKSLSH + 'oohgversion.h' + DOUBLE_QUOTATION_MARK + ' >> ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
@@ -2673,14 +2672,13 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          NEXT i
          // Rule for .rc compiling
          cOut += '$(OBJ_DIR)\_temp.o : $(PROJECTFOLDER)\_temp.rc' + CRLF
-         cOut += HTAB + '$(RC_COMP) -i $^ -o $@' + CRLF
+         cOut += HTAB + '$(RC_COMP) -I $(INCLUDE_DIR) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
          hb_MemoWrit( 'makefile.gcc', cOut )
          // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'echo #include ' + DOUBLE_QUOTATION_MARK + cMiniGUIFolderI + BKSLSH + 'oohgversion.h' + DOUBLE_QUOTATION_MARK + ' >> ' + cFolder + '_oohg_resconfig.h' + CRLF
          cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
             cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
