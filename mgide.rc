@@ -94,3 +94,41 @@ IDE_TIMER             BITMAP       imgs\timer.bmp
 IDE_TREE              BITMAP       imgs\tree.bmp
 IDE_VD                ICON         imgs\vd.ico
 IDE_XBROWSE           BITMAP       imgs\xbrowse.bmp
+
+#define OOHG_MACRO2STRING( macro )   MACRO2STR( macro )
+#define MACRO2STR( macro )           #macro
+
+#include "oohgversion.h"
+
+#define OOHG_VER_PROD_STR            OOHG_MACRO2STRING( OOHG_VER_MAJOR ) "." OOHG_MACRO2STRING( OOHG_VER_MINOR ) "." OOHG_MACRO2STRING( OOHG_VER_RELEASE ) ".0"
+#define OOHG_VER_FILE                OOHG_VER_PROD
+#define OOHG_VER_FILE_STR            OOHG_VER_PROD_STR
+
+#include <winver.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     OOHG_VER_FILE
+PRODUCTVERSION  OOHG_VER_PROD
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_APP
+BEGIN
+   BLOCK "StringFileInfo"
+   BEGIN
+      BLOCK "040904B0"  /* LANGUAGE: US English (0x0409), ENCODING: Unicode (1200/0x04B0) */
+      BEGIN
+         VALUE "Comments",         "See LICENSE.txt for licensing terms." "\0"
+         VALUE "CompanyName",      OOHG_COMPANY_NAME "\0"
+         VALUE "FileDescription",  "OOHG IDE+" "\0"
+         VALUE "FileVersion",      OOHG_VER_FILE_STR "\0"
+         VALUE "LegalCopyright",   "© 2005-2020 OOHG Development Team" "\0"
+         VALUE "ProductName",      OOHG_NAME "\0"
+         VALUE "ProductVersion",   OOHG_VER_PROD_STR "\0"
+      END
+   END
+   BLOCK "VarFileInfo"
+   BEGIN
+      VALUE "Translation", 0x0409, 0x04B0  /* LANGUAGE: US English (0x0409), ENCODING: Unicode (1200/0x04B0) */
+   END
+END

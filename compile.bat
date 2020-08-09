@@ -14,7 +14,7 @@ rem
 
    if not exist mgide.rc goto ERROR1
 
-   if /I not "%1" == "/C" goto ROOT
+   if /I not "%1" == "/C" goto VERBOSE
    shift
    set HG_ROOT=
    set HG_HRB=
@@ -23,6 +23,13 @@ rem
    set LIB_GUI=
    set LIB_HRB=
    set BIN_HRB=
+
+:VERBOSE
+
+   set HG_SILENT=^> nul
+   if /I not "%1" == "/V" goto ROOT
+   shift
+   set HG_SILENT=
 
 :ROOT
 
@@ -98,8 +105,10 @@ rem
    if errorlevel 1 goto ERROR3
 
    echo BRC32: Compiling resources...
-   copy /b %HG_ROOT%\resources\oohg_bcc.rc + mgide.rc _temp.rc /y > nul
-   %HG_BCC%\bin\brc32.exe -r -i%HG_ROOT%\resources;%HG_ROOT%\include _temp.rc > nul
+   echo #define __VERSION_INFO > _temp.rc
+   echo. >> _temp.rc
+   copy /b _temp.rc + %HG_ROOT%\resources\oohg_bcc.rc + mgide.rc _temp.rc /y %HG_SILENT%
+   "%HG_BCC%\bin\brc32.exe" -i%HG_ROOT%\include -i%HG_ROOT%\resources -i%HG_BCC%\include -r _temp.rc %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
    echo ILINK32: Linking...
@@ -115,7 +124,7 @@ rem
    for %%a in ( cw32mt import32 user32 winspool gdi32 comctl32 comdlg32 shell32 ole32 oleaut32 uuid mpr wsock32 ws2_32 mapi32 winmm vfw32 msimg32 iphlpapi ) do echo %%a.lib + >> b32.bc
    echo , , + >> b32.bc
    echo _temp.res + >> b32.bc
-   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc > nul
+   "%HG_BCC%\bin\ilink32.exe" -Gn -Tpe -aa -L%HG_BCC%\lib;%HG_BCC%\lib\psdk; @b32.bc %HG_SILENT%
 
    if exist oide.exe goto OK_XB
    echo Build finished with ERROR !!!
@@ -181,9 +190,9 @@ rem
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
-   echo #include "%HG_ROOT%\INCLUDE\oohgversion.h" >> _oohg_resconfig.h
-   copy /b %HG_ROOT%\resources\ooHG.rc + mgide.rc _temp.rc > nul
-   windres -i _temp.rc -o _temp.o
+   echo #define __VERSION_INFO >> _oohg_resconfig.h
+   copy /b %HG_ROOT%\resources\ooHG.rc + mgide.rc _temp.rc %HG_SILENT%
+   windres.exe -I %HG_ROOT%\INCLUDE -i _temp.rc -o _temp.o %HG_SILENT%
 
    echo GCC: Linking...
    set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o mgide.o dbucvc.o formedit.o menued.o toolbed.o _temp.o

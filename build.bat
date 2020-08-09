@@ -57,25 +57,25 @@ rem
 
 :CALL30
 
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM30 mgide %1 %2 %3 %4 %5 %6 %7 %8 %9
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM30 mgide -NOVER %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL32
 
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM32 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM32 mgide -NOVER %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL3264
 
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM3264 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM3264 mgide -NOVER %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL34
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM34 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM34 mgide -NOVER %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :CALL3464
-   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM3464 mgide  %1 %2 %3 %4 %5 %6 %7 %8 %9
+   call "%HG_ROOT%\BuildApp.bat" %HG_CLEAN% HM3464 mgide -NOVER %1 %2 %3 %4 %5 %6 %7 %8 %9
    goto END
 
 :END
