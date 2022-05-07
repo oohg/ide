@@ -861,7 +861,7 @@
    * ide\sample\tbarsamp.fmg
      * Updated copyright info.
 
-2016-05-19 21:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2016-05-19 21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      * Some titles in statusbar's properties window.
 
@@ -1029,7 +1029,7 @@
    * ide\prgs\formedit.prg
      + TAB's DELAYMSGS clause.
 
-2015-02-16 01:00 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
+2015-02-16 01 UTC-0200 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! RTE when saving new form with empty statusbar.
      ! Blank line in GRID.
@@ -1807,7 +1807,7 @@
      * Format.
      * FMG cleanup.
 
-2014-06-24 21:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+2014-06-24 21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\moside.prg
      + Ctrl+Left to reduce control's widht.
      + Ctrl+Right to increase control's widht.
