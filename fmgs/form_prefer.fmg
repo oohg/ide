@@ -695,6 +695,24 @@ DEFINE WINDOW TEMPLATE ;
             TOOLTIP i18n( "This text will be send as is to the compiler." ) ;
             MAXLENGTH 30
 
+         @ 260, 20 LABEL label_33 ;
+            WIDTH 140 ;
+            HEIGHT 24 ;
+            VALUE i18n( "Make Tool" ) ;
+            TRANSPARENT
+
+         @ 260, 160 TEXTBOX text_make ;
+            WIDTH 360 ;
+            HEIGHT 24 ;
+            TOOLTIP i18n( "Tool to build the project when Own Make option is selected at Project's Build Type list." ) ;
+            MAXLENGTH 30
+
+         @ 257, 530 BUTTON button_18 ;
+            WIDTH 30 ;
+            HEIGHT 28 ;
+            CAPTION "..." ;
+            ACTION iif( ! Empty( Folder := GetFile() ), form_prefer.text_make.Value := folder, NIL )
+
       END PAGE
 
       DEFINE PAGE i18n( "GUI" )
