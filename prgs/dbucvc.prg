@@ -2,26 +2,24 @@
  * $Id: dbucvc.prg $
  */
 /*
- * ooHG source code:
- * ooHG IDE+ form generator
+ * OOHG source code:
+ * OOHG IDE+ form generator
  *
- * Copyright 2014-2020 Fernando Yurisich <fyurisich@oohg.org> and contributors of
+ * Copyright 2014-2022 Fernando Yurisich <fyurisich@oohg.org> and contributors of
  * the Object Oriented (x)Harbour GUI (aka OOHG) Project, https://oohg.github.io
  *
- * Based upon:
- * Harbour Minigui Ide 
- * Copyright 2002-2014 Ciro Vargas Clemow <cvc@oohg.org>
- *
  * Portions of this project are based upon:
+ *    "Harbour Minigui IDE"
+ *       Copyright 2002-2014 Ciro Vargas Clemow, <cvc@oohg.org>
  *    "Harbour MiniGUI Extended Edition Library"
  *       Copyright 2005-2020 MiniGUI Team, http://hmgextended.com
  *    "Harbour GUI framework for Win32"
- *       Copyright 2001 Alexander S.Kresin <alex@kresin.ru>
- *       Copyright 2001 Antonio Linares <alinares@fivetech.com>
+ *       Copyright 2001 Alexander S.Kresin, <alex@kresin.ru>
+ *       Copyright 2001 Antonio Linares, <alinares@fivetech.com>
  *    "Harbour MiniGUI"
- *       Copyright 2002-2016 Roberto Lopez <mail.box.hmg@gmail.com>
+ *       Copyright 2002-2016 Roberto Lopez, <mail.box.hmg@gmail.com>
  *    "Harbour Project"
- *       Copyright 1999-2020 Contributors, https://harbour.github.io/
+ *       Copyright 1999-2022 Contributors, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -1314,7 +1312,7 @@ LOCAL _DBUmaxcol, _DBUfieldnamesize, _DBUspecifysize
             col 10
             width 490
             tooltip i18n( "Select a record number and click 'Goto' to edit it." )
-            rangemin IIF( _DBUalias->( reccount() ) == 0, 0, 1 )
+            rangemin iif( _DBUalias->( reccount() ) == 0, 0, 1 )
             rangemax _DBUalias->( reccount() )
             on change _DBUeditdbf._DBUrecgoto.value := _DBUeditdbf._DBUrecgotoslider.value
          end slider
