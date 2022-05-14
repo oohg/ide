@@ -1196,11 +1196,19 @@ DEFINE WINDOW TEMPLATE ;
             NUMERIC ;
             MAXLENGTH 3
 
-         @ 260, 20 BUTTON button_17 ;
-            WIDTH 200 ;
+         @ 260, 20 LABEL label_32 ;
+            WIDTH 140 ;
             HEIGHT 24 ;
-            CAPTION i18n( "Supported Color Constants" ) ;
-            ACTION ::EditColors()
+            VALUE i18n( "Keyboard Jump (Px)" ) ;
+            TRANSPARENT ;
+            VCENTERALIGN
+
+         @ 260, 180 TEXTBOX text_34 ;
+            WIDTH 40 ;
+            HEIGHT 24 ;
+            TOOLTIP i18n( "Enter a 0 to use 10 px as default value." ) ;
+            NUMERIC ;
+            MAXLENGTH 3
 
          @ 260, 320 LABEL label_27 ;
             WIDTH 190 ;
@@ -1277,6 +1285,19 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             CAPTION i18n( "Save form's dimensions on size" ) ;
             TOOLTIP "Uncheck to avoid replacing variable-based width/height values with numbers when the form is sized interactively." ;
+            VALUE .T.
+
+         @ 260, 20 BUTTON button_17 ;
+            WIDTH 200 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Supported Color Constants" ) ;
+            ACTION ::EditColors()
+
+         @ 260, 320 CHECKBOX chk_MultiDel ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Enable multi delete" ) ;
+            TOOLTIP "Check to enable the deletion of all selected controls (default is to delete only the first selected one)." ;
             VALUE .T.
 
       END PAGE
