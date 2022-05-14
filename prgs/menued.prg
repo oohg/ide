@@ -2,26 +2,24 @@
  * $Id: menued.prg $
  */
 /*
- * ooHG source code:
- * ooHG IDE+ form generator
+ * OOHG source code:
+ * OOHG IDE+ form generator
  *
- * Copyright 2014-2020 Fernando Yurisich <fyurisich@oohg.org> and contributors of
+ * Copyright 2014-2022 Fernando Yurisich <fyurisich@oohg.org> and contributors of
  * the Object Oriented (x)Harbour GUI (aka OOHG) Project, https://oohg.github.io
  *
- * Based upon:
- * Harbour Minigui Ide
- * Copyright 2002-2014 Ciro Vargas Clemow <cvc@oohg.org>
- *
  * Portions of this project are based upon:
+ *    "Harbour Minigui IDE"
+ *       Copyright 2002-2014 Ciro Vargas Clemow, <cvc@oohg.org>
  *    "Harbour MiniGUI Extended Edition Library"
  *       Copyright 2005-2020 MiniGUI Team, http://hmgextended.com
  *    "Harbour GUI framework for Win32"
- *       Copyright 2001 Alexander S.Kresin <alex@kresin.ru>
- *       Copyright 2001 Antonio Linares <alinares@fivetech.com>
+ *       Copyright 2001 Alexander S.Kresin, <alex@kresin.ru>
+ *       Copyright 2001 Antonio Linares, <alinares@fivetech.com>
  *    "Harbour MiniGUI"
- *       Copyright 2002-2016 Roberto Lopez <mail.box.hmg@gmail.com>
+ *       Copyright 2002-2016 Roberto Lopez, <mail.box.hmg@gmail.com>
  *    "Harbour Project"
- *       Copyright 1999-2020 Contributors, https://harbour.github.io/
+ *       Copyright 1999-2022 Contributors, https://harbour.github.io/
  */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -174,7 +172,7 @@ LOCAL nNxtLvl, nLvl, nPopupCount := 0
                         AllTrim( ( ::cID )->image ), ;
                         ( ::cID )->right == 'X', ;
                         ( ::cID )->stretch == 'X', ;
-                        IIF( ( ::cID )->breakmenu == 'X', 1, NIL ) )
+                        iif( ( ::cID )->breakmenu == 'X', 1, NIL ) )
 
                      nPopupCount ++
                   ENDIF
@@ -192,7 +190,7 @@ LOCAL nNxtLvl, nLvl, nPopupCount := 0
                         ( ::cID )->hilited == 'X', ;
                         ( ::cID )->right == 'X', ;
                         ( ::cID )->stretch == 'X', ;
-                        IIF( ( ::cID )->breakmenu == 'X', 1, NIL ) )
+                        iif( ( ::cID )->breakmenu == 'X', 1, NIL ) )
                   ENDIF
 
                   DO WHILE nNxtLvl < nLvl
@@ -236,7 +234,7 @@ LOCAL nNxtLvl, nLvl, nPopupCount := 0
                      ( ::cID )->hilited == 'X', ;
                      ( ::cID )->right == 'X', ;
                      ( ::cID )->stretch == 'X', ;
-                     IIF( ( ::cID )->breakmenu == 'X', 1, NIL ) )
+                     iif( ( ::cID )->breakmenu == 'X', 1, NIL ) )
                ENDIF
 
                ( ::cID )->( dbSkip() )
@@ -268,7 +266,7 @@ LOCAL nNxtLvl, nLvl, nPopupCount := 0
                      ( ::cID )->hilited == 'X', ;
                      ( ::cID )->right == 'X', ;
                      ( ::cID )->stretch == 'X', ;
-                     IIF( ( ::cID )->breakmenu == 'X', 1, NIL ) )
+                     iif( ( ::cID )->breakmenu == 'X', 1, NIL ) )
                ENDIF
 
                ( ::cID )->( dbSkip() )
@@ -301,7 +299,7 @@ LOCAL nNxtLvl, nLvl, nPopupCount := 0
                      ( ::cID )->hilited == 'X', ;
                      ( ::cID )->right == 'X', ;
                      ( ::cID )->stretch == 'X', ;
-                     IIF( ( ::cID )->breakmenu == 'X', 1, NIL ) )
+                     iif( ( ::cID )->breakmenu == 'X', 1, NIL ) )
                ENDIF
 
                ( ::cID )->( dbSkip() )
@@ -1237,7 +1235,7 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteBreakMenu() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->breakmenu := IIF( ::FormEdit:checkbox_104:Value, 'X', ' ' )
+   ( ::cID )->breakmenu := iif( ::FormEdit:checkbox_104:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
@@ -1256,7 +1254,7 @@ METHOD WriteChecked() CLASS TMyMenuEditor
       MsgStop( i18n( 'You must first define a name for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->checked := IIF( ::FormEdit:checkbox_101:Value, 'X', ' ' )
+   ( ::cID )->checked := iif( ::FormEdit:checkbox_101:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
@@ -1268,14 +1266,14 @@ METHOD WriteDisabled() CLASS TMyMenuEditor
       MsgStop( i18n( 'You must first define a name for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->enabled := IIF( ::FormEdit:checkbox_102:Value, 'X', ' ' )
+   ( ::cID )->enabled := iif( ::FormEdit:checkbox_102:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
 //------------------------------------------------------------------------------
 METHOD WriteHilited() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->hilited := IIF( ::FormEdit:checkbox_106:Value, 'X', ' ' )
+   ( ::cID )->hilited := iif( ::FormEdit:checkbox_106:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
@@ -1311,7 +1309,7 @@ RETURN NIL
 //------------------------------------------------------------------------------
 METHOD WriteRight() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
-   ( ::cID )->right := IIF( ::FormEdit:checkbox_103:Value, 'X', ' ' )
+   ( ::cID )->right := iif( ::FormEdit:checkbox_103:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
@@ -1330,7 +1328,7 @@ METHOD WriteStretch() CLASS TMyMenuEditor
       MsgStop( i18n( 'You must first define an image for this item.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
-   ( ::cID )->stretch := IIF( ::FormEdit:checkbox_105:Value, 'X', ' ' )
+   ( ::cID )->stretch := iif( ::FormEdit:checkbox_105:Value, 'X', ' ' )
    ::FormEdit:browse_101:Refresh()
 RETURN NIL
 
