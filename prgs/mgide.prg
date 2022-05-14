@@ -70,16 +70,14 @@
 
 #define APP_F_OPTIONS         i18n( 'F1 Help    F5 Build    F6 Build / Run    F7 Run    F8 Debug    ' )
 #define APP_FULL_NAME         ( "OOHG IDE+ v." + SubStr( __DATE__, 3, 2 ) + "." + Right( __DATE__, 4 ) )
-#define BKT( x )              ( "[" + x + "]")
 #define CR                    Chr( 13 )
 #define HTAB                  Chr( 9 )
 #define LF                    Chr( 10 )
 #define NUL                   Chr( 0 )
-#define DOUBLE_QUOTATION_MARK '"'
-#define DQM( x )              DOUBLE_QUOTATION_MARK + x + DOUBLE_QUOTATION_MARK
-#define SINGLE_QUOTATION_MARK "'"
-#define SQM( x )              ( SINGLE_QUOTATION_MARK + x + SINGLE_QUOTATION_MARK )
 #define BKSLSH                "\"
+#define UpperNIL( cValue )    iif( Upper( AllTrim( cValue ) ) == "NIL", "NIL", cValue )
+#define NOTEMPTY( cValue )    ( ! Empty( cValue ) .AND. UpperNIL( cValue ) != "NIL" )
+#define NOTZERO( cValue )     ( ! Empty( cValue ) .AND. UpperNIL( cValue ) != "NIL" .AND. UpperNIL( cValue ) != "0" )
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 FUNCTION Main( rtl )
@@ -119,6 +117,7 @@ CLASS THMI
    DATA cBCCFolderI        INIT ''
    DATA cBCCFolderL        INIT ''
    DATA cExtEditor         INIT ''
+   DATA cExe               INIT ''
    DATA cFile              INIT ''
    DATA cFormDefFontColor  INIT 'NIL'
    DATA cFormDefFontName   INIT 'MS Sans Serif'
@@ -162,6 +161,7 @@ CLASS THMI
    DATA cItemFile          INIT ''
    DATA cLibCC             INIT ""
    DATA cLibXH             INIT ""
+   DATA cMakeTool          INIT ""
    DATA cMinGWFolder       INIT ''
    DATA cMinGWFolderB      INIT ''
    DATA cMinGWFolderI      INIT ''
@@ -193,6 +193,7 @@ CLASS THMI
    DATA Form_Wait          INIT NIL
    DATA lCloseOnFormExit   INIT .F.
    DATA lHideTT            INIT .F.
+   DATA lMultiDelete       INIT .F.
    DATA lPsave             INIT .T.
    DATA lSave              INIT .T.
    DATA lSaveDefaultValues INIT .T.
@@ -210,6 +211,7 @@ CLASS THMI
    DATA nLabelHeight       INIT 0
    DATA nLineSkip          INIT 5
    DATA nPosText           INIT 0
+   DATA nPxJump            INIT 10
    DATA nPxMove            INIT 5
    DATA nPxSize            INIT 1
    DATA nRowBorder         INIT 50
@@ -242,8 +244,8 @@ CLASS THMI
    METHOD GetPreferredFont
    METHOD GoLine
    METHOD InitializeProject
-   METHOD LeaDatoLogicR
-   METHOD LeaDatoR
+   METHOD LeaLogR
+   METHOD LeaStrR
    METHOD LoadClrDefs
    METHOD LookChanges
    METHOD ModifyItem
@@ -283,7 +285,7 @@ ENDCLASS
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewIde( cParameter ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, cvcy, cAux1, cAux2
+LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, cvcy, cName, cExt
 
    SET CENTURY ON
    SET EXACT ON
@@ -304,26 +306,26 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
    IF cParameter # NIL
       nPos := At( ".", cParameter )
       IF nPos > 0
-         cAux1 := SubStr( cParameter, 1, nPos - 1 )
-         IF ! Empty( cAux1 )
-            cAux2 := SubStr( cParameter, nPos + 1, 3 )
-            IF Lower( cAux2 ) == "ch"
-               ::cFile := cAux1 + "." + cAux2
-            ELSEIF Lower( cAux2 ) == "fmg"
-               ::cFile := cAux1 + "." + cAux2
-            ELSEIF Lower( cAux2 ) == "pmg"
+         cName := SubStr( cParameter, 1, nPos - 1 )
+         IF ! Empty( cName )
+            cExt := SubStr( cParameter, nPos + 1, 3 )
+            IF Lower( cExt ) == "ch"
+               cParameter := cName + "." + cExt
+            ELSEIF Lower( cExt ) == "fmg"
+               cParameter := cName + "." + cExt
+            ELSEIF Lower( cExt ) == "pmg"
                lIsProject := .T.
-               ::cFile := cAux1 + "." + cAux2
-            ELSEIF Lower( cAux2 ) == "prg"
-               ::cFile := cAux1 + "." + cAux2
-            ELSEIF Lower( cAux2 ) == "rc"
-               ::cFile := cAux1 + "." + cAux2
-            ELSEIF Lower( cAux2 ) == "rpt"
-               ::cFile := cAux1 + "." + cAux2
+               cParameter := cName + "." + cExt
+            ELSEIF Lower( cExt ) == "prg"
+               cParameter := cName + "." + cExt
+            ELSEIF Lower( cExt ) == "rc"
+               cParameter := cName + "." + cExt
+            ELSEIF Lower( cExt ) == "rpt"
+               cParameter := cName + "." + cExt
             ENDIF
          ENDIF
       ELSE
-         ::cFile := cParameter + ".fmg"
+         cParameter := cParameter + ".fmg"
       ENDIF
    ENDIF
 
@@ -438,20 +440,20 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
                AUTOSIZE
 
             BUTTON Button_1b ;
-               TOOLTIP i18n( 'Open...' ) ;
+               TOOLTIP i18n( 'Open ...' ) ;
                PICTURE 'IDE_OPENPRJ' ;
                ACTION ::OpenProject() ;
                AUTOSIZE
 
             BUTTON Button_01 ;
-               TOOLTIP i18n( 'Save...' ) ;
+               TOOLTIP i18n( 'Save ...' ) ;
                PICTURE 'IDE_SAVE' ;
                ACTION ::SaveProject() ;
                AUTOSIZE ;
                SEPARATOR
 
             BUTTON Button_1 ;
-               TOOLTIP i18n( 'Add...' ) ;
+               TOOLTIP i18n( 'Add ...' ) ;
                PICTURE 'IDE_NEWITEM' ;
                ACTION ::NewFMG( InputBox( "FMG", i18n( 'Add FMG module' ) ) ) ;
                DROPDOWN ;
@@ -577,23 +579,25 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
 
    IF lIsProject
       // Project
-      pmgFolder := OnlyFolder( ::cFile )
+      pmgFolder := OnlyFolder( cParameter )
       IF ! Empty( pmgFolder )
          ::cProjFolder := pmgFolder
          DirChange( pmgFolder )
       ENDIF
-      ::InitializeProject( ::cFile )
+      ::InitializeProject( cParameter )
       ::Form_Tree:Add:Enabled := .T.
       ::Form_Tree:Button_1:Enabled := .T.
       ACTIVATE WINDOW Form_Tree, Form_Wait, Form_Splash
-   ELSEIF ! Empty( ::cFile )
+   ELSEIF ! Empty( cParameter )
       // Other files (ch, fmg, prg, rc, rpt)
       ::lCloseOnFormExit := .T.
       ::Form_Tree:Add:Enabled := .F.
       ::Form_Tree:Button_1:Enabled := .F.
       ::Form_Tree:Hide()
       ACTIVATE WINDOW Form_Tree, Form_Wait, Form_Splash NOWAIT
-      ::Analizar( ::cFile )
+      ::cFile := cParameter
+      ::Analizar( cParameter )
+      ::cFile := ""
    ELSE
       // None
       ::Form_Tree:Add:Enabled := .F.
@@ -627,15 +631,15 @@ FUNCTION BorraTemp( cFolder )
    IF File( cFolder + "OBJ\nul" )
       ZapDirectory( cFolder + "OBJ" + NUL )
    ENDIF
-   FErase( cFolder + '_aux.rc' )
-   FErase( cFolder + '_build.bat' )
-   FErase( cFolder + '_oohg_resconfig.h' )
-   FErase( cFolder + '_temp.bc' )
-   FErase( cFolder + '_temp.rc' )
-   FErase( cFolder + 'b32.bc' )
-   FErase( cFolder + 'comp.bat' )
-   FErase( cFolder + 'error.txt' )
-   FErase( cFolder + 'makefile.gcc' )
+   DELETE FILE ( cFolder + '_aux.rc' )
+   DELETE FILE ( cFolder + '_build.bat' )
+   DELETE FILE ( cFolder + '_oohg_resconfig.h' )
+   DELETE FILE ( cFolder + '_temp.bc' )
+   DELETE FILE ( cFolder + '_temp.rc' )
+   DELETE FILE ( cFolder + 'b32.bc' )
+   DELETE FILE ( cFolder + 'comp.bat' )
+   DELETE FILE ( cFolder + 'error.txt' )
+   DELETE FILE ( cFolder + 'makefile.gcc' )
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -679,58 +683,56 @@ FUNCTION BorraObj()
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD Analizar( cParameter ) CLASS THMI
+METHOD Analizar( cItem ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL cParent, lWait, nPos, oEditor, cItem, cExt
+LOCAL cGroup, lWait, nPos, oEditor, cExt
 
-   IF HB_ISSTRING( cParameter )
-      nPos := At( ".", cParameter )
-      cExt := Lower( SubStr( cParameter, nPos + 1, 3 ) )
+   IF HB_ISSTRING( cItem )
+      nPos := At( ".", cItem )
+      cExt := Lower( SubStr( cItem, nPos + 1, 3 ) )
       DO CASE
       CASE cExt == "ch"
-         cParent := "CH"
+         cGroup := "CH"
       CASE cExt == "fmg"
-         cParent := "FMG"
+         cGroup := "FMG"
       CASE cExt == "prg"
-         cParent := "PRG"
+         cGroup := "PRG"
       CASE cExt == "rc"
-         cParent := "RC"
+         cGroup := "RC"
       CASE cExt == "rpt"
-         cParent := "RPT"
+         cGroup := "RPT"
       OTHERWISE
          RETURN NIL
       ENDCASE
-      cParameter := SubStr( cParameter, 1, nPos - 1 )
-      cItem      := Lower( cParameter )
-      cParameter := cParameter + "." + cExt
       lWait := .T.
    ELSEIF ::Form_Tree:Tree_1:Value > 0
-      cParameter := ::Form_Tree:Tree_1:Item( ::Form_Tree:Tree_1:Value )
-      cParent    := ::SearchType( ::Form_Tree:Tree_1:Value )
+      cItem := ::Form_Tree:Tree_1:Item( ::Form_Tree:Tree_1:Value )
+      cGroup := ::SearchType( ::Form_Tree:Tree_1:Value )
       DO CASE
-      CASE cParent == "CH"
+      CASE cGroup == "CH"
          cExt := 'ch'
-      CASE cParent == "FMG"
+      CASE cGroup == "FMG"
          cExt := 'fmg'
-      CASE cParent == "PRG"
+      CASE cGroup == "PRG"
          cExt := 'prg'
-      CASE cParent == "RC"
+      CASE cGroup == "RC"
          cExt := 'rc'
-      CASE cParent == "RPT"
+      CASE cGroup == "RPT"
          cExt := 'rpt'
       OTHERWISE
          RETURN NIL
       ENDCASE
-      cItem      := Lower( cParameter )
-      cParameter := cParameter + "." + cExt
-      lWait      := .F.
+      cItem := Lower( cItem ) + "." + cExt
+      lWait := .F.
    ELSE
       RETURN NIL
    ENDIF
 
    IF cItem == "project" .OR. cItem == "ch" .OR. cItem == "fmg" .OR. cItem == "prg" .OR. cItem == "rc" .OR. cItem == "rpt"
-      // Do nothing
-   ELSEIF cParent == "FMG"
+      RETURN NIL
+   ENDIF
+
+   IF cGroup == "FMG"
       IF Len( ::aEditors ) > 0                // TODO: more than one form at the same time
          MsgStop( i18n( "Sorry, the IDE can't -yet- edit more than one FMG module at a time." ), 'OOHG IDE+' )
       ELSE
@@ -745,13 +747,13 @@ LOCAL cParent, lWait, nPos, oEditor, cItem, cExt
             oEditor := TFormEditor()
             aAdd( ::aEditors, oEditor )
             ::nActiveEditor := Len( ::aEditors )
-            oEditor:EditForm( Self, cParameter, ::nActiveEditor, lWait )
+            oEditor:EditForm( Self, cItem, ::nActiveEditor, lWait )
          ENDIF
       ENDIF
-   ELSEIF cParent == "RPT"
-      ::Report_Edit( cParameter )
-   ELSEIF cParent == "PRG" .OR. cParent == "CH" .OR. cParent == "RC"
-      ::ModifyItem( cParameter, cParent )
+   ELSEIF cGroup == "RPT"
+      ::Report_Edit( cItem )
+   ELSEIF cGroup == "PRG" .OR. cGroup == "CH" .OR. cGroup == "RC"
+      ::ModifyItem( cItem, cGroup )
    ENDIF
 RETURN NIL
 
@@ -770,7 +772,7 @@ LOCAL cFile, cText, nLineCount, i, lCreate := .T.
          ENDIF
       NEXT i
    ENDIF
-   IF lCreate .AND. ! MsgYesNo( i18n( "Color definitions file not found." ) + CRLF + i18n( "Create new file and edit?" ), 'OOHG IDE+' )
+   IF lCreate .AND. ! MsgYesNo( i18n( "The file containing the color definitions could not be found." ) + CRLF + i18n( "Create new file and edit?" ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
    cText := "/*" + CRLF + ;
@@ -1002,7 +1004,8 @@ RETURN uRet
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadINI( cFile ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1
+LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := ""
+LOCAL lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1, lMultiDelete := 0
 
    IF Left( cFile, 1 ) == "\"
       cFile := SubStr( cFile, 2 )
@@ -1055,6 +1058,10 @@ LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
       GET ::nPxMove           SECTION "FORMMETRICS" ENTRY "PXMOVE"        DEFAULT 5
       IF ::nPxMove < 1 .OR. ::nPxMove > 99
          ::nPxMove := 5
+      ENDIF
+      GET ::nPxJump           SECTION "FORMMETRICS" ENTRY "PXJUMP"        DEFAULT 10
+      IF ::nPxJump < 1 .OR. ::nPxJump > 99
+         ::nPxJump := 10
       ENDIF
       GET ::nPxSize           SECTION "FORMMETRICS" ENTRY "PXSIZE"        DEFAULT 1
       IF ::nPxSize < 1 .OR. ::nPxSize > 99
@@ -1164,10 +1171,13 @@ LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", lSaveDefaultValues := 1
       ::lSavePosOnDrag := ( lSavePosOnDrag == 1 )
       GET lSaveSizeonRed      SECTION 'SETTINGS'    ENTRY "SAVESIZEONRED" DEFAULT 1
       ::lSaveSizeonRed := ( lSaveSizeonRed == 1 )
+      GET lMultiDelete        SECTION 'SETTINGS'    ENTRY "MULTIDELETE"   DEFAULT 0
+      ::lMultiDelete := ( lMultiDelete == 1 )
       GET lSnap               SECTION 'SETTINGS'    ENTRY "SNAP"          DEFAULT 0
       ::lSnap := ( lSnap == 1 )
       GET ::cLibCC            SECTION 'SETTINGS'    ENTRY "ADDLIBCC"      DEFAULT ''
       GET ::cLibXH            SECTION 'SETTINGS'    ENTRY "ADDLIBXH"      DEFAULT ''
+      GET ::cMakeTool         SECTION 'SETTINGS'    ENTRY "MAKETOOL"      DEFAULT ''
       GET ::nSyntax           SECTION 'SETTINGS'    ENTRY "SYNTAX"        DEFAULT 1
       GET lHideTT             SECTION 'SETTINGS'    ENTRY "HIDETT"        DEFAULT 0
       ::lHideTT := ( lHideTT == 1 )
@@ -1200,6 +1210,7 @@ METHOD SaveINI( cFile ) CLASS THMI
       SET SECTION "FORMMETRICS" ENTRY "TEXTBOXHEIGHT" TO LTrim( Str( ::nTextBoxHeight, 2, 0 ) )
       SET SECTION "FORMMETRICS" ENTRY "STDVERTGAP"    TO LTrim( Str( ::nStdVertGap, 3, 0 ) )
       SET SECTION "FORMMETRICS" ENTRY "PXMOVE"        TO LTrim( Str( ::nPxMove, 2, 0 ) )
+      SET SECTION "FORMMETRICS" ENTRY "PXJUMP"        TO LTrim( Str( ::nPxJump, 2, 0 ) )
       SET SECTION "FORMMETRICS" ENTRY "PXSIZE"        TO LTrim( Str( ::nPxSize, 2, 0 ) )
       // OOHG
       SET SECTION 'GUILIB'      ENTRY "GUIHBMINGW"    TO ::cGuiHbMinGW
@@ -1278,11 +1289,13 @@ METHOD SaveINI( cFile ) CLASS THMI
       // OTHER
       SET SECTION "SETTINGS"    ENTRY "ADDLIBCC"      TO ::cLibCC
       SET SECTION "SETTINGS"    ENTRY "ADDLIBXH"      TO ::cLibXH
+      SET SECTION "SETTINGS"    ENTRY "MAKETOOL"      TO ::cMakeTool
       SET SECTION 'SETTINGS'    ENTRY "LINESKIP"      TO LTrim( Str( ::nLineSkip, 2, 0 ) )
       IF ::lTBuild < 1 .OR. ( ::lTBuild > 2 .AND. ::nCompxBase == 2 ) .OR. ( ::lTBuild > 3 .AND. ::nCompilerC == 1 )
          ::lTBuild := 2
       ENDIF
       SET SECTION "SETTINGS"    ENTRY "BUILD"         TO LTrim( Str( ::lTBuild, 1, 0 ) )
+      SET SECTION "SETTINGS"    ENTRY "MULTIDELETE"   TO iif( ::lMultiDelete, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SAVEDEFAULTS"  TO iif( ::lSaveDefaultValues, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SAVEPOSONDRAG" TO iif( ::lSavePosOnDrag, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SAVESIZEONRED" TO iif( ::lSaveSizeonRed, "1", "0" )
@@ -1305,7 +1318,7 @@ METHOD Exit() CLASS THMI
    ENDDO
 
    IF ! ::lPsave
-      IF MsgYesNo( i18n( 'Save project changes?' ), 'OOHG IDE+' )
+      IF MsgYesNo( i18n( 'Save the changes made to the project?' ), 'OOHG IDE+' )
          ::SaveProject()
       ENDIF
    ENDIF
@@ -1420,17 +1433,22 @@ RETURN NIL
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD RunP() CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-   LOCAL cExe
+LOCAL cRun
 
    ::Form_Tree:button_09:Enabled := .F.
    ::Form_Tree:button_10:Enabled := .F.
    ::Form_Tree:button_11:Enabled := .F.
 
-   cExe := StrTran( AllTrim( DelExt( ::cProjectName ) ), " ", "_" ) + '.exe'
-   IF File( cExe )
-      EXECUTE FILE cExe
+   IF Empty( ::cOutFile )
+      cRun := ::cExe
    ELSE
-      MsgStop( i18n( "File is missing: " + DQM( cExe ) ), 'OOHG IDE+' )
+      cRun := ::cOutFile
+   ENDIF
+
+   IF File( cRun )
+      EXECUTE FILE cRun
+   ELSE
+      MsgStop( i18n( 'The EXE file could not be found.' ) + CRLF + i18n( 'You must build the project before running it.' ), 'OOHG IDE+' )
    ENDIF
 
    ::Form_Tree:button_09:Enabled := .T.
@@ -1468,7 +1486,7 @@ LOCAL oPrint, nCount, wPage, i
       IF nCount > 60
          nCount ++
          nCount ++
-         oPrint:PrintData( nCount, 0, 'Page... ' + Str( wPage, 3 ) )
+         oPrint:PrintData( nCount, 0, 'Page # ' + Str( wPage, 3 ) )
          nCount ++
          oPrint:PrintData( nCount, 0, Replicate( '-', 90 ) )
          oPrint:EndPage()
@@ -1479,7 +1497,7 @@ LOCAL oPrint, nCount, wPage, i
    NEXT i
    nCount ++
    nCount ++
-   oPrint:PrintData( nCount, 0, 'Page... ' + Str( wPage, 3 ) )
+   oPrint:PrintData( nCount, 0, 'Page # ' + Str( wPage, 3 ) )
    nCount ++
    oPrint:PrintData( nCount, 0, Replicate( '-', 90 ) )
    nCount ++
@@ -1666,6 +1684,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:text_21:value      := ::nTextBoxHeight
    ::Form_Prefer:text_22:value      := ::nStdVertGap
    ::Form_Prefer:text_23:value      := ::nPxMove
+   ::Form_Prefer:text_34:value      := ::nPxJump
    ::Form_Prefer:text_24:value      := ::nPxSize
    ::Form_Prefer:text_25:value      := ::nTabSize
    ::Form_Prefer:text_1:value       := ::cExtEditor
@@ -1680,6 +1699,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
       // xHarbour
       ::Form_Prefer:radiogroup_3:value := ::lTBuild
    ENDIF
+   ::Form_Prefer:text_make:value     := ::cMakeTool
    ::Form_Prefer:text_libCC:value    := ::cLibCC
    ::Form_Prefer:chk_HideTT:value    := ::lHideTT
    ::Form_Prefer:chk_Snap:value      := ::lSnap
@@ -1690,6 +1710,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:chk_SaveDefs:value  := ::lSaveDefaultValues
    ::Form_Prefer:chk_SaveDrag:value  := ::lSavePosOnDrag
    ::Form_Prefer:chk_SaveRedim:value := ::lSaveSizeonRed
+   ::Form_Prefer:chk_MultiDel:value  := ::lMultiDelete
    ::Form_Prefer:tab_1:value         := 1
 
    ACTIVATE WINDOW Form_Prefer
@@ -1922,7 +1943,6 @@ METHOD GetPreferredFont( aFont )
                 iif( _OOHG_DefaultFontColor == NIL, "", ;
                      ", Color " + ::ColorToStr( _OOHG_DefaultFontColor ) ), ;
                 ", Color " + ::ColorToStr( aFont[5] ) ) )
-// TODO: Add properties for bold, italic, underline and strikeout
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -1968,7 +1988,7 @@ METHOD SearchText() CLASS THMI
          ENDIF
       ELSEIF ::SearchType( i ) == "PRG" .AND. ! cItem == "PRG"
          IF file(citem+'.prg')
-            cInput:=memoread(cItem+'.prg')
+            cInput:= MemoRead( cItem + '.prg' )
             FOR j := 1 TO MLCount(cInput)
                IF At( Upper( cTextSearch ), Upper( Trim( MemoLine( cInput, 500, j ) ) ) ) > 0
                   cOutput += cItem + '  ==> ' + "PRG" + '  Line ' + Str( j, 6 ) + CRLF
@@ -2009,7 +2029,7 @@ RETURN NIL
 METHOD OkPrefer( aFont ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 
-   ::cOutFile           := ::Form_Prefer:text_4:Value
+   ::cOutFile           := AllTrim( ::Form_Prefer:text_4:Value )
    ::cExtEditor         := AllTrim( ::Form_Prefer:text_1:Value )
    ::cGuiHbMinGW        := ::Form_Prefer:text_12:Value
    ::cGuiHbBCC          := ::Form_Prefer:text_9:Value
@@ -2084,6 +2104,7 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::lSnap              := ::Form_Prefer:chk_Snap:Value
    ::cLibCC             := AllTrim( ::Form_Prefer:text_libCC:Value )
    ::cLibXH             := AllTrim( ::Form_Prefer:text_libXH:Value )
+   ::cMakeTool          := AllTrim( ::Form_Prefer:text_make:Value )
    ::cFormDefFontName   := iif( Empty( aFont[1] ), '', aFont[1] )
    ::nFormDefFontSize   := iif( aFont[2] > 0, Int( aFont[2] ), 0 )
    ::cFormDefFontColor  := iif( Empty( aFont[5] ), "NIL", iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, "NIL", ::ColorToStr( aFont[5] ) ) )
@@ -2091,6 +2112,7 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::nTextBoxHeight     := ::Form_Prefer:text_21:Value
    ::nStdVertGap        := ::Form_Prefer:text_22:Value
    ::nPxMove            := ::Form_Prefer:text_23:Value
+   ::nPxJump            := ::Form_Prefer:text_34:Value
    ::nPxSize            := ::Form_Prefer:text_24:Value
    ::nTabSize           := ::Form_Prefer:text_25:Value
    ::nSyntax            := ::Form_Prefer:combo_26:Value
@@ -2116,6 +2138,7 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::lSaveDefaultValues := ::Form_Prefer:chk_SaveDefs:value
    ::lSavePosOnDrag     := ::Form_Prefer:chk_SaveDrag:value
    ::lSaveSizeonRed     := ::Form_Prefer:chk_SaveRedim:value
+   ::lMultiDelete       := ::Form_Prefer:chk_MultiDel:value
 
    ::Form_Prefer:Release()
 
@@ -2138,7 +2161,6 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder  := ::cHbMinGWFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cHbMinGWFolderB
@@ -2146,6 +2168,8 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
    LOCAL cHarbourFolderL := cHarbourFolder + ::cHbMinGWFolderL
    LOCAL cHBP
    LOCAL cHBMK2
+   LOCAL cLine
+   LOCAL cMemo
    LOCAL cMiniGuiFolder  := ::cGUIHbMinGW + '\'
    LOCAL cMiniGuiFolderI := cMiniGuiFolder + ::cGUIHbMinGWI
    LOCAL cMiniGuiFolderL := cMiniGuiFolder + ::cGUIHbMinGWL
@@ -2155,105 +2179,95 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
+   LOCAL nLineCount
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
    ::Form_Tree:button_10:Enabled := .F.
    ::Form_Tree:button_11:Enabled := .F.
    CursorWait()
-   ::Form_Wait:hmi_label_101:Value := i18n( 'Compiling ...' )
+   ::Form_Wait:hmi_label_101:Value := i18n( 'Building ...' )
    ::Form_Wait:Show()
 
    BEGIN SEQUENCE
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\MINGW32-MAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "MinGW's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MINGW32-MAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-Hb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-Hb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\LIBOOHG.A" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The Harbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The Harbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\LIBHBRTL.A" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBHBRTL.A", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBHBRTL.A", 'OOHG IDE+' )
          Break
       ENDIF
 
       // Prepare to build
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
-      cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
-      ENDIF
-      IF File( cExe )
-         ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
-         Break
-      ENDIF
 
       DO CASE
       CASE ::lTBuild == 3    // HBMK2
          // Check for hbp file
-         cHBP := cPrgName + '.hbp'
+         cHBP := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" ) + '.hbp'
          IF ! File( cHBP )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
+            MsgInfo( cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Check for hbmk2.exe file
@@ -2263,7 +2277,53 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
             cHBMK2 := cHarbourFolderB + "\hbmk2.exe"
          ELSE
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
+            MsgInfo( i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
+            Break
+         ENDIF
+         // Get EXE filename (search for -o<outname> or name of first prg)
+         cMemo := MemoRead( cHBP )
+         nLineCount := MLCount( cMemo )
+         ::cExe := ""
+         FOR i := 1 TO nLineCount
+            cLine := AllTrim( MemoLine( cMemo, 1200, i ) )
+            IF Upper( Left( cLine, 2 ) ) == "-O"
+               ::cExe := SubStr( cLine, 3 )
+               EXIT
+            ENDIF
+         NEXT i
+         IF Empty( ::cExe )
+            FOR i := 1 TO nLineCount
+               cLine := AllTrim( MemoLine( cMemo, 1200, i ) )
+               IF Upper( Right( cLine, 4 ) ) == ".PRG"
+                  ::cExe := Left( cLine, Len( cLine ) - 4 )
+                  EXIT
+               ENDIF
+            NEXT i
+         ENDIF
+         IF Empty( ::cExe )
+            IF Empty( ::cOutFile )
+               MsgStop( i18n( 'EXE filename can not be determined.' ) + CRLF + i18n( 'Change the .hbp file or set "Output Name" field at "File/Preferences" menu.' ), 'OOHG IDE+' )
+               Break
+            ELSE
+               IF ! Upper( Right( ::cOutFile, 4 ) ) == ".EXE"
+                  ::cOutFile += ".EXE"
+               ENDIF
+            ENDIF
+         ELSE
+            IF ! Upper( Right( ::cExe, 4 ) ) == ".EXE"
+               ::cExe += ".EXE"
+            ENDIF
+         ENDIF
+         // Delete previous EXE
+         IF File( ::cExe )
+            DELETE FILE ( ::cExe )
+         ENDIF
+         IF File( ::cOutFile )
+            DELETE FILE ( ::cOutFile )
+         ENDIF
+         IF File( ::cExe ) .or. File( ::cOutFile )
+            ::Form_Wait:Hide()
+            MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build batch to launch HBMK2 utility
@@ -2278,12 +2338,13 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
+
       CASE ::lTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
          aRcFiles := {}
-         For i := 1 To nItems
+         FOR i := 1 TO nItems
             cFile := ::Form_Tree:Tree_1:Item( i )
             IF ::SearchType( ::SearchItem( cFile, "PRG" ) ) == "PRG" .AND. ! cFile == "PRG"
                cFile := Upper( AllTrim( cFile ) )
@@ -2300,15 +2361,16 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
+         ::cExe := aPrgFiles[1] + ".EXE"
          // Build make script
          // Variables
          cOut := ''
          cOut += 'PATH          = ' + cCompFolderB + CRLF
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
-         cOut += 'APP_NAME      = ' + cExe + CRLF
+         cOut += 'APP_NAME      = ' + ::cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
          FOR i := 1 TO nPrgFiles
@@ -2349,14 +2411,14 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          cOut += HTAB + '$(LINK_EXE) $(LINK_FLAGS) -o$(APP_NAME) $^ $(LINK_SEARCH) $(LINK_LIBS)' + CRLF
          cOut += CRLF
          // Rule for .c compiling
-         For i := 1 To nPrgFiles
+         FOR i := 1 TO nPrgFiles
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.o : $(OBJ_DIR)\' + aPrgFiles[i] + '.c' + CRLF
             cOut += HTAB + '$(CC_EXE) $(CC_FLAGS) $(CC_SEARCH) -c $^ -o $@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
             cOut += CRLF
          NEXT i
          // Rule for .prg compiling
-         For i := 1 To nPrgFiles
+         FOR i := 1 TO nPrgFiles
             cOut += '$(OBJ_DIR)\' + aPrgFiles[i] + '.c : $(PROJECTFOLDER)\' + aPrgFiles[i] + '.prg' + CRLF
             cOut += HTAB + '$(HRB_EXE) $^ $(HRB_FLAGS) $(HRB_SEARCH) -o$@' + CRLF
             cOut += HTAB + '@echo #' + CRLF
@@ -2367,36 +2429,51 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          cOut += HTAB + '$(RC_COMP) -I $(INCLUDE_DIR) -i $^ -o $@' + CRLF
          cOut += HTAB + '@echo #' + CRLF
          hb_MemoWrit( 'makefile.gcc', cOut )
+         // Delete previous EXE
+         IF File( ::cExe )
+            DELETE FILE ( ::cExe )
+         ENDIF
+         IF File( ::cOutFile )
+            DELETE FILE ( ::cOutFile )
+         ENDIF
+         IF File( ::cExe ) .or. File( ::cOutFile )
+            ::Form_Wait:Hide()
+            MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+            Break
+         ENDIF
          // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
-            cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
-            cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
          NEXT i
-         cOut += cCompFolderB + '\mingw32-make.exe -f makefile.gcc > error.txt 2>&1' + CRLF
+         cOut += ::cMakeTool + ' -f makefile.gcc > error.txt 2>&1' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create temp folder for objects
          CreateFolder( cFolder + 'OBJ' )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
+
       CASE ::lTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
-         For i := 1 To nItems
+         FOR i := 1 TO nItems
             cFile := ::Form_Tree:Tree_1:Item( i )
             IF ::SearchType( ::SearchItem( cFile, "PRG" ) ) == "PRG" .AND. ! cFile == "PRG"
                cFile := Upper( AllTrim( cFile + '.PRG' ) )
                IF aScan( aPrgFiles, cFile ) == 0
+                  // Ignore duplicated files
                   aAdd( aPrgFiles, cFile )
                ENDIF
             ENDIF
@@ -2404,48 +2481,70 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
-         For i := 1 To nPrgFiles
+         FOR i := 1 TO nPrgFiles
             cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
+         cPrgName := TempFile()   // Unique file name without extension
          hb_MemoWrit( cPrgName + '.prg', cOut )
+         // Delete previous EXE
+         ::cExe := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" ) + '.EXE'
+         IF File( ::cExe )
+            DELETE FILE ( ::cExe )
+         ENDIF
+         IF File( ::cOutFile )
+            DELETE FILE ( ::cOutFile )
+         ENDIF
+         IF File( ::cExe ) .OR. File( ::cOutFile )
+            ::Form_Wait:Hide()
+            MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+            Break
+         ENDIF
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase( cPrgName + '.prg' )
+         DELETE FILE ( cPrgName + '.prg' )
+         IF File( cPrgName + '.EXE' )
+            RENAME ( cPrgName + '.EXE' ) TO ( ::cExe )
+            IF ! File( ::cExe )
+               MsgInfo( i18n( "EXE file can't be renamed as " + ::cExe ) + CRLF + i18n( 'Current name is ' + cPrgName + '.EXE' ), 'OOHG IDE+' )
+            ENDIF
+         ENDIF
       ENDCASE
 
       // Check for errors
-      cError := hb_OEMToANSI( MemoRead( 'error.txt' ) )
+      cError := hb_OEMToANSI( MemoRead( 'error.txt' ) ) // TODO: check hb_OEMToANSI
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' ERROR:', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "MINGW32-MAKE:", cError1 ) ) > 0 .AND. ( At( " STOP.", SubStr( cError1, nPos ) ) > 0 .OR. At( " ERROR ", SubStr( cError1, nPos ) ) > 0 ) )
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' ERROR:', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing: " ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "Error building " ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
-         EXECUTE FILE cDosComm WAIT HIDE
-         IF ! File( cOut )
-            ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
-            Break
+         ::cOutFile := cOut
+         IF ! ::cExe == ::cOutFile
+            cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
+            EXECUTE FILE cDosComm WAIT HIDE
+            IF ! File( cOut )
+               ::Form_Wait:Hide()
+               MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+               Break
+            ENDIF
+            ::cExe := cOut
          ENDIF
-         cExe := cOut
       ENDIF
 
       // Cleanup
@@ -2454,7 +2553,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         ::RunP()
       ENDIF
    END SEQUENCE
 
@@ -2476,7 +2575,6 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder  := ::cxHbMinGWFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbMinGWFolderB
@@ -2491,7 +2589,6 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -2505,81 +2602,91 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\MINGW32-MAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "MinGW's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MINGW32-MAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-xHb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-xHb-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\LIBOOHG.A" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\LIBOOHG.A", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The xHarbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The xHarbour-MinGW folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\LIBRTL.A" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBRTL.A", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\LIBRTL.A", 'OOHG IDE+' )
          Break
       ENDIF
 
       // Prepare to build
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
-      cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
       ENDIF
-      IF File( cExe )
+      IF File( ::cOutFile )
+         DELETE FILE ( ::cOutFile )
+      ENDIF
+      IF File( ::cExe ) .or. File( ::cOutFile )
          ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         Break
+      ENDIF
+      ::cExe := cPrgName + '.exe'
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
+      ENDIF
+      IF File( ::cExe )
+         ::Form_Wait:Hide()
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2606,7 +2713,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build make script
@@ -2614,7 +2721,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          cOut := ''
          cOut += 'PATH          = ' + cCompFolderB + CRLF
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
-         cOut += 'APP_NAME      = ' + cExe + CRLF
+         cOut += 'APP_NAME      = ' + ::cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
          FOR i := 1 TO nPrgFiles
@@ -2677,12 +2784,13 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          cOut := ''
          cOut += '@echo off' + CRLF
          cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
-         cOut += 'copy /b ' + cMiniGUIFolderR + '\oohg.rc _temp.rc > NUL' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
          FOR i := 1 TO Len( aRcFiles )
-            cOut += 'copy /b _temp.rc _aux.rc > NUL' + CRLF
-            cOut += 'copy /b _aux.rc + ' + aRcFiles[ i ] + '.rc _temp.rc > NUL' + CRLF
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
          NEXT i
-         cOut += cCompFolderB + '\mingw32-make.exe -f makefile.gcc > error.txt 2>&1' + CRLF
+         cOut += ::cMakeTool + ' -f makefile.gcc > error.txt 2>&1' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create temp folder for objects
          CreateFolder( cFolder + 'OBJ' )
@@ -2692,7 +2800,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
@@ -2710,49 +2818,50 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
          For i := 1 To nPrgFiles
             cOut += "#include '" + aPrgFiles[i] + "'" + CRLF + CRLF
          NEXT i
+         cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
          hb_MemoWrit( cPrgName + '.prg', cOut )
 
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase( cPrgName + '.prg' )
+         DELETE FILE ( cPrgName + '.prg' )
       ENDCASE
 
       // Check for errors
       cError := MemoRead( 'error.txt' )
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "MINGW32-MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing: " ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "File is missing: " ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
+         ::cOutFile := cOut
+         cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
          EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+            MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
             Break
          ENDIF
-         cExe := cOut
+         ::cExe := cOut
       ENDIF
 
       // Cleanup
@@ -2761,7 +2870,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         EXECUTE FILE ::cExe
       ENDIF
    END SEQUENCE
 
@@ -2787,7 +2896,6 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder  := ::cHbBCCFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cHbBCCFolderB
@@ -2804,7 +2912,6 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -2818,67 +2925,67 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\MAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "BCC's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-Hb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-Hb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG_BCC.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The Harbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The Harbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\HBRTL.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2886,13 +2993,13 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
       cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
+      ::cExe := cPrgName + '.exe'
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
       ENDIF
-      IF File( cExe )
+      IF File( ::cExe )
          ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -2902,7 +3009,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          cHBP := cPrgName + '.hbp'
          IF ! File( cHBP )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
+            MsgInfo( cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Check for hbmk2.exe file
@@ -2912,7 +3019,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
             cHBMK2 := cHarbourFolderB + "\hbmk2.exe"
          ELSE
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
+            MsgInfo( i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
             Break
          ENDIF
          // Build batch to launch HBMK2 utility
@@ -2949,25 +3056,21 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build make script
          // Variables
          cOut := ''
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
-         cOut += 'APP_NAME      = ' + cExe + CRLF
+         cOut += 'APP_NAME      = ' + ::cExe + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
          For i := 1 To nPrgFiles
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.obj '
          NEXT i
          cOut += CRLF
-         cOut += 'RESFILES      = '
-         For i := 1 to Len( aRcFiles )
-            cOut += '\' + CRLF + '$(OBJ_DIR)\' + aRcFiles[i] + '.res '
-         NEXT i
-         cOut += '\' + CRLF + cMiniGUIFolderR + '\oohg.res' + CRLF
+         cOut += 'RESFILES      = $(OBJ_DIR)\_temp.res '
          cOut += 'LINK_EXE      = ' + cCompFolderB + '\ILINK32.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Gn -Tpe -x' + iif( nOption == 2, "-ap", "-aa" ) + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
@@ -3068,21 +3171,23 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
             cOut += HTAB + '@echo.' + CRLF
             cOut += CRLF
          NEXT i
-         // Rule for .rc compiling
-         For i := 1 to Len( aRcFiles )
-            cOut += '$(OBJ_DIR)\' + aRcFiles[i] + '.res : $(PROJECTFOLDER)\' + aRcFiles[i] + '.rc' + CRLF
-            cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
-            cOut += HTAB + '@echo.' + CRLF
-         NEXT i
-         cOut += cMiniGUIFolderR + '\oohg.res : ' + cMiniGUIFolderR + '\oohg_bcc.rc' + CRLF
+         // Rule for _temp.rc compiling
+         cOut += '$(OBJ_DIR)\_temp.res : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          // Write make script
          hb_MemoWrit( '_temp.bc', cOut )
-         // Build batch to launch make utility
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolderB + '\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
+         NEXT i
+         cOut += ::cMakeTool + ' /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create temp folder for objects
          CreateFolder( cFolder + 'OBJ' )
@@ -3092,7 +3197,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
@@ -3110,7 +3215,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
@@ -3121,37 +3226,37 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase(  cPrgName + '.prg' )
+         DELETE FILE (  cPrgName + '.prg' )
       ENDCASE
 
       // Check for errors
       cError := MemoRead( 'error.txt' )
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing: " ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "File is missing: " ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
+         ::cOutFile := cOut
+         cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
          EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+            MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
             Break
          ENDIF
-         cExe := cOut
+         ::cExe := cOut
       ENDIF
 
       // Cleanup
@@ -3160,7 +3265,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         EXECUTE FILE ::cExe
       ENDIF
    END SEQUENCE
 
@@ -3182,7 +3287,6 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder := ::cxHbBCCFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbBCCFolderB
@@ -3197,7 +3301,6 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -3211,67 +3314,67 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\MAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "BCC's BIN subfolder error: can't find " ) + cHarbourFolderB + "\MAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-xHb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-xHb-BCC folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG_BCC.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_BCC.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The xHarbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The xHarbour-Borland C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\RTL.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3279,13 +3382,13 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
       cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
+      ::cExe := cPrgName + '.exe'
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
       ENDIF
-      IF File( cExe )
+      IF File( ::cExe )
          ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3312,14 +3415,14 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build make script
          // Variables
          cOut := ''
          cOut += 'PROJECTFOLDER = ' + DelSlash( cFolder ) + CRLF
-         cOut += 'APP_NAME      = ' + cExe + CRLF
+         cOut += 'APP_NAME      = ' + ::cExe + CRLF
          cOut += 'TDS_NAME      = ' + cPrgName + '.tds' + CRLF
          cOut += 'OBJ_DIR       = ' + cFolder + 'OBJ' + CRLF
          cOut += 'OBJECTS       = '
@@ -3327,11 +3430,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
             cOut += '\' + CRLF + '$(OBJ_DIR)\' + aPrgFiles[i] + '.obj '
          NEXT i
          cOut += CRLF
-         cOut += 'RESFILES      = '
-         For i := 1 to Len( aRcFiles )
-            cOut += '\' + CRLF + '$(OBJ_DIR)\' + aRcFiles[i] + '.res '
-         NEXT i
-         cOut += '\' + CRLF + cMiniGUIFolderR + '\oohg.res' + CRLF
+         cOut += 'RESFILES      = $(OBJ_DIR)\_temp.res '
          cOut += 'LINK_EXE      = ' + cCompFolderB + '\ILINK32.EXE' + CRLF
          cOut += 'LINK_FLAGS    = -Gn -Tpe -x ' + iif( nOption == 2, "-ap", "-aa" ) + CRLF
          cOut += 'LINK_SEARCH   = -L' + DelSlash( cFolder ) + ;
@@ -3433,21 +3532,23 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
             cOut += HTAB + '@echo.' + CRLF
             cOut += CRLF
          NEXT i
-         // Rule for .rc compiling
-         For i := 1 to Len( aRcFiles )
-            cOut += '$(OBJ_DIR)\' + aRcFiles[i] + '.res : $(PROJECTFOLDER)\' + aRcFiles[i] + '.rc' + CRLF
-            cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
-            cOut += HTAB + '@echo.' + CRLF
-         NEXT i
-         cOut += cMiniGUIFolderR + '\oohg.res : ' + cMiniGUIFolderR + '\oohg_bcc.rc' + CRLF
+         // Rule for _temp.rc compiling
+         cOut += '$(OBJ_DIR)\_temp.res : $(PROJECTFOLDER)\_temp.rc' + CRLF
          cOut += HTAB + '$(RC_COMP) -r -fo$@ $**' + CRLF
          cOut += HTAB + '@echo.' + CRLF
          // Write make script
          hb_MemoWrit( '_temp.bc', cOut )
-         // Build batch to launch make utility
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolderB + '\MAKE.EXE /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
+         NEXT i
+         cOut += ::cMakeTool + ' /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create temp folder for objects
          CreateFolder( cFolder + 'OBJ' )
@@ -3457,7 +3558,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
@@ -3475,7 +3576,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
@@ -3486,37 +3587,37 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase( cPrgName + '.prg' )
+         DELETE FILE ( cPrgName + '.prg' )
       ENDCASE
 
       // Check for errors
       cError := MemoRead( 'error.txt' )
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "MAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing: " ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "File is missing: " ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
+         ::cOutFile := cOut
+         cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
          EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+            MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
             Break
          ENDIF
-         cExe := cOut
+         ::cExe := cOut
       ENDIF
 
       // Cleanup
@@ -3525,7 +3626,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         EXECUTE FILE ::cExe
       ENDIF
    END SEQUENCE
 
@@ -3547,7 +3648,6 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder  := ::cHbPellFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cHbPellFolderB
@@ -3564,7 +3664,6 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -3578,67 +3677,67 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\POMAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Pelles's BIN subfolder error: can't find " ) + cHarbourFolderB + "\POMAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-Hb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-Hb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG_PELLES.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The Harbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The Harbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\HBRTL.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "Harbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\HBRTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3646,13 +3745,13 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
       cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
+      ::cExe := cPrgName + '.exe'
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
       ENDIF
-      IF File( cExe )
+      IF File( ::cExe )
          ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -3662,7 +3761,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          cHBP := cPrgName + '.hbp'
          IF ! File( cHBP )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
+            MsgInfo( cHBP + i18n( " was not found in the project's folder." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Check for hbmk2.exe file
@@ -3672,7 +3771,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
             cHBMK2 := cHarbourFolderB + "\hbmk2.exe"
          ELSE
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
+            MsgInfo( i18n( "Can't find: " ) + "HBMK2.EXE", 'OOHG IDE+' )
             Break
          ENDIF
          // Build batch to launch HBMK2 utility
@@ -3709,7 +3808,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build make script
@@ -3718,7 +3817,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          cOut += 'CC = ' + cCompFolderB + '\POCC.EXE' + CRLF
          cOut += 'ILINK_EXE = ' + cCompFolderB + '\POLINK.EXE' + CRLF
          cOut += 'BRC_EXE = ' + cCompFolderB + '\PORC.EXE' + CRLF
-         cOut += 'APP_NAME = ' + cExe + CRLF
+         cOut += 'APP_NAME = ' + ::cExe + CRLF
          cOut += 'INCLUDE_DIR = ' + cHarbourFolderI + ';' + cMiniGuiFolderI + ';' + DelSlash( cFolder ) + CRLF
          cOut += 'INCLUDE_C_DIR = ' + cHarbourFolderI + ' -I' + cMiniGuiFolderI + ' -I' + DelSlash( cFolder ) + ' -I' + cCompFolderI + ' -I' + cCompFolderI + '\WIN' + CRLF
          cOut += 'CC_LIB_DIR = ' + cCompFolderL + CRLF
@@ -3735,12 +3834,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
             cOut += '   $(OBJ_DIR)\' + aPrgFiles[i] + '.obj'
          NEXT i
          cOut += CRLF
-         For i := 1 to Len( aRcFiles )
-            cOut += '   $(BRC_EXE) /fo' + aRcFiles[i] + '.res ' + aRcFiles[i] + '.rc' + CRLF
-         NEXT i
-         IF ! File( cMiniGUIFolderR + '\oohg.res' ) .AND. File( cMiniGUIFolderR + '\oohg_pelles.rc' )
-            cOut += '   $(BRC_EXE) /fo' + cMiniGUIFolderR + '\oohg.res ' + cMiniGUIFolderR + '\oohg_pelles.rc' + CRLF
-         ENDIF
+         cOut += '   $(BRC_EXE) /fo _temp.res _temp.rc' + CRLF
          For i := 1 To nPrgFiles
             cOut += '   echo $(OBJ_DIR)\' + aPrgFiles[i] + '.obj + >' + iif( i > 1, '>', '' ) + ' b32.bc' + CRLF
          NEXT i
@@ -3838,10 +3932,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          IF ! Empty( ::cLibCC )
             cOut += '   echo ' + ::cLibCC + ' >> b32.bc' + CRLF
          ENDIF
-         For i := 1 to Len( aRcFiles )
-            cOut += '   echo ' + aRcFiles[i] + '.res >> b32.bc' + CRLF
-         NEXT i
-         cOut += '   echo ' + cMiniGUIFolderR + '\oohg.res >> b32.bc' + CRLF
+         cOut += '   echo _temp.res >> b32.bc' + CRLF
          cOut += '   $(ILINK_EXE)  /SUBSYSTEM:' + iif( nOption == 2, "CONSOLE", "WINDOWS" ) + ' @b32.bc' + CRLF
          cOut += CRLF
          For i := 1 To nPrgFiles
@@ -3853,10 +3944,17 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
             cOut += '   $(CC) $(COBJFLAGS) -Fo$@ $**' + CRLF
          NEXT i
          hb_MemoWrit( '_temp.bc', cOut )
-         // Build batch
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolderB + '\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
+         NEXT i
+         cOut += ::cMakeTool + ' /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create folder for objects
          CreateFolder( cFolder + 'OBJ' )
@@ -3866,7 +3964,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
@@ -3884,7 +3982,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
@@ -3895,37 +3993,37 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase( cPrgName + '.prg' )
+         DELETE FILE ( cPrgName + '.prg' )
       ENDCASE
 
       // Check for errors
       cError := MemoRead( 'error.txt' )
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "POMAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing: " ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "File is missing: " ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
+         ::cOutFile := cOut
+         cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
          EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+            MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
             Break
          ENDIF
-         cExe := cOut
+         ::cExe := cOut
       ENDIF
 
       // Cleanup
@@ -3934,7 +4032,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         EXECUTE FILE ::cExe
       ENDIF
    END SEQUENCE
 
@@ -3956,7 +4054,6 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
    LOCAL cDosComm
    LOCAL cError
    LOCAL cError1
-   LOCAL cExe
    LOCAL cFile
    LOCAL cHarbourFolder  := ::cxHbPellFolder + '\'
    LOCAL cHarbourFolderB := cHarbourFolder + ::cxHbPellFolderB
@@ -3971,7 +4068,6 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
    LOCAL cFolder := ::cProjFolder + '\'
    LOCAL i
    LOCAL nItems
-   LOCAL nPos
    LOCAL nPrgFiles
 
    ::Form_Tree:button_09:Enabled := .F.
@@ -3985,67 +4081,67 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
       // Check folders
       IF Empty( ::cProjectName )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'You must save the project before building it.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cCompFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
-      IF ! File( cCompFolderB + "\POMAKE.EXE" )
+      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Pelles's BIN subfolder error: can't find " ) + cHarbourFolderB + "\POMAKE.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cMiniGuiFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The ooHG-xHb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The ooHG-xHb-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderI + "\OOHG.CH" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's INCLUDE subfolder error: can't find " ) + cMiniGuiFolderI + "\OOHG.CH", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderL + "\OOHG.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's LIB subfolder error: can't find " ) + cMiniGuiFolderL + "\OOHG.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cMiniGuiFolderR + "\OOHG_PELLES.RC" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
+         MsgStop( i18n( "OOHG's RESOURCES subfolder error: can't find " ) + cMiniGuiFolderR + "\OOHG_PELLES.RC", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF Empty( cHarbourFolder )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'The xHarbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
+         MsgStop( i18n( 'The xHarbour-Pelles C folder must be specified to build a project.' ), 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderB + "\HARBOUR.EXE" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's BIN subfolder error: can't find " ) + cHarbourFolderB + "\HARBOUR.EXE", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderI + "\HBAPI.H" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's INCLUDE subfolder error: can't find " ) + cHarbourFolderI + "\HBAPI.H", 'OOHG IDE+' )
          Break
       ENDIF
 
       IF ! File( cHarbourFolderL + "\RTL.LIB" )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
+         MsgStop( i18n( "xHarbour's LIB subfolder error: can't find " ) + cHarbourFolderL + "\RTL.LIB", 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -4053,13 +4149,13 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
       SetCurrentFolder( cFolder )
       BorraTemp( cFolder )
       cPrgName := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" )
-      cExe := cPrgName + '.exe'
-      IF File( cExe )
-         DELETE FILE ( cExe )
+      ::cExe := cPrgName + '.exe'
+      IF File( ::cExe )
+         DELETE FILE ( ::cExe )
       ENDIF
-      IF File( cExe )
+      IF File( ::cExe )
          ::Form_Wait:Hide()
-         MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( 'Is EXE running?' ), 'OOHG IDE+' )
+         MsgInfo( i18n( 'Is EXE running?' ), 'OOHG IDE+' )
          Break
       ENDIF
 
@@ -4086,7 +4182,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build make script
@@ -4095,7 +4191,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          cOut += 'CC = ' + cCompFolderB + '\POCC.EXE' + CRLF
          cOut += 'ILINK_EXE = ' + cCompFolderB + '\POLINK.EXE' + CRLF
          cOut += 'BRC_EXE = ' + cCompFolderB + '\PORC.EXE' + CRLF
-         cOut += 'APP_NAME = ' + cExe + CRLF
+         cOut += 'APP_NAME = ' + ::cExe + CRLF
          cOut += 'INCLUDE_DIR = ' + cHarbourFolderI + ';' + cMiniGuiFolderI + ';' + DelSlash( cFolder ) + CRLF
          cOut += 'INCLUDE_C_DIR = ' + cHarbourFolderI + ' -I' + cMiniGuiFolderI + ' -I' + DelSlash( cFolder ) + ' -I' + cCompFolderI + ' -I' + cCompFolderI + '\WIN' + CRLF
          cOut += 'CC_LIB_DIR = ' + cCompFolderL + CRLF
@@ -4112,12 +4208,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
             cOut += '   $(OBJ_DIR)\' + aPrgFiles[i] + '.obj'
          NEXT i
          cOut += CRLF
-         For i := 1 to Len( aRcFiles )
-            cOut += '   $(BRC_EXE) /fo' + aRcFiles[i] + '.res ' + aRcFiles[i] + '.rc' + CRLF
-         NEXT i
-         IF ! File( cMiniGUIFolderR + '\oohg.res' ) .AND. File( cMiniGUIFolderR + '\oohg_pelles.rc' )
-            cOut += '   $(BRC_EXE) /fo' + cMiniGUIFolderR + '\oohg.res ' + cMiniGUIFolderR + '\oohg_pelles.rc' + CRLF
-         ENDIF
+         cOut += '   $(BRC_EXE) /fo _temp.res _temp.rc' + CRLF
          For i := 1 To nPrgFiles
             cOut += '   echo $(OBJ_DIR)\' + aPrgFiles[i] + '.obj + >' + iif( i > 1, '>', '' ) + ' b32.bc' + CRLF
          NEXT i
@@ -4209,10 +4300,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          IF ! Empty( ::cLibCC )
             cOut += '   echo ' + ::cLibCC + ' >> b32.bc' + CRLF
          ENDIF
-         For i := 1 to Len( aRcFiles )
-            cOut += '   echo ' + aRcFiles[i] + '.res >> b32.bc' + CRLF
-         NEXT i
-         cOut += '   echo ' + cMiniGUIFolderR + '\oohg.res >> b32.bc' + CRLF
+         cOut += '   echo _temp.res >> b32.bc' + CRLF
          cOut += '   $(ILINK_EXE)  /SUBSYSTEM:' + iif( nOption == 2, "CONSOLE", "WINDOWS" ) + ' @b32.bc' + CRLF
          cOut += CRLF
          For i := 1 To nPrgFiles
@@ -4224,10 +4312,17 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
             cOut += '   $(CC) $(COBJFLAGS) -Fo$@ $**' + CRLF
          NEXT i
          hb_MemoWrit( '_temp.bc', cOut )
-         // Build batch
+         // Build batch to create RC temp file and launch make utility
          cOut := ''
          cOut += '@echo off' + CRLF
-         cOut += cCompFolderB + '\POMAKE.EXE /F' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
+         cOut += 'echo #define oohgpath ' + cMiniGUIFolderR + ' > ' + cFolder + '_oohg_resconfig.h' + CRLF
+         cOut += 'echo. > "' + cMiniGUIFolderR + '\filler"' + CRLF
+         cOut += 'copy /b "' + cMiniGUIFolderR + '\oohg.rc" _temp.rc > NUL' + CRLF
+         FOR i := 1 TO Len( aRcFiles )
+            cOut += 'copy /b "' + cMiniGUIFolderR + '\filler" + _temp.rc _aux.rc > NUL' + CRLF
+            cOut += 'copy /b "' + aRcFiles[ i ] + '.rc" + _aux.rc _temp.rc > NUL' + CRLF
+         NEXT i
+         cOut += ::cMakeTool + ' /f' + cFolder + '_temp.bc > ' + cFolder + 'error.txt' + CRLF
          hb_MemoWrit( '_build.bat', cOut )
          // Create folder for objects
          CreateFolder( cFolder + 'OBJ' )
@@ -4237,7 +4332,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
-            MsgInfo( i18n( 'Error building project.' ) + CRLF + i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
+            MsgInfo( i18n( "Copy OOHG's COMPILE.BAT to the project's folder or add OOHG root folder to PATH." ), 'OOHG IDE+' )
             Break
          ENDIF
          // Build auxiliary source file
@@ -4255,7 +4350,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          nPrgFiles := Len( aPrgFiles )
          IF nPrgFiles == 0
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
+            MsgStop( i18n( 'Project has no .PRG files.' ), 'OOHG IDE+' )
             Break
          ENDIF
          cOut := ''
@@ -4266,37 +4361,37 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          // Compile and link
          cDosComm := 'CMD.EXE /c compile ' + cPrgName + ' /nr /l' + iif( nOption == 2, " /d", "" )
          EXECUTE FILE cDosComm WAIT HIDE
-         FErase( cPrgName + '.prg' )
+         DELETE FILE ( cPrgName + '.prg' )
       ENDCASE
 
       // Check for errors
       cError := MemoRead( 'error.txt' )
       cError1 := Upper( cError )
-      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0 .OR. ;
-         ( ( nPos := At( "POMAKE:", cError1 ) ) > 0 .AND. At( " STOP.", SubStr( cError1, nPos ) ) > 0 )                                  // TODO: CHECK MESSAGES
+      IF At( ' ERROR ', cError1 ) > 0 .OR. At( ' FATAL ', cError1 ) > 0 .OR. At( 'LD RETURNED 1 EXIT STATUS', cError1 ) > 0
          ::Form_Wait:Hide()
          ::ViewErrors( cError )
          Break
-      ELSEIF ! File( cExe )
+      ELSEIF ! File( ::cExe )
          ::Form_Wait:Hide()
-         MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "File is missing." ) + DQM( cExe ), 'OOHG IDE+' )
+         MsgStop( i18n( "File is missing." ) + DQM( ::cExe ), 'OOHG IDE+' )
          Break
       ENDIF
 
       // Rename or move
+      cOut := Upper( AllTrim( ::cOutFile ) )
       IF ! Empty( ::cOutFile )
-         cOut := Upper( AllTrim( ::cOutFile ) )
          IF Right( cOut, 4 ) != ".EXE"
             cOut += ".EXE"
          ENDIF
-         cDosComm := 'CMD.EXE /c move ' + cExe
+         ::cOutFile := cOut
+         cDosComm := 'CMD.EXE /c move /y ' + ::cExe + " " + cOut
          EXECUTE FILE cDosComm WAIT HIDE
          IF ! File( cOut )
             ::Form_Wait:Hide()
-            MsgStop( i18n( 'Error building project.' ) + CRLF + i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
+            MsgStop( i18n( "Can't move or rename EXE file." ), 'OOHG IDE+' )
             Break
          ENDIF
-         cExe := cOut
+         ::cExe := cOut
       ENDIF
 
       // Cleanup
@@ -4305,7 +4400,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
       IF nOption == 0
          MsgInfo( i18n( 'Project builded.' ), 'OOHG IDE+' )
       ELSEIF nOption == 1 .or. nOption == 2
-         EXECUTE FILE cExe
+         EXECUTE FILE ::cExe
       ENDIF
    END SEQUENCE
 
@@ -4406,12 +4501,12 @@ RETURN NIL
 METHOD NewProject() CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    IF Len( ::aEditors ) > 0
-      MsgStop( i18n( 'You can´t open a new project until the FMG being edited is closed.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "You can't open a new project until the FMG being edited is closed." ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
 
    IF ! ::lPsave
-      IF MsgYesNo( i18n( 'Current project not saved, save it now?' ), 'OOHG IDE+' )
+      IF MsgYesNo( i18n( 'Save changes made to current project?' ), 'OOHG IDE+' )
          ::SaveProject()
       ENDIF
    ENDIF
@@ -4438,21 +4533,21 @@ RETURN NIL
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD OpenProject() CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL pmgFolder
+LOCAL pmgFolder, cName
 
    IF Len( ::aEditors ) > 0
       MsgStop( i18n( 'You can´t open another project until the FMG being edited is closed.' ), 'OOHG IDE+' )
       RETURN NIL
    ENDIF
 
-   ::cFile := GetFile( { { i18n( 'OOHG IDE+ project files *.pmg' ), '*.pmg' } }, 'OOHG IDE+ - ' + i18n( 'Open Project'), "", .F., .F. )
-   IF Len( ::cFile ) > 0
-      pmgFolder := OnlyFolder( ::cFile )
+   cName := GetFile( { { i18n( 'OOHG IDE+ project files *.pmg' ), '*.pmg' } }, 'OOHG IDE+ - ' + i18n( 'Open Project'), "", .F., .F. )
+   IF Len( cName ) > 0
+      pmgFolder := OnlyFolder( cName )
       IF ! Empty( pmgFolder )
          ::cProjFolder := pmgFolder
          DirChange( pmgFolder )
       ENDIF
-      ::InitializeProject( ::cFile )
+      ::InitializeProject( cName )
       ::Form_Tree:Add:Enabled := .T.
       ::Form_Tree:Button_1:Enabled := .T.
    ENDIF
@@ -4528,7 +4623,31 @@ RETURN NIL
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD SaveProject() CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL Output, nItems, i, cItem
+LOCAL Output, nItems, i, cItem, nPos, cExt, lRet, cName, aPrgFiles, cPrg
+
+   IF Empty( ::cProjectName ) .AND. ! Empty( ::cFile )
+      nPos := At( ".", ::cFile )
+      cExt := Lower( SubStr( ::cFile, nPos + 1, 3 ) )
+      cName := SubStr( ::cFile, 1, nPos - 1 )
+      DO CASE
+      CASE cExt == "ch"
+         lRet := ::NewCH( cName )
+      CASE cExt == "fmg"
+         lRet := ::NewFMG( cName )
+      CASE cExt == "prg"
+         lRet := ::NewPRG( cName )
+      CASE cExt == "rc"
+         lRet := ::NewRC( cName )
+      CASE cExt == "rpt"
+         lRet := ::NewRPT( cName )
+      OTHERWISE
+         RETURN NIL
+      ENDCASE
+      IF ! lRet
+         RETURN NIL
+      ENDIF
+      ::cFile := ""
+   ENDIF
 
    Output := ''
    nItems := ::Form_Tree:Tree_1:ItemCount
@@ -4550,7 +4669,6 @@ LOCAL Output, nItems, i, cItem
       ENDCASE
       Output += cItem + CRLF
    NEXT i
-   Output += ''
 
    IF Empty( ::cProjectName )
       ::cProjectName := PutFile( { { i18n( 'OOHG IDE+ project files *.pmg' ), '*.pmg' } }, 'OOHG IDE+ - ' + i18n( 'Save Project' ) )
@@ -4565,118 +4683,150 @@ LOCAL Output, nItems, i, cItem
    ::cProjFolder := OnlyFolder( ::cProjectName )
    ::Form_Tree:Title := APP_FULL_NAME + i18n( ' - Project: ' ) + ::cProjectName
    ::Form_Tree:StatusBar:Item( 1, ::Form_Tree:Title )
-   IF ! Empty( ::cProjectName )
-      ::Form_Tree:Add:Enabled := .T.
-      ::Form_Tree:Button_1:Enabled := .T.
-   ENDIF
 
    IF Empty( ::cProjectName )
-      MsgStop( i18n( 'Project not saved because it has no name.' ), 'OOHG IDE+' )
+      MsgStop( i18n( 'Project was not saved because it has no name.' ), 'OOHG IDE+' )
    ELSE
-      hb_MemoWrit( ::cProjectName, Output )
-      ::SaveINI( ::cProjFolder + '\hmi.ini' )
-      ::lPsave := .T.
-      MsgInfo( i18n( 'Project saved.' ), 'OOHG IDE+' )
+      nItems := ::Form_Tree:Tree_1:ItemCount
+      aPrgFiles := {}
+      FOR i := 1 TO nItems
+         cPrg := ::Form_Tree:Tree_1:Item( i )
+         IF ::SearchType( ::SearchItem( cPrg, "PRG" ) ) == "PRG" .AND. ! cPrg == "PRG"
+            cPrg := Upper( AllTrim( cPrg + '.PRG' ) )
+            IF aScan( aPrgFiles, cPrg ) == 0
+               aAdd( aPrgFiles, cPrg )
+            ENDIF
+         ENDIF
+      NEXT i
+      IF ! Empty( ::cFile ) .AND. aScan( aPrgFiles, Upper( ::cFile ) ) # 0
+         MsgStop( i18n( "Project was not saved because its name is equal to one of its PRG files." ), 'OOHG IDE+' )
+         ::cProjectName := ''
+      ELSE
+         ::Form_Tree:Add:Enabled := .T.
+         ::Form_Tree:Button_1:Enabled := .T.
+         hb_MemoWrit( ::cProjectName, Output )
+         ::SaveINI( ::cProjFolder + '\hmi.ini' )
+         ::lPsave := .T.
+         MsgInfo( i18n( 'Project was saved.' ), 'OOHG IDE+' )
+      ENDIF
    ENDIF
+
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewFMG( cForm ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
+LOCAL nValue, lRet := .F.
 
    IF Val( cForm ) > 0
-      MsgStop( i18n( 'The name must begin with a letter.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "The FMG's name must begin with a letter." ), 'OOHG IDE+' )
    ELSEIF Len( cForm ) > 0
       IF At( '.', cForm ) # 0
          MsgStop( i18n( 'The name must not contain a dot (.) in it.' ), 'OOHG IDE+' )
       ELSEIF ::SearchType( ::SearchItem( cForm, "FMG" ) ) == "FMG"
          MsgStop( i18n( 'This name is not allowed.' ), 'OOHG IDE+' )
       ELSE
-         ::Form_Tree:Tree_1:AddItem( cForm, 2 )
+         nValue := ::SearchItem( "FMG", "FMG" )
+         ::Form_Tree:Tree_1:AddItem( cForm, nValue )
          ::lPsave := .F.
+         lRet := .T.
       ENDIF
    ENDIF
-RETURN NIL
+RETURN lRet
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewPRG( cPrg ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nValue
+LOCAL nValue, lRet := .F.
 
    IF Val( cPrg ) > 0
-      MsgStop( i18n( 'The name must begin with a letter.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "The PRG's name must begin with a letter." ), 'OOHG IDE+' )
    ELSEIF Len( cPrg ) > 0
       IF At( '.', cPrg ) # 0
-         MsgStop( i18n( 'The name must not contain a dot (.) in it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( "The PRG's name must not contain a dot (.) in it." ), 'OOHG IDE+' )
       ELSEIF ::SearchType( ::SearchItem( cPrg, "PRG" ) ) == "PRG"
          MsgStop( i18n( 'This name is not allowed.' ), 'OOHG IDE+' )
+      ELSEIF ::SearchItem( cPrg, "PRG" ) # 0
+         MsgStop( i18n( 'Another PRG with the same name is already part of the project.' ), 'OOHG IDE+' )
+      ELSEIF Upper( cPrg ) == Upper( AllTrim( DelExt( ::cProjectName ) ) )
+         MsgStop( i18n( "The PRG's name must not be equal to the project's name." ), 'OOHG IDE+' )
       ELSE
          nValue := ::SearchItem( "PRG", "PRG" )
          ::Form_Tree:Tree_1:AddItem( cPrg, nValue )
          ::lPsave := .F.
+         lRet := .T.
       ENDIF
    ENDIF
-RETURN NIL
+RETURN lRet
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewCH( cCH ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nValue
+LOCAL nValue, lRet := .F.
 
    IF Val( cCH ) > 0
-      MsgStop( i18n( 'The name must begin with a letter.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "The CH's name must begin with a letter." ), 'OOHG IDE+' )
    ELSEIF Len( cCH ) > 0
       IF At( '.', cCH ) # 0
-         MsgStop( i18n( 'The name must not contain a dot (.) in it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( "The CH's name must not contain a dot (.) in it." ), 'OOHG IDE+' )
       ELSEIF ::SearchType( ::SearchItem( cCH, "CH" ) ) == "CH"
          MsgStop( i18n( 'This name is not allowed.' ), 'OOHG IDE+' )
+      ELSEIF ::SearchItem( cCH, "CH" ) # 0
+         MsgStop( i18n( 'Another CH with the same name is already part of the project.' ), 'OOHG IDE+' )
       ELSE
          nValue := ::SearchItem( "CH", "CH" )
          ::Form_Tree:Tree_1:AddItem( cCH, nValue )
          ::lPsave := .F.
+         lRet := .T.
       ENDIF
    ENDIF
-RETURN NIL
+RETURN lRet
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewRC( cRC ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nValue
+LOCAL nValue, lRet := .F.
 
    IF Val( cRC ) > 0
-      MsgStop( i18n( 'The name must begin with a letter.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "The RC's name must begin with a letter." ), 'OOHG IDE+' )
    ELSEIF Len( cRC ) > 0
       IF At( '.', cRC ) # 0
-         MsgStop( i18n( 'The name must not contain a dot (.) in it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( "The RC's name must not contain a dot (.) in it." ), 'OOHG IDE+' )
       ELSEIF ::SearchType( ::SearchItem( cRC, "RC" ) ) == "RC"
          MsgStop( i18n( 'This name is not allowed.' ), 'OOHG IDE+' )
+      ELSEIF ::SearchItem( cRC, "RC" ) # 0
+         MsgStop( i18n( 'Another RC with the same name is already part of the project.' ), 'OOHG IDE+' )
       ELSE
          nValue := ::SearchItem( "RC", "RC" )
          ::Form_Tree:Tree_1:AddItem( cRC, nValue )
          ::lPsave := .F.
+         lRet := .T.
       ENDIF
    ENDIF
-RETURN NIL
+RETURN lRet
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD NewRPT( cRpt ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nValue
+LOCAL nValue, lRet := .F.
 
    IF Val( cRpt ) > 0
-      MsgStop( i18n( 'The name must begin with a letter.' ), 'OOHG IDE+' )
+      MsgStop( i18n( "The RPT's name must begin with a letter." ), 'OOHG IDE+' )
    ELSEIF Len( cRpt ) > 0
       IF At( '.', cRpt ) # 0
-         MsgStop( i18n( 'The name must not contain a dot (.) in it.' ), 'OOHG IDE+' )
+         MsgStop( i18n( "The RPT's name must not contain a dot (.) in it." ), 'OOHG IDE+' )
       ELSEIF ::SearchType( ::SearchItem( cRpt, "RPT" ) ) == "RPT"
          MsgStop( i18n( 'This name is not allowed.' ), 'OOHG IDE+' )
+      ELSEIF ::SearchItem( cRpt, "RPT" ) # 0
+         MsgStop( i18n( 'Another RPT with the same name is already part of the project.' ), 'OOHG IDE+' )
       ELSE
          nValue := ::SearchItem( "RPT", "RPT" )
          ::Form_Tree:Tree_1:AddItem( cRpt, nValue )
          ::lPsave := .F.
+         lRet := .T.
       ENDIF
    ENDIF
-RETURN NIL
+RETURN lRet
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD DeleteItem() CLASS THMI
@@ -4696,14 +4846,14 @@ LOCAL cItem
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD SearchItem( cNameItem, cParent ) CLASS THMI
+METHOD SearchItem( cNameItem, cGroup ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 LOCAL nItems, i, cItem, sw := 0
 
    nItems := ::Form_Tree:Tree_1:ItemCount
    FOR i := 1 TO nItems
       cItem := ::Form_Tree:Tree_1:Item( i )
-      IF cItem == cParent
+      IF cItem == cGroup
          sw := 1
       ENDIF
       IF sw == 1
@@ -4784,7 +4934,7 @@ LOCAL Output, cItem := SubStr( cParameter, 1, At( ".", cParameter ) - 1 )
          hb_MemoWrit( cParameter, Output )
          ::OpenFile( cParameter )
       ENDIF
-   ELSEIF "RC"
+   ELSEIF cParent == "RC"
       IF File( cParameter )
          ::OpenFile( cParameter )
       ELSE
@@ -5647,7 +5797,7 @@ RETURN cOutFolder
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 FUNCTION OnlyFolder( cFile )
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL nPos, cFolder := NIL
+LOCAL nPos, cFolder := ""
 
    IF Len( cFile ) > 0
       nPos := RAt( '\', cFile )
@@ -5695,15 +5845,15 @@ LOCAL wr
 
       wr := wr + "CHANGING PREFERENCES" + CRLF
       wr := wr + "Select 'Preferences' from menu File." + CRLF
-      wr := wr + "You can change Date Format, Compile mode (Tradtional or BRmake)" + CRLF
-      wr := wr + "default Backcolor and linker options." + CRLF + CRLF
+      wr := wr + "You can change Project, xBase compiler, C compiler, OOHG, Build Type, " + CRLF
+      wr := wr + "Make Tool and IDE+ related options." + CRLF + CRLF
 
       wr := wr + "SAVING PROJECTS" + CRLF
       wr := wr + "Select 'Save Project' from File menu." + CRLF + CRLF
 
       wr := wr + "ADDING ITEMS TO PROJECT TREE" + CRLF
       wr := wr + "Add form, prg, ch, rpt and rc modules." + CRLF
-      wr := wr + "Select 'ADD...' toolbar button or it's dropdown menu options." + CRLF + CRLF
+      wr := wr + "Select 'ADD ...' toolbar button or it's dropdown menu options." + CRLF + CRLF
 
       wr := wr + "MODIFY ITEMS" + CRLF
       wr := wr + "Simply double click over the item to modify it, or" + CRLF
@@ -5816,110 +5966,200 @@ METHOD Report_Edit( cFileRep ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 LOCAL nCount, i
 LOCAL cTitle := ''
-LOCAL aHeaders := '{},{}'
-LOCAL aFields := '{}'
-LOCAL aWidths := '{}'
-LOCAL aTotals := ''
-LOCAL nFormats := ''
-LOCAL nLPP := 50
-LOCAL nCPL := 80
-LOCAL nLMargin := 0
-LOCAL cPaperSize := 'DMPAPER_LETTER'
+LOCAL cHeaders := '{},{}'
+LOCAL cFields := '{}'
+LOCAL cWidths := '{}'
+LOCAL cTotals := ''
+LOCAL cFormats := ''
 LOCAL cAlias := ''
+LOCAL cLPP := '50'
+LOCAL cCPL := '80'
+LOCAL cLMargin := '0'
+LOCAL cPaperSize := 'DMPAPER_LETTER'
+LOCAL lNoProp := .F.
 LOCAL lDos := .F.
 LOCAL lPreview := .F.
 LOCAL lSelect := .F.
+LOCAL cGraphic := "'     ' at 0,0 to 0,0"
 LOCAL lMul := .F.
-LOCAL cGraphic := " '     ' at 0,0 to 0,0"
 LOCAL cGrpBy := ''
 LOCAL cHdrGrp := ''
 LOCAL lLandscape := .F.
+LOCAL lGroupEject := .F.
+LOCAL cHeading := ''
+LOCAL cRes := ''
+LOCAL cBin := ''
+LOCAL cDuplex := ''
+LOCAL lCollate := .F.
+LOCAL cCopies := ''
+LOCAL lColor := .F.
+LOCAL cScale := ''
+LOCAL cLength := ''
+LOCAL cWidth := ''
+LOCAL cName := ''
+LOCAL cTMargin := ''
+LOCAL lNoStamp := .F.
 LOCAL Output
 LOCAL aLabels
 LOCAL aInitValues
 LOCAL aFormats
 LOCAL aResults
 LOCAL cReport
+LOCAL cLine
 
    ::aLineR := {}
-   cReport := MemoRead( cFileRep )
    IF File( cFileRep )
+      cReport := MemoRead( cFileRep )
+      cReport := StrTran( cReport, HTAB, " " )
       nCount := MLCount( cReport )
       FOR i := 1 TO nCount
-         aAdd( ::aLineR, MemoLine( cReport, 500, i ) )
+         /* The leading and trailing spaces are necessary to properly find key words */
+         cLine := AllTrim( MemoLine( cReport, 1200, i ) )
+         IF Left( cLine, 7 ) == "DEFINE " .AND. Left( LTrim( SubStr( cLine, 8 ) ), 7 ) == "REPORT "
+            cLine := "DO REPORT ;"
+         ELSEIF Right( cLine, 1 ) # ";"
+            cLine += " ;"
+         ELSEIF ! Right( cLine, 2 ) == " ;"
+            cLine := Left( cLine, Len( cLine ) - 1 ) + " ;"
+         ENDIF
+         AAdd( ::aLineR, " " + cLine + " " )
       NEXT i
-      cTitle     := ::LeaDatoR( 'REPORT', 'TITLE', '' )
-      aHeaders   := ::LeaDatoR( 'REPORT', 'HEADERS', '{},{}' )
-      aFields    := ::LeaDatoR( 'REPORT', 'FIELDS', '{}' )
-      aWidths    := ::LeaDatoR( 'REPORT', 'WIDTHS', '{}' )
-      aTotals    := ::LeaDatoR( 'REPORT', 'TOTALS', '' )
-      nFormats   := ::LeaDatoR( 'REPORT', 'NFORMATS', '' )
-      nLPP       := Val( ::LeaDatoR( 'REPORT', 'LPP', '55' ) )
-      nCPL       := Val( ::LeaDatoR( 'REPORT', 'CPL', '80' ) )
-      nLMargin   := Val( ::LeaDatoR( 'REPORT', 'LMARGIN', '' ) )
-      cPaperSize := ::LeaDatoR( 'REPORT', 'PAPERSIZE', '' )
-      cAlias     := ::LeaDatoR( 'REPORT', 'WORKAREA', '' )
-      lDos       := ::LeaDatoLogicR( 'REPORT', 'DOSMODE', .F.)
-      lPreview   := ::LeaDatoLogicR( 'REPORT', 'PREVIEW', .F.)
-      lSelect    := ::LeaDatoLogicR( 'REPORT', 'SELECT', .F.)
-      lMul       := ::LeaDatoLogicR( 'REPORT', 'MULTIPLE', .F.)
-      cGraphic   := ::LeaDatoR( 'REPORT', 'IMAGE', '')
-      cGrpBy     := ::LeaDatoR( 'REPORT', 'GROUPED BY', '' )
-      cHdrGrp    := ::CleanR( ::LeaDatoR( 'REPORT', 'HEADRGRP', '' ) )
-      lLandscape := ::LeaDatoLogicR( 'REPORT', 'LANDSCAPE', .F. )
+      cTitle      := ::LeaStrR( 'TITLE', '' )
+      cHeaders    := ::LeaStrR( 'HEADERS', '{},{}' )
+      cFields     := ::LeaStrR( 'FIELDS', '{}' )
+      cWidths     := ::LeaStrR( 'WIDTHS', '{}' )
+      cTotals     := ::LeaStrR( 'TOTALS', '{}' )
+      cFormats    := ::LeaStrR( 'NFORMATS', '{}' )
+      cAlias      := ::LeaStrR( 'WORKAREA', '' )
+      cLPP        := ::LeaStrR( 'LPP', '55' )
+      cCPL        := ::LeaStrR( 'CPL', '80' )
+      cLMargin    := ::LeaStrR( 'LMARGIN', '' )
+      cPaperSize  := ::LeaStrR( 'PAPERSIZE', '' )
+      lNoProp     := ::LeaLogR( 'NOFIXED', .F. )
+      lDos        := ::LeaLogR( 'DOSMODE', .F. )
+      lPreview    := ::LeaLogR( 'PREVIEW', .F. )
+      lSelect     := ::LeaLogR( 'SELECT', .F. )
+      cGraphic    := ::LeaStrR( 'IMAGE', '')
+      lMul        := ::LeaLogR( 'MULTIPLE', .F. )
+      cGrpBy      := ::LeaStrR( 'GROUPED BY', '' )
+      cHdrGrp     := ::LeaStrR( 'HEADRGRP', '' )
+      lLandscape  := ::LeaLogR( 'LANDSCAPE', .F. )
+      lGroupEject := ::LeaLogR( 'GROUPEJECT', .F. )
+      cHeading    := ::LeaStrR( 'HEADING', '' )
+      cRes        := ::LeaStrR( 'QUALITY', '' )
+      cBin        := ::LeaStrR( 'DEFAULTSOURCE', '' )
+      cDuplex     := ::LeaStrR( 'DUPLEX', '' )
+      lCollate    := ::LeaLogR( 'COLLATE', .F. )
+      cCopies     := ::LeaStrR( 'COPIES', '' )
+      lColor      := ::LeaLogR( 'COLOR', .F. )
+      cScale      := ::LeaStrR( 'SCALE', '' )
+      cLength     := ::LeaStrR( 'PAPERLENGTH', '' )
+      cWidth      := ::LeaStrR( 'PAPERWIDTH', '' )
+      cName       := ::LeaStrR( 'NAME', '' )
+      cTMargin    := ::LeaStrR( 'TMARGIN', '' )
+      lNoStamp    := ::LeaLogR( 'NODATETIMESTAMP', .F. )
    ENDIF
 
-   aLabels     := { 'Title', 'Headers', 'Fields', 'Widths ', 'Totals', 'Nformats', 'Workarea', 'Lpp', 'Cpl', 'Lmargin', 'Dosmode', 'Preview', 'Select', 'Image / at - to', 'Multiple', 'Grouped by', 'Group header', 'Landscape', 'Papersize' }
-   aInitValues := { cTitle,  aHeaders,  afields,  awidths,   atotals,  nformats,   calias,     nlpp,  ncpl,  nLMargin, ldos,      lpreview,  lselect,  cgraphic,          lmul,       cgrpby,       cHdrGrp,        lLandscape,   cpapersize }
-   aFormats    := { 320,     320,       320,      160,       160,      320,        20,         '999', '999', '999',     .F.,       .T.,       .F.,      50,                .F.,        50,           28,             .F.,         30 }
+   aLabels     := { 'Title', 'Headers', 'Fields', 'Widths ', 'Totals', 'NFormats', 'Workarea', 'LPP', 'CPL', 'Left margin', 'Paper size', 'No fixed', 'Dos mode', 'Preview', 'Select', 'Image / at - to', 'Multiple', 'Grouped by', 'Group header', 'Landscape', 'Group eject', 'Heading', 'Quality', 'Default source', 'Duplex', 'Collate', 'Copies', 'Color', 'Scale', 'Paper Length', 'Paper Width', 'Name', 'Top margin', 'No Stamp' }
+   aInitValues := { cTitle,  cHeaders,  cFields,  cWidths,   cTotals,  cFormats,   cAlias,     cLPP,  cCPL,  cLMargin,      cPaperSize,   lNoProp,    lDos,       lPreview,  lSelect,  cGraphic,          lMul,       cGrpBy,       cHdrGrp,        lLandscape,  lGroupEject,   cHeading,  cRes,      cBin,             cDuplex,  lCollate,  cCopies,  lColor,  cScale,  cLength,        cWidth,        cName,  cTMargin,     lNoStamp   }
+   aFormats    := { 1000,    1000,      1000,     1000,      1000,     1000,       1000,       1000,  1000,  1000,          1000,         .F.,        .F.,        .T.,       .F.,      1000,              .F.,        1000,         1000,           .F.,         .T.,           1000,      1000,      1000,             1000,     .F.,       1000,     .F.,     1000,    1000,           1000,          1000,   1000,         .F.        }
    aResults    := ::myInputWindow( "Report parameters of " + cFileRep, aLabels, aInitValues, aFormats )
    IF aResults[1] == NIL
       RETURN NIL
    ENDIF
 
-   Output := 'DO REPORT ;' + CRLF
-   Output += "TITLE " + aResults[1] + ' ;' + CRLF
-   Output += "HEADERS " + aResults[2] + ' ;' + CRLF
-   Output += "FIELDS " + aResults[3] + ' ;' + CRLF
-   Output += "WIDTHS " + aResults[4] + ' ;' + CRLF
-   IF Len( aResults[5] ) > 0
-      Output += "TOTALS " + aResults[5] + ' ;' + CRLF
+   Output := 'DO REPORT'
+   Output += ' ;' + CRLF + "   TITLE " + aResults[01]
+   Output += ' ;' + CRLF + "   HEADERS " + aResults[02]
+   Output += ' ;' + CRLF + "   FIELDS " + aResults[03]
+   Output += ' ;' + CRLF + "   WIDTHS " + aResults[04]
+   IF NOTEMPTY( aResults[05] )
+      Output += ' ;' + CRLF + "   TOTALS " + aResults[05]
    ENDIF
-   IF Len( aResults[6] ) > 0
-      Output += "NFORMATS " + aResults[6] + ' ;' + CRLF
+   IF NOTEMPTY( aResults[06] )
+      Output += ' ;' + CRLF + "   NFORMATS " + aResults[06]
    ENDIF
-   Output += "WORKAREA " + aResults[7] + ' ;' + CRLF
-   Output += "LPP " + Str( aResults[8], 3 ) + ' ;' + CRLF
-   Output += "CPL " + Str( aResults[9], 3 ) + ' ;' + CRLF
-   IF aResults[10] > 0
-      Output += "LMARGIN " + Str( aResults[10], 3 ) + ' ;' + CRLF
+   Output += ' ;' + CRLF + "   WORKAREA " + aResults[07]
+   IF NOTZERO( aResults[08] )
+      Output += ' ;' + CRLF + "   LPP " + aResults[08]
    ENDIF
-   IF Len( aResults[19] ) > 0
-      Output += "PAPERSIZE " + Upper( aResults[19] ) + ' ;' + CRLF
+   IF NOTZERO( aResults[09] )
+      Output += ' ;' + CRLF + "   CPL " + aResults[09]
    ENDIF
-   IF aResults[11]
-      Output += "DOSMODE " + ' ;' + CRLF
+   IF NOTEMPTY( aResults[10] )
+      Output += ' ;' + CRLF + "   LMARGIN " + aResults[10]
+   ENDIF
+   IF NOTZERO( aResults[11] )
+      Output += ' ;' + CRLF + "   PAPERSIZE " + aResults[11]
    ENDIF
    IF aResults[12]
-      Output += "PREVIEW " + ' ;' + CRLF
+      Output += ' ;' + CRLF + "   NOFIXED"
    ENDIF
    IF aResults[13]
-      Output += "SELECT " + ' ;' + CRLF
+      Output += ' ;' + CRLF + "   DOSMODE"
    ENDIF
-   IF Len( aResults[14] ) > 0
-      Output += "IMAGE " + aResults[14] + ' ;' + CRLF
+   IF aResults[14]
+      Output += ' ;' + CRLF + "   PREVIEW"
    ENDIF
    IF aResults[15]
-      Output += "MULTIPLE " + ' ;' + CRLF
+      Output += ' ;' + CRLF + "   SELECT"
    ENDIF
-   IF Len( aResults[16] ) > 0
-      Output += "GROUPED BY " + aResults[16] + ' ;' + CRLF
+   IF NOTEMPTY( aResults[16] )
+      Output += ' ;' + CRLF + "   IMAGE " + aResults[16]
    ENDIF
-   IF Len( aResults[17] ) > 0
-      Output += "HEADRGRP " + "'" + aResults[17] + "'" + ' ;' + CRLF
+   IF aResults[17]
+      Output += ' ;' + CRLF + "   MULTIPLE"
    ENDIF
-   IF aResults[18]
-      Output += "LANDSCAPE " + ' ;' + CRLF
+   IF NOTEMPTY( aResults[18] )
+      Output += ' ;' + CRLF + "   GROUPED BY " + aResults[18]
+   ENDIF
+   IF NOTEMPTY( aResults[19] )
+      Output += ' ;' + CRLF + "   HEADRGRP " + aResults[19]
+   ENDIF
+   IF aResults[20]
+      Output += ' ;' + CRLF + "   LANDSCAPE"
+   ENDIF
+   IF aResults[21]
+      Output += ' ;' + CRLF + "   GROUPEJECT"
+   ENDIF
+   IF NOTEMPTY( aResults[22] )
+      Output += ' ;' + CRLF + "   HEADING " + aResults[22]
+   ENDIF
+   IF NOTEMPTY( aResults[23] )
+      Output += ' ;' + CRLF + "   QUALITY " + aResults[23]
+   ENDIF
+   IF NOTEMPTY( aResults[24] )
+      Output += ' ;' + CRLF + "   DEFAULTSOURCE " + aResults[24]
+   ENDIF
+   IF NOTEMPTY( aResults[25] )
+      Output += ' ;' + CRLF + "   DUPLEX " + aResults[25]
+   ENDIF
+   IF aResults[26]
+      Output += ' ;' + CRLF + "   COLLATE"
+   ENDIF
+   IF NOTEMPTY( aResults[27] )
+      Output += ' ;' + CRLF + "   COPIES " + aResults[27]
+   ENDIF
+   IF aResults[28]
+      Output += ' ;' + CRLF + "   COLOR"
+   ENDIF
+   IF NOTEMPTY( aResults[29] )
+      Output += ' ;' + CRLF + "   SCALE " + aResults[29]
+   ENDIF
+   IF NOTEMPTY( aResults[30] )
+      Output += ' ;' + CRLF + "   PAPERLENGTH " + aResults[30]
+   ENDIF
+   IF NOTEMPTY( aResults[31] )
+      Output += ' ;' + CRLF + "   PAPERWIDTH " + aResults[31]
+   ENDIF
+   IF NOTEMPTY( aResults[32] )
+      Output += ' ;' + CRLF + "   NAME " + aResults[32]
+   ENDIF
+   IF NOTEMPTY( aResults[33] )
+      Output += ' ;' + CRLF + "   TMARGIN " + aResults[33]
+   ENDIF
+   IF aResults[34]
+      Output += ' ;' + CRLF + "   NODATETIMESTAMP"
    ENDIF
    Output += CRLF + CRLF
    IF hb_MemoWrit( cFileRep, Output )
@@ -5930,13 +6170,13 @@ LOCAL cReport
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD LeaDatoR( cName, cPropmet, cDefault ) CLASS THMI
+METHOD LeaStrR( cPropmet, cDefault ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 LOCAL i, sw, cFValue, nPos
 
    sw := 0
    FOR i := 1 TO Len( ::aLineR )
-      IF ! At( Upper( cName ) + ' ', Upper( ::aLineR[i] ) ) == 0
+      IF ! At( " DO REPORT ", Upper( ::aLineR[i] ) ) == 0
          sw := 1
       ELSE
          IF sw == 1
@@ -5960,12 +6200,12 @@ LOCAL i, sw, cFValue, nPos
 RETURN cDefault
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD LeaDatoLogicR( cName, cPropmet, cDefault ) CLASS THMI
+METHOD LeaLogR( cPropmet, cDefault ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 LOCAL i, sw := 0
 
    FOR i := 1 TO Len( ::aLineR )
-      IF At( Upper( cName ) + ' ', Upper( ::aLineR[i] ) ) # 0
+      IF At( " DO REPORT ", Upper( ::aLineR[i] ) ) # 0
          sw := 1
       ELSE
          IF sw == 1
@@ -5987,8 +6227,9 @@ METHOD CleanR( cFValue ) CLASS THMI
    cFValue  :=  StrTran( cFValue, "'", "" )
 RETURN cFValue
 
-
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 #pragma BEGINDUMP
+/*--------------------------------------------------------------------------------------------------------------------------------*/
 
 #include <windows.h>
 #include <winuser.h>
