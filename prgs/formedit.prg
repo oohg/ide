@@ -340,6 +340,7 @@
                               { "aPageObjs",      "" }, ;
                               { "aPageSkip",      .F. }, ;
                               { "aPageSubClass",  "" }, ;
+                              { "aPageToolTips",  "" }, ;
                               { "aParent",        "" }, ;
                               { "aPassword",      .F. }, ;
                               { "aPicture",       "" }, ;
@@ -751,7 +752,6 @@ CLASS TFormEditor
    METHOD ReadFormStringData
    METHOD ReadLogicalData
    METHOD ReadOopData
-   METHOD ReadPageCargo
    METHOD ReadStringData
    METHOD RecreateControl
    METHOD RefreshControlInspector
@@ -879,7 +879,7 @@ METHOD EditForm( myIde, cFullName, nEditorIndex, lWait ) CLASS TFormEditor
          ACTION ::FrmEvents() ;
          WIDTH 30 ;
          HEIGHT 28 ;
-         TOOLTIP "Events"
+         TOOLTIP i18n( "Events" )
 
       @ 17,182 BUTTON form_mc ;
          PICTURE "IDE_FRMFONT" ;
@@ -1386,7 +1386,7 @@ METHOD FirstCtrl() CLASS TFormEditor
 
    aControls := ::oCtrlList:Value
    IF Len( aControls ) > 0
-      cName := aControls[1,1]
+      cName := ::oCtrlList:Cell( aControls[1], 6 )
       nHandleA := AScan( ::oDesignForm:aControls, { |o| Lower( o:Name ) == cName } )
    ELSE
       nHandleA := 0
@@ -1479,7 +1479,7 @@ METHOD Open( cFMG, lWait ) CLASS TFormEditor
          ITEM i18n( "Font/Colors" )            ACTION ::CtrlFontColors()
          ITEM i18n( "Manual Move/Size" )       ACTION ::ManualMoveSize( 1 )
          ITEM i18n( "Interactive Move" )       ACTION ::MoveControl()
-         ITEM i18n( "Keyboard Move" )          ACTION ::KeyboardMoveSize()
+         ITEM i18n( "Keyboard Move/Size" )     ACTION ::KeyboardMoveSize()
          ITEM i18n( "Interactive Size" )       ACTION ::SizeControl()
          SEPARATOR
          ITEM i18n( "Global Row Align" )       ACTION ::ValGlobalPos( "ROW" )
@@ -1982,7 +1982,7 @@ METHOD Open( cFMG, lWait ) CLASS TFormEditor
          ITEM i18n( "Font/Colors" )            ACTION ::CtrlFontColors()
          ITEM i18n( "Manual Move/Size" )       ACTION ::ManualMoveSize( 1 )
          ITEM i18n( "Interactive Move" )       ACTION ::MoveControl()
-         ITEM i18n( "Keyboard Move" )          ACTION ::KeyboardMoveSize()
+         ITEM i18n( "Keyboard Move/Size" )     ACTION ::KeyboardMoveSize()
          ITEM i18n( "Interactive Size" )       ACTION ::SizeControl()
          SEPARATOR
          ITEM i18n( "Global Row Align" )       ACTION ::ValGlobalPos( "ROW" )
@@ -2074,7 +2074,7 @@ METHOD New( lWait ) CLASS TFormEditor
          ITEM i18n( "Font/Colors" )            ACTION ::CtrlFontColors()
          ITEM i18n( "Manual Move/Size" )       ACTION ::ManualMoveSize( 1 )
          ITEM i18n( "Interactive Move" )       ACTION ::MoveControl()
-         ITEM i18n( "Keyboard Move" )          ACTION ::KeyboardMoveSize()
+         ITEM i18n( "Keyboard Move/Size" )     ACTION ::KeyboardMoveSize()
          ITEM i18n( "Interactive Size" )       ACTION ::SizeControl()
          SEPARATOR
          ITEM i18n( "Global Row Align" )       ACTION ::ValGlobalPos( "ROW" )
@@ -2144,7 +2144,7 @@ METHOD New( lWait ) CLASS TFormEditor
          ITEM i18n( "Font/Colors" )            ACTION ::CtrlFontColors()
          ITEM i18n( "Manual Move/Size" )       ACTION ::ManualMoveSize( 1 )
          ITEM i18n( "Interactive Move" )       ACTION ::MoveControl()
-         ITEM i18n( "Keyboard Move" )          ACTION ::KeyboardMoveSize()
+         ITEM i18n( "Keyboard Move/Size" )     ACTION ::KeyboardMoveSize()
          ITEM i18n( "Interactive Size" )       ACTION ::SizeControl()
          SEPARATOR
          ITEM i18n( "Global Row Align" )       ACTION ::ValGlobalPos( "ROW" )
@@ -2855,12 +2855,12 @@ METHOD VerifyBar() CLASS TFormEditor
       ::oDesignForm:Statusbar:Release()
       ::lSStat := .F.
       ::Form_Main:btn_Status:Enabled := .F.
-      ::oCtrlBox:Control_Statusbar:ToolTip := i18n( "StatusBar On" )
+      ::oCtrlBox:Control_Statusbar:ToolTip := "StatusBar On"
    ELSE
       ::CreateStatusBar()
       ::lSStat := .T.
       ::Form_Main:btn_Status:Enabled := .T.
-      ::oCtrlBox:Control_Statusbar:ToolTip := i18n( "StatusBar Off" )
+      ::oCtrlBox:Control_Statusbar:ToolTip := "StatusBar Off"
    ENDIF
    ::lIsFormModified := .T.
    ::oDesignForm:SetFocus()
@@ -3447,10 +3447,11 @@ METHOD AddControl( lOpenContextMenu ) CLASS TFormEditor
       CASE ::CurrentControl == TYPE_TAB
          ::aCaption[::nControlW]      := { 'Page 1', 'Page 2' }
          ::aImage[::nControlW]        := { '', '' }
-         ::aPageCargos[::nControlW]   := { NIL, NIL }
+         ::aPageCargos[::nControlW]   := { 'NIL', 'NIL' }
          ::aPageNames[::nControlW]    := { '', '' }
          ::aPageObjs[::nControlW]     := { '', '' }
          ::aPageSubClass[::nControlW] := { '', '' }
+         ::aPageToolTips[::nControlW] := { '', '' }
          nWidth                       := 240
          nHeight                      := 200
 
@@ -4687,14 +4688,14 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
             <.invisible.>, <.disabled.>, <.multiline.>, <.noproc.>, ;
             <.right.>, <.bottom.>, <{rclick}>, <.ragged.>, <.fwidth.>, NIL, ;
             <nw>, <nh>, <min>, <hor>, <ver>, NIL, <.il.>, <.ll.>, <.rj.>, <.so.>, ;
-            <{click}> )
+            <{click}>, <cargo> )
 */
       oCtrl := TTab():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, {}, {}, ;
                   NIL, NIL, NIL, i18n( "Right click on header area to change properties and events or to move/size." ), NIL, ;
                   ::aButtons[i], ::aFlat[i], ::aHotTrack[i], ::aVertical[i], .F., NIL, ::aFontBold[i], ::aFontItalic[i], ;
                   ::aFontUnderline[i], ::aFontStrikeout[i], {}, ::aRTL[i], ::aInternals[i], .F., .F., ::aMultiLine[i], .F., ;
                   ::aRightAlign[i], ::aBottomAlign[i], NIL, ::aRaggedRight[i], ::aFixedWidths[i], NIL, NIL, NIL, NIL, NIL, ;
-                  NIL, NIL, ::aIconLeft[i], ::aLabelLeft[i], ::aRightJust[i], ::aScrollOp[i], NIL )
+                  NIL, NIL, ::aIconLeft[i], ::aLabelLeft[i], ::aRightJust[i], ::aScrollOp[i], NIL, NIL )
          /* Add pages and controls */
          aCaptions := AClone( ::aCaption[i] )
          nCnt      := Len( aCaptions )
@@ -5346,15 +5347,33 @@ METHOD KeyboardMoveSize() CLASS TFormEditor
       RETURN NIL
    ENDIF
 
-   ON KEY LEFT       OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "L" )
-   ON KEY RIGHT      OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "R" )
-   ON KEY UP         OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "U" )
-   ON KEY DOWN       OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "D" )
-   ON KEY ESCAPE     OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "E" )
-   ON KEY CTRL+LEFT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W-" )
-   ON KEY CTRL+RIGHT OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W+" )
-   ON KEY CTRL+UP    OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H-" )
-   ON KEY CTRL+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H+" )
+   ON KEY LEFT   OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "L" )
+   ON KEY RIGHT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "R" )
+   ON KEY UP     OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "U" )
+   ON KEY DOWN   OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "D" )
+   ON KEY ESCAPE OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "E" )
+
+   IF ::myIde:lCtrlSizes
+      ON KEY CTRL+LEFT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W-" )
+      ON KEY CTRL+RIGHT OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W+" )
+      ON KEY CTRL+UP    OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H-" )
+      ON KEY CTRL+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H+" )
+
+      ON KEY ALT+LEFT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "LJ" )
+      ON KEY ALT+RIGHT OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "RJ" )
+      ON KEY ALT+UP    OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "UJ" )
+      ON KEY ALT+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "DJ" )
+   ELSE
+      ON KEY ALT+LEFT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W-" )
+      ON KEY ALT+RIGHT OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "W+" )
+      ON KEY ALT+UP    OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H-" )
+      ON KEY ALT+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "H+" )
+
+      ON KEY CTRL+LEFT  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "LJ" )
+      ON KEY CTRL+RIGHT OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "RJ" )
+      ON KEY CTRL+UP    OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "UJ" )
+      ON KEY CTRL+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "DJ" )
+   ENDIF
 
    IF _IsControlDefined( "Statusbar", ::oDesignForm:Name )
       ::oDesignForm:Statusbar:Release()
@@ -5391,28 +5410,40 @@ METHOD KeyHandler( cPar ) CLASS TFormEditor
       ELSE
          DO CASE
          CASE cPar == "L"
-            oControl:Col := oControl:Col - iif( ::myIde:lSnap, ::myIde:nPxMove, 1 )
+            oControl:Col := oControl:Col - ::myIde:nPxMove
             ::lIsFormModified := .T.
          CASE cPar == "R"
-            oControl:Col := oControl:Col + iif( ::myIde:lSnap, ::myIde:nPxMove, 1 )
+            oControl:Col := oControl:Col + ::myIde:nPxMove
             ::lIsFormModified := .T.
          CASE cPar == "U"
-            oControl:Row := oControl:Row - iif( ::myIde:lSnap, ::myIde:nPxMove, 1 )
+            oControl:Row := oControl:Row - ::myIde:nPxMove
             ::lIsFormModified := .T.
          CASE cPar == "D"
-            oControl:Row := oControl:Row + iif( ::myIde:lSnap, ::myIde:nPxMove, 1 )
+            oControl:Row := oControl:Row + ::myIde:nPxMove
+            ::lIsFormModified := .T.
+         CASE cPar == "LJ"
+            oControl:Col := oControl:Col - ::myIde:nPxJump
+            ::lIsFormModified := .T.
+         CASE cPar == "RJ"
+            oControl:Col := oControl:Col + ::myIde:nPxJump
+            ::lIsFormModified := .T.
+         CASE cPar == "UJ"
+            oControl:Row := oControl:Row - ::myIde:nPxJump
+            ::lIsFormModified := .T.
+         CASE cPar == "DJ"
+            oControl:Row := oControl:Row + ::myIde:nPxJump
             ::lIsFormModified := .T.
          CASE cPar == "W-"
-            oControl:Width := oControl:Width - iif( ::myIde:lSnap, ::myIde:nPxSize, 1 )
+            oControl:Width := oControl:Width - ::myIde:nPxSize
             ::lIsFormModified := .T.
          CASE cPar == "W+"
-            oControl:Width := oControl:Width + iif( ::myIde:lSnap, ::myIde:nPxSize, 1 )
+            oControl:Width := oControl:Width + ::myIde:nPxSize
             ::lIsFormModified := .T.
          CASE cPar == "H-"
-            oControl:Height := oControl:Height - iif( ::myIde:lSnap, ::myIde:nPxSize, 1 )
+            oControl:Height := oControl:Height - ::myIde:nPxSize
             ::lIsFormModified := .T.
          CASE cPar == "H+"
-            oControl:Height := oControl:Height + iif( ::myIde:lSnap, ::myIde:nPxSize, 1 )
+            oControl:Height := oControl:Height + ::myIde:nPxSize
             ::lIsFormModified := .T.
          ENDCASE
          IF _IsControlDefined( "Statusbar", ::oDesignForm:Name )
@@ -6573,39 +6604,6 @@ METHOD ReadCargo( i, cWhat ) CLASS TFormEditor
    NEXT j
 
    RETURN ""
-
-/*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD ReadPageCargo( i, cProp, cDefault ) CLASS TFormEditor
-
-   LOCAL j, nFrom, nTo, nPos, cSearch, cAux, cValue
-
-   nFrom   := iif( i > 0, ::aSpeed[i], ::cSSpeed ) + 1
-   nTo     := iif( i > 0, ::aNumber[i], ::cSNumber )
-   cSearch := " " + Upper( ::cFName ) + "." + Upper( ::aName[i] ) + "." + Upper( cProp )
-   FOR j := nFrom TO nTo
-      IF At( cSearch, Upper( ::aLine[j] ) ) == 1
-         cAux := LTrim( SubStr( ::aLine[j], Len( cSearch ) + 1 ) )
-         IF Left( cAux, 1 ) == "="
-            nPos := 2
-         ELSEIF Left( cAux, 2 ) == ":="
-            nPos := 3
-         ELSE
-            nPos := 1
-         ENDIF
-         IF nPos > 1
-            cValue := AllTrim( SubStr( cAux, nPos ) )
-            IF Empty( cValue )
-               RETURN cDefault
-            ELSEIF Upper( cValue ) == "NIL"
-               RETURN "NIL"
-            ELSE
-               RETURN cValue
-            ENDIF
-         ENDIF
-      ENDIF
-   NEXT j
-
-   RETURN cDefault
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadStringData( i, cProp, cDefault, nLine, nCount ) CLASS TFormEditor
@@ -11330,8 +11328,8 @@ METHOD pSpinner( i ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD pTab( i ) CLASS TFormEditor
 
-   LOCAL cAction, cCargo, cFontName, cItemSize, cMinWidth, cObj, cOnChange, cOnRClick, cPadding, cParent, cPCaption, cPImage
-   LOCAL cPName, cPObj, cPSub, cSubClass, cToolTip, cVal, cValue, j, k, lBold, lBottom, lButtons, lCont
+   LOCAL cAction, cCargo, cFontName, cItemSize, cMinWidth, cObj, cOnChange, cOnRClick, cPadding, cParent, cPCargo, cPCaption
+   LOCAL cPImage, cPName, cPObj, cPSub, cPTTip, cSubClass, cToolTip, cVal, cValue, j, k, lBold, lBottom, lButtons, lCont
    LOCAL lDelay, lEnabled, lFixedWidth, lFlat, lHotTrack, lIconLeft, lInternals, lItalic, lLabelLeft, lMultiLine, lNoTabStop
    LOCAL lRagRight, lRight, lRightJust, lRTL, lScrollOp, lStrikeout, lUnderline, lVertical, lVisible, nCol, nFontSize, nHeight
    LOCAL nLevel, nRow, nWidth, oCtrl, uFontName, uFontSize
@@ -11452,6 +11450,7 @@ METHOD pTab( i ) CLASS TFormEditor
    ::aPageNames[i]     := {}
    ::aPageObjs[i]      := {}
    ::aPageSubClass[i]  := {}
+   ::aPageToolTips[i]  := {}
 
    /* find start and end lines */
    IF ( j := AScan( ::aTabs, { |tabdata| tabdata[1] == Lower( ::aName[i] ) } ) ) > 0
@@ -11498,6 +11497,8 @@ METHOD pTab( i ) CLASS TFormEditor
          cPName  := ""
          cPObj   := ""
          cPSub   := ""
+         cPTTip  := ""
+         cPCargo := ""
          DO WHILE j <= Len( ::aLine ) .AND. lCont
             DO CASE
             CASE At( " IMAGE ", Upper( ::aLine[j] ) ) == 1
@@ -11528,6 +11529,20 @@ METHOD pTab( i ) CLASS TFormEditor
                ELSE
                   lCont := .F.
                ENDIF
+            CASE At( " TOOLTIP ", Upper( ::aLine[j] ) ) == 1
+               cPTTip := AllTrim( SubStr( ::aLine[j], 10 ) )
+               IF Right( cPTTip, 1 ) == ";"
+                  cPTTip := RTrim( SubStr( cPTTip, 1, Len( cPTTip ) - 1 ) )
+               ELSE
+                  lCont := .F.
+               ENDIF
+            CASE At( " CARGO ", Upper( ::aLine[j] ) ) == 1
+               cPCargo := AllTrim( SubStr( ::aLine[j], 8 ) )
+               IF Right( cPCargo, 1 ) == ";"
+                  cPCargo := RTrim( SubStr( cPCargo, 1, Len( cPCargo ) - 1 ) )
+               ELSE
+                  lCont := .F.
+               ENDIF
             OTHERWISE
                lCont := .F.
             ENDCASE
@@ -11540,14 +11555,8 @@ METHOD pTab( i ) CLASS TFormEditor
             AAdd( ::aPageNames[i], cPName )
             AAdd( ::aPageObjs[i], cPObj )
             AAdd( ::aPageSubClass[i], cPSub )
-/* xxx
-            cCargo := ::ReadPageCargo( i, "CARGO", NIL )
-
-            IF hay cargo clause then
-               AAdd( ::aPageCargos[i], cPCargo )
-ATail( ( _OOHG_ActiveFrame ):aPages ).Cargo := cCargo
-            ENDIF
-*/
+            AAdd( ::aPageToolTips[i], cPTTip )
+            AAdd( ::aPageCargos[i], cPCargo )
          ENDIF
       ELSE
          j ++
@@ -12977,7 +12986,7 @@ METHOD Save( lSaveAs ) CLASS TFormEditor
       Output += " ;" + CRLF + Space( nSpacing ) + "ON MDBLCLICK " + AllTrim( ::cFMDblClickProcedure )
    ENDIF
    IF NOTEMPTY( ::cFCargo )
-      Output += CRLF + "LastForm.Cargo := " + AllTrim( ::cFCargo )
+      Output += CRLF + CRLF + "LastForm.Cargo := " + AllTrim( ::cFCargo )
    ENDIF
    Output += CRLF + CRLF
 
@@ -13156,7 +13165,7 @@ METHOD Save( lSaveAs ) CLASS TFormEditor
 
       Output += Space( nSpacing ) + "END STATUSBAR"
       IF NOTEMPTY( ::cSCargo )
-         Output += CRLF + Space( nSpacing ) + "LastForm.StatusBar.Cargo := " + AllTrim( ::cSCargo )
+         Output += CRLF + CRLF + Space( nSpacing ) + "LastForm.StatusBar.Cargo := " + AllTrim( ::cSCargo )
       ENDIF
       Output += CRLF + CRLF
    ENDIF
@@ -13308,7 +13317,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SUBCLASS " + AllTrim( ::aSubClass[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -13364,7 +13373,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -13413,7 +13422,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TOOLTIP " + AllTrim( ::aToolTip[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -13764,7 +13773,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NEWATROW " + AllTrim( ::aNewAtRow[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -13932,7 +13941,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14032,7 +14041,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOFOCUSRECT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14195,7 +14204,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HANDCURSOR"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14295,7 +14304,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SINGLEBUFFER"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14477,7 +14486,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + AllTrim( ::aValueIs[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14571,7 +14580,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "VALID " + AllTrim( ::aValid[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14677,7 +14686,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BREAK"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -14744,7 +14753,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             ENDIF
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15059,10 +15068,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOVSCROLL"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
-         ENDIF
-         IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15141,7 +15147,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOALT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15221,7 +15227,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SUBCLASS " + AllTrim( ::aSubClass[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15330,7 +15336,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOPARENTREDRAW"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15403,7 +15409,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BACKCOLOR " + ::ColorStrToColorDef( ::aBackColor[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15516,7 +15522,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CURSOR" + AllTrim( ::aCursor[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15634,7 +15640,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BREAK"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15732,7 +15738,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON LOSTFOCUS " + AllTrim( ::aOnLostFocus[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15852,7 +15858,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DEFAULT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -15970,7 +15976,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HANDCURSOR"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16049,7 +16055,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16114,7 +16120,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "RTL"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16166,7 +16172,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SUBCLASS " + AllTrim( ::aSubClass[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16236,7 +16242,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SUBCLASS " + AllTrim( ::aSubClass[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16343,7 +16349,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOFOCUSRECT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16464,7 +16470,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "VERSION " + AllTrim( ::aVersion[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16575,7 +16581,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "AUTOMOVE"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16641,7 +16647,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16735,7 +16741,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CUEBANNER " + AllTrim( ::aCue[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -16853,6 +16859,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aScrollOp[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SCROLLOP"
          ENDIF
+         IF NOTEMPTY( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+         ENDIF
          Output += CRLF + CRLF
          /* Output pages */
          FOR CurrentPage := 1 TO Len( ::aCaption[j] )
@@ -16869,6 +16878,12 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             ENDIF
             IF NOTEMPTY( ::aPageSubClass[j, CurrentPage ] )
                Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 2 ) ) + "SUBCLASS " + AllTrim( ::aPageSubClass[j, CurrentPage ] )
+            ENDIF
+            IF NOTEMPTY( ::aPageToolTips[j, CurrentPage ] )
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 2 ) ) + "TOOLTIP " + AllTrim( ::aPageToolTips[j, CurrentPage ] )
+            ENDIF
+            IF NOTEMPTY( ::aPageCargos[j, CurrentPage ] )
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 2 ) ) + "CARGO " + AllTrim( ::aPageCargos[j, CurrentPage ] )
             ENDIF
             Output += CRLF + CRLF
             /* Output page controls */
@@ -16890,18 +16905,10 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
                ENDIF
             NEXT k
             /* Output page end */
-            Output += Space( nSpacing * ( nLevel + 1 ) ) + "END PAGE" + CRLF
-            /* Output page's cargo */
-            IF NOTEMPTY( ::aPageCargos[j, CurrentPage ] )
-               Output += CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ATail( ( _OOHG_ActiveFrame ):aPages ):Cargo := " + AllTrim( ::aPageCargos[j, CurrentPage ] ) + CRLF
-            ENDIF
-            Output += CRLF
+            Output += Space( nSpacing * ( nLevel + 1 ) ) + "END PAGE" + CRLF + CRLF
          NEXT i
          /* Output TAB's end */
          Output += Space( nSpacing * nLevel ) + "END TAB" + CRLF + CRLF
-         IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
-         ENDIF
       ENDIF
 
       IF ::aCtrlType[j] == ::ControlType[ TYPE_TEXTARRAY ]
@@ -16984,7 +16991,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON LOSTFOCUS " + AllTrim( ::aOnLostFocus[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -17151,7 +17158,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CUEBANNER " + AllTrim( ::aCue[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -17236,7 +17243,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "VALID " + AllTrim( ::aValid[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -17271,7 +17278,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ONCE"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -17435,7 +17442,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON DROP " + AllTrim( ::aOnDrop[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
    /*
@@ -17796,7 +17803,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TIMEOUT " + AllTrim( ::aTimeOut[j] )
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
-            Output += CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
+            Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
          Output += CRLF + CRLF
       ENDIF
@@ -20464,10 +20471,12 @@ METHOD AddTabPage( i, oTab, oTabProp ) CLASS TFormEditor
    AAdd( ::aPageNames[i], "" )
    AAdd( ::aPageObjs[i], "" )
    AAdd( ::aPageSubClass[i], "" )
+   AAdd( ::aPageToolTips[i], "" )
+   AAdd( ::aPageCargos[i], "" )
 
    oTab:Addpage( nPages + 1, "Page " + LTrim( Str( nPages + 1 ) ) )
 
-   oTabProp:Label_6:Value := ( 'Page count: ' + LTrim( Str( nPages + 1 ) ) )
+   oTabProp:lbl_PageCount:Value := ( 'Page count: ' + LTrim( Str( nPages + 1 ) ) )
 
    oTabProp:Spinner_1:RangeMax := nPages + 1
    oTabProp:Spinner_1:Value := nPages + 1
@@ -20489,6 +20498,8 @@ METHOD DeleteTabPage( i, oTab, oTabProp ) CLASS TFormEditor
    ASize( ::aPageNames[i], nPages - 1 )
    ASize( ::aPageObjs[i], nPages - 1 )
    ASize( ::aPageSubClass[i], nPages - 1 )
+   ASize( ::aPageToolTips[i], nPages - 1 )
+   ASize( ::aPageCargos[i], nPages - 1 )
 
    cName := ::aControlW[i]
    FOR j := ::nControlW TO 1 STEP -1
@@ -20501,7 +20512,7 @@ METHOD DeleteTabPage( i, oTab, oTabProp ) CLASS TFormEditor
    oTab:Visible := .F.
    oTab:Visible := .T.
 
-   oTabProp:Label_6:Value := ( 'Page count: ' + LTrim( Str( nPages - 1 ) ) )
+   oTabProp:lbl_PageCount:Value := ( 'Page count: ' + LTrim( Str( nPages - 1 ) ) )
 
    oTabProp:Spinner_1:RangeMax := nPages - 1
    oTabProp:Spinner_1:Value := nPages - 1
@@ -20516,19 +20527,23 @@ METHOD LoadTabpageProperties( j, oTabProp ) CLASS TFormEditor
    oTabProp:Edit_3:Value := ::aPageNames[j, oTabProp:Spinner_1:Value]
    oTabProp:Edit_4:Value := ::aPageObjs[j, oTabProp:Spinner_1:Value]
    oTabProp:Edit_5:Value := ::aPageSubClass[j, oTabProp:Spinner_1:Value]
+   oTabProp:Edit_6:Value := ::aPageToolTips[j, oTabProp:Spinner_1:Value]
+   oTabProp:Edit_7:Value := ::aPageCargos[j, oTabProp:Spinner_1:Value]
 
    RETURN NIL
  
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD SaveTabpageProperties( j, oTabProp ) CLASS TFormEditor
 
-   ::aCaption[j, ::oTabProp:Spinner_1:Value]      := oTabProp:Edit_1:Value
-   ::aImage[j, ::oTabProp:Spinner_1:Value]        := oTabProp:Edit_2:Value
-   ::aPageNames[j, ::oTabProp:Spinner_1:Value]    := oTabProp:Edit_3:Value
-   ::aPageObjs[j, ::oTabProp:Spinner_1:Value]     := oTabProp:Edit_4:Value
-   ::aPageSubClass[j, ::oTabProp:Spinner_1:Value] := oTabProp:Edit_5:Value
+   ::aCaption[j, oTabProp:Spinner_1:Value]      := oTabProp:Edit_1:Value
+   ::aImage[j, oTabProp:Spinner_1:Value]        := oTabProp:Edit_2:Value
+   ::aPageNames[j, oTabProp:Spinner_1:Value]    := oTabProp:Edit_3:Value
+   ::aPageObjs[j, oTabProp:Spinner_1:Value]     := oTabProp:Edit_4:Value
+   ::aPageSubClass[j, oTabProp:Spinner_1:Value] := oTabProp:Edit_5:Value
+   ::aPageToolTips[j, oTabProp:Spinner_1:Value] := oTabProp:Edit_6:Value
+   ::aPageCargos[j, oTabProp:Spinner_1:Value]   := oTabProp:Edit_7:Value
 
-   ::oTabProp:Button_5:Enabled := .F.
+   oTabProp:Button_5:Enabled := .F.
    ::lIsFormModified := .T.
 
    RETURN NIL
