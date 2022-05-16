@@ -290,7 +290,7 @@ CLASS TMyToolBar
    DATA cFontNameFrm              INIT ""
    DATA cFontSizeFrm              INIT ""
    DATA cObj                      INIT ""
-   DATA cSubclass                 INIT ""
+   DATA cSubClass                 INIT ""
    DATA cToolTip                  INIT ""
    DATA FormEdit                  INIT NIL
    DATA lBold                     INIT .F.
@@ -349,7 +349,7 @@ CLASS TMyToolBar
    METHOD WriteObj
    METHOD WritePicture
    METHOD WriteSeparator
-   METHOD WriteSubclass
+   METHOD WriteSubClass
    METHOD WriteToolTip
    METHOD WriteWhole
 
@@ -482,7 +482,7 @@ METHOD FmgOutput( nSpacing ) CLASS TMyToolBar
    cOutput += iif( ::lNoTabStop, " ;" + CRLF + Space( nSpacing * 2 ) + "NOTABSTOP ", "" )
    cOutput += iif( NOTEMPTY( ::cCaption ), " ;" + CRLF + Space( nSpacing * 2 ) + "CAPTION " + AllTrim( ::cCaption ), "" )
    cOutput += iif( NOTEMPTY( ::cAction ), " ;" + CRLF + Space( nSpacing * 2 ) + "ACTION " + AllTrim( ::cAction ), "" )
-   cOutput += iif( NOTEMPTY( ::cSubclass ), " ;" + CRLF + Space( nSpacing * 2 ) + "SUBCLASS " + AllTrim( ::cSubclass ), "" )
+   cOutput += iif( NOTEMPTY( ::cSubClass ), " ;" + CRLF + Space( nSpacing * 2 ) + "SUBCLASS " + AllTrim( ::cSubClass ), "" )
    cOutput += CRLF + CRLF
 
    FOR EACH oBut IN ::aButtons
@@ -599,12 +599,12 @@ METHOD OnEditInit() CLASS TMyToolBar
    ::FormEdit:txt_Obj:Value      := ::cObj
    ::FormEdit:txt_Caption:Value  := ::cCaption
    ::FormEdit:txt_Action:Value   := ::cAction
-   ::FormEdit:txt_Subclass:Value := ::cSubclass
+   ::FormEdit:txt_SubClass:Value := ::cSubClass
    ::FormEdit:txt_TBSize:Value   := ::nToolBarSize
 
    FOR EACH oBut IN ::aButtons
       WITH OBJECT oBut
-         ::FormEdit:grd_Buttons:AddItem( { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:AddItem( { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    NEXT
 
@@ -637,7 +637,7 @@ METHOD OnGridChange() CLASS TMyToolBar
       ::FormEdit:txt_ItPicture:Value   := oBut:cPicture
       ::FormEdit:txt_ItToolTip:Value   := oBut:cToolTip
       ::FormEdit:txt_ItObj:Value       := oBut:cObj
-      ::FormEdit:txt_ItSubclass:Value  := oBut:cSubclass
+      ::FormEdit:txt_ItSubClass:Value  := oBut:cSubClass
       ::FormEdit:chk_ItCheck:Value     := oBut:lCheck
       ::FormEdit:chk_ItAutosize:Value  := oBut:lAutosize
       ::FormEdit:chk_ItSeparator:Value := oBut:lSeparator
@@ -650,7 +650,7 @@ METHOD OnGridChange() CLASS TMyToolBar
       ::FormEdit:txt_ItPicture:Value   := ""
       ::FormEdit:txt_ItToolTip:Value   := ""
       ::FormEdit:txt_ItObj:Value       := ""
-      ::FormEdit:txt_ItSubclass:Value  := ""
+      ::FormEdit:txt_ItSubClass:Value  := ""
       ::FormEdit:chk_ItCheck:Value     := .F.
       ::FormEdit:chk_ItAutosize:Value  := .F.
       ::FormEdit:chk_ItSeparator:Value := .F.
@@ -927,7 +927,7 @@ METHOD WriteAction() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :cAction := ::FormEdit:txt_ItAction:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -943,7 +943,7 @@ METHOD WriteAutosize() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :lAutosize := ::FormEdit:chk_ItAutosize:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -959,7 +959,7 @@ METHOD WriteCaption() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :cCaption := ::FormEdit:txt_ItCaption:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -975,7 +975,7 @@ METHOD WriteCheck() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :lCheck := ::FormEdit:chk_ItCheck:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -991,7 +991,7 @@ METHOD WriteGroup() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :lGroup := ::FormEdit:chk_ItGroup:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1025,7 +1025,7 @@ METHOD WriteName() CLASS TMyToolBar
          ENDIF
 
          :Name := AllTrim( ::FormEdit:txt_ItName:Value )
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1041,7 +1041,7 @@ METHOD WriteObj() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :cObj := ::FormEdit:txt_ItObj:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1057,7 +1057,7 @@ METHOD WritePicture() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :cPicture := ::FormEdit:txt_ItPicture:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1073,14 +1073,14 @@ METHOD WriteSeparator() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :lSeparator := ::FormEdit:chk_ItSeparator:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
    RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD WriteSubclass() CLASS TMyToolBar
+METHOD WriteSubClass() CLASS TMyToolBar
 
    LOCAL oBut
 
@@ -1088,8 +1088,8 @@ METHOD WriteSubclass() CLASS TMyToolBar
       oBut := ::aButtons[ ::FormEdit:grd_Buttons:Value ]
 
       WITH OBJECT oBut
-         :cSubclass := ::FormEdit:txt_ItSubclass:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         :cSubClass := ::FormEdit:txt_ItSubClass:Value
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1105,7 +1105,7 @@ METHOD WriteToolTip() CLASS TMyToolBar
 
       WITH OBJECT oBut
          :cToolTip := ::FormEdit:txt_ItToolTip:Value
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1122,7 +1122,7 @@ METHOD WriteWhole() CLASS TMyToolBar
       WITH OBJECT oBut
          IF :lDrop
             :lWhole := ::FormEdit:chk_ItWhole:Value
-            ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+            ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
          ELSE
             MsgStop( i18n( "Button has no dropdown menu." ), "OOHG IDE+" )
          ENDIF
@@ -1145,7 +1145,7 @@ METHOD EditDropDownButton() CLASS TMyToolBar
          IF ! :lDrop
             :lWhole := .F.
          ENDIF
-         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubclass } )
+         ::FormEdit:grd_Buttons:Item( ::FormEdit:grd_Buttons:Value, { :Name, :cCaption, :cAction, :lCheck, :lAutosize, :cPicture, :lSeparator, :lGroup, :cTooltip, :cObj, :lDrop, :lWhole, :cSubClass } )
       END WITH
    ENDIF
 
@@ -1161,7 +1161,7 @@ CLASS TMyTBBtn
    DATA cObj                      INIT ""
    DATA cPicture                  INIT ""
    DATA cToolTip                  INIT ""
-   DATA cSubclass                 INIT ""
+   DATA cSubClass                 INIT ""
    DATA lAutosize                 INIT .F.
    DATA lCheck                    INIT .F.
    DATA lDrop                     INIT .F.
@@ -1217,8 +1217,8 @@ METHOD FmgOutput( nSpacing ) CLASS TMyTBBtn
    IF NOTEMPTY( ::cObj )
       cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "OBJ " + AllTrim( ::cObj )
    ENDIF
-   IF NOTEMPTY( ::cSubclass )
-      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "SUBCLASS " + AllTrim( ::cSubclass )
+   IF NOTEMPTY( ::cSubClass )
+      cOutput += " ;" + CRLF + Space( nSpacing * 3 ) + "SUBCLASS " + AllTrim( ::cSubClass )
    ENDIF
    cOutput += CRLF + CRLF
 
