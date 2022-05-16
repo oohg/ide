@@ -152,7 +152,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 342, 280 LABEL label_3 ;
       WIDTH 120 ;
       HEIGHT 24 ;
-      VALUE 'Subclass' ;
+      VALUE 'SubClass' ;
       TRANSPARENT ;
       CENTERALIGN 
 
@@ -160,7 +160,7 @@ DEFINE WINDOW TEMPLATE ;
       WIDTH 120 ;
       HEIGHT 24 ;
       MAXLENGTH 30 ;
-      ON CHANGE ::cSubclass := AllTrim( ::FormEdit:text_3:Value )
+      ON CHANGE ::cSubClass := AllTrim( ::FormEdit:text_3:Value )
 
    @ 325, 430 BUTTON button_108 ;
       WIDTH 100 ;
@@ -239,13 +239,13 @@ DEFINE WINDOW TEMPLATE ;
    @ 205, 560 LABEL label_5 ;
       WIDTH 76 ;
       HEIGHT 17 ;
-      VALUE 'Subclass'
+      VALUE 'SubClass'
 
    @ 202, 635 TEXTBOX text_6 ;
       WIDTH 120 ;
       HEIGHT 23 ;
       MAXLENGTH 30 ;
-      ON CHANGE ::WriteSubclass()
+      ON CHANGE ::WriteSubClass()
 
    @ 245, 560 CHECKBOX checkbox_105 ;
       WIDTH 90 ;
@@ -292,7 +292,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 340, 560 LABEL label_6 ;
       WIDTH 190 ;
       HEIGHT 24 ;
-      VALUE i18n( 'Level:' ) ;
+      VALUE 'Level:' ;
       TRANSPARENT ;
       CENTERALIGN 
 

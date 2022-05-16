@@ -211,7 +211,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 300, 410 FRAME frm_Size ;
       WIDTH 120 ;
       HEIGHT 80 ;
-      CAPTION i18n( 'Button' ) ;
+      CAPTION 'ButtonSize' ;
       TRANSPARENT
 
    @ 323, 420 LABEL lbl_Height ;
@@ -241,7 +241,7 @@ DEFINE WINDOW TEMPLATE ;
       NUMERIC
 
    @ 380, 20 LABEL label_TbName ;
-      VALUE 'Toolbar Name' ;
+      VALUE 'Name' ;
       WIDTH 120 ;
       HEIGHT 18 ;
       TRANSPARENT ;
@@ -254,7 +254,7 @@ DEFINE WINDOW TEMPLATE ;
       ON CHANGE ::Name := AllTrim( ::FormEdit:txt_Name:Value )
 
    @ 380, 150 LABEL lbl_ToolTip ;
-      VALUE 'Tooltip' ;
+      VALUE 'ToolTip' ;
       WIDTH 120 ;
       HEIGHT 18 ;
       TRANSPARENT ;
@@ -280,7 +280,7 @@ DEFINE WINDOW TEMPLATE ;
       ON CHANGE ::cObj := AllTrim( ::FormEdit:txt_Obj:Value )
 
    @ 380, 410 LABEL lbl_TBSize ;
-      VALUE 'Toolbar Size' ;
+      VALUE 'Size' ;
       WIDTH 120 ;
       HEIGHT 24 ;
       TRANSPARENT ;
@@ -319,18 +319,18 @@ DEFINE WINDOW TEMPLATE ;
       MAXLENGTH 30 ;
       ON CHANGE ::cAction := AllTrim( ::FormEdit:txt_Action:Value )
 
-   @ 430, 280 LABEL lbl_Subclass ;
-      VALUE 'Subclass' ;
+   @ 430, 280 LABEL lbl_SubClass ;
+      VALUE 'SubClass' ;
       WIDTH 120 ;
       HEIGHT 24 ;
       TRANSPARENT ;
       CENTERALIGN
 
-   @ 450, 280 TEXTBOX txt_Subclass ;
+   @ 450, 280 TEXTBOX txt_SubClass ;
       WIDTH 120 ;
       HEIGHT 24 ;
       MAXLENGTH 30 ;
-      ON CHANGE ::cSubclass := AllTrim( ::FormEdit:txt_Subclass:Value )
+      ON CHANGE ::cSubClass := AllTrim( ::FormEdit:txt_SubClass:Value )
 
    @ 448, 430 BUTTON btn_SetFont ;
       ACTION ::SetFont() ;
@@ -462,17 +462,17 @@ DEFINE WINDOW TEMPLATE ;
       ON CHANGE ::WriteWhole() ;
       TRANSPARENT
 
-   @ 392, 560 LABEL lbl_ItSubclass ;
-      VALUE 'Subclass' ;
+   @ 392, 560 LABEL lbl_ItSubClass ;
+      VALUE 'SubClass' ;
       WIDTH 76 ;
       HEIGHT 23 ;
       TRANSPARENT
 
-   @ 389, 635 TEXTBOX txt_ItSubclass ;
+   @ 389, 635 TEXTBOX txt_ItSubClass ;
       WIDTH 120 ;
       HEIGHT 23 ;
       MAXLENGTH 30 ;
-      ON CHANGE ::WriteSubclass()
+      ON CHANGE ::WriteSubClass()
 
    @ 448, 550 BUTTON btn_Save ;
       ACTION ::Save() ;
