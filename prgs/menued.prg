@@ -72,7 +72,7 @@ CLASS TMyMenuEditor
    DATA cMnFile   INIT ''
    DATA cMnName   INIT ''
    DATA cObj      INIT ''
-   DATA cSubclass INIT ''
+   DATA cSubClass INIT ''
    DATA FormEdit  INIT NIL
    DATA nLevel    INIT 0
    DATA nType     INIT 0
@@ -106,7 +106,7 @@ CLASS TMyMenuEditor
    METHOD WriteObj
    METHOD WriteRight
    METHOD WriteStretch
-   METHOD WriteSubclass
+   METHOD WriteSubClass
 
 ENDCLASS
 
@@ -440,8 +440,8 @@ LOCAL Output := "", nNxtLvl, nLvl, nPopupCount := 0
          IF ! Empty( ::cObj )
             Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'OBJ ' + AllTrim( ::cObj )
          ENDIF
-         IF ! Empty( ::cSubclass )
-            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubclass )
+         IF ! Empty( ::cSubClass )
+            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubClass )
          ENDIF
          Output += CRLF + CRLF
 
@@ -590,8 +590,8 @@ LOCAL Output := "", nNxtLvl, nLvl, nPopupCount := 0
          IF ! Empty( ::cObj )
             Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'OBJ ' + AllTrim( ::cObj )
          ENDIF
-         IF ! Empty( ::cSubclass )
-            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubclass )
+         IF ! Empty( ::cSubClass )
+            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubClass )
          ENDIF
          Output += CRLF + CRLF
 
@@ -663,8 +663,8 @@ LOCAL Output := "", nNxtLvl, nLvl, nPopupCount := 0
          IF ! Empty( ::cObj )
             Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'OBJ ' + AllTrim( ::cObj )
          ENDIF
-         IF ! Empty( ::cSubclass )
-            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubclass )
+         IF ! Empty( ::cSubClass )
+            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubClass )
          ENDIF
          Output += CRLF + CRLF
 
@@ -736,8 +736,8 @@ LOCAL Output := "", nNxtLvl, nLvl, nPopupCount := 0
          IF ! Empty( ::cObj )
             Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'OBJ ' + AllTrim( ::cObj )
          ENDIF
-         IF ! Empty( ::cSubclass )
-            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubclass )
+         IF ! Empty( ::cSubClass )
+            Output += ' ;' + CRLF + Space( nSpacing * ( ( ::cID )->level + 2 ) ) + 'SUBCLASS ' + AllTrim( ::cSubClass )
          ENDIF
          Output += CRLF + CRLF
 
@@ -1119,7 +1119,7 @@ LOCAL aDbf[14][4]
    aDbf[13][ DBS_LEN ]  := 1
    aDbf[13][ DBS_DEC ]  := 0
 
-   aDbf[14][ DBS_NAME ] := "Subclass"
+   aDbf[14][ DBS_NAME ] := "SubClass"
    aDbf[14][ DBS_TYPE ] := "Character"
    aDbf[14][ DBS_LEN ]  := 40
    aDbf[14][ DBS_DEC ]  := 0
@@ -1185,12 +1185,12 @@ LOCAL i, nProps := 3, aPar := array( nProps ), wVar, nStart, nIndex
 
    ::cMnName    := aPar[01]
    ::cObj       := aPar[02]
-   ::cSubclass  := aPar[03]
+   ::cSubClass  := aPar[03]
 
    IF ::FormEdit # NIL
       ::FormEdit:text_1:Value     := ::cMnName
       ::FormEdit:text_2:Value     := ::cObj
-      ::FormEdit:text_3:Value     := ::cSubclass
+      ::FormEdit:text_3:Value     := ::cSubClass
    ENDIF
 RETURN NIL
 
@@ -1219,7 +1219,7 @@ LOCAL wVar
                                                          // Length
    wVar := ::cMnName + ',' + ;                           //  30 + 1
            ::cObj + ',' + ;                              //  30 + 1
-           ::cSubclass                                   //  30
+           ::cSubClass                                   //  30
                                                          //  90 + 2
    ( ::cID )->( dbGoTop() )
    ( ::cID )->auxit  := SubStr(wVar, 1, Len( ( ::cID )->auxit ) )
@@ -1314,7 +1314,7 @@ METHOD WriteRight() CLASS TMyMenuEditor
 RETURN NIL
 
 //------------------------------------------------------------------------------
-METHOD WriteSubclass() CLASS TMyMenuEditor
+METHOD WriteSubClass() CLASS TMyMenuEditor
 //------------------------------------------------------------------------------
    ( ::cID )->subclass := AllTrim( ::FormEdit:text_6:Value )
    ::FormEdit:browse_101:Refresh()
