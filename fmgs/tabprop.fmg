@@ -66,7 +66,7 @@ DEFINE WINDOW TEMPLATE ;
    OBJ oTabProp ;
    AT 132, 235 ;
    WIDTH 430 ;
-   HEIGHT 480 ;
+   HEIGHT 580 ;
    TITLE ( DQM( ::cFName + ".fmg" ) + i18n( " - Properties of Control " ) + ::aName[j] ) ;
    BACKCOLOR ::myIde:aSystemColor ;
    MODAL ;
@@ -77,7 +77,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 10, 10 FRAME Frame_1 ;
       WIDTH 410 ;
       HEIGHT 80 ;
-      CAPTION 'DEFINE TAB Properties' ;
+      CAPTION i18n( 'DEFINE TAB Properties' ) ;
       TRANSPARENT
 
    @ 41, 20 BUTTON Button_1 ;
@@ -110,7 +110,7 @@ DEFINE WINDOW TEMPLATE ;
    @ 110, 10 FRAME Frame_2 ;
       WIDTH 410 ;
       HEIGHT 320 ;
-      CAPTION 'DEFINE PAGE Properties' ;
+      CAPTION i18n( 'DEFINE PAGE Properties' ) ;
       TRANSPARENT
 
    @ 143, 20 LABEL Label_0 ;
@@ -224,15 +224,49 @@ DEFINE WINDOW TEMPLATE ;
       ON CHANGE oTabProp:Button_5:Enabled := .T. ;
       NOVSCROLL
 
-   @ 443, 20 LABEL Label_6 ;
-      VALUE ( 'Page count: ' + LTrim( Str( oControl:ItemCount ) ) ) ;
+   @ 433, 20 LABEL Label_6 ;
+      VALUE 'ToolTip:' ;
+      WIDTH 65 ;
+      HEIGHT 24 ;
+      FONT 'Arial' ;
+      SIZE 9 ;
+      TRANSPARENT
+
+   @ 430, 90 EDITBOX Edit_6 ;
+      WIDTH 320 ;
+      HEIGHT 40 ;
+      FONT 'Arial' ;
+      SIZE 9 ;
+      MAXLENGTH 500 ;
+      ON CHANGE oTabProp:Button_5:Enabled := .T. ;
+      NOVSCROLL
+
+   @ 483, 20 LABEL Label_7 ;
+      VALUE 'Cargo:' ;
+      WIDTH 65 ;
+      HEIGHT 24 ;
+      FONT 'Arial' ;
+      SIZE 9 ;
+      TRANSPARENT
+
+   @ 480, 90 EDITBOX Edit_7 ;
+      WIDTH 320 ;
+      HEIGHT 40 ;
+      FONT 'Arial' ;
+      SIZE 9 ;
+      MAXLENGTH 500 ;
+      ON CHANGE oTabProp:Button_5:Enabled := .T. ;
+      NOVSCROLL
+
+   @ 543, 20 LABEL lbl_PageCount ;
+      VALUE i18n( 'Page count: ' ) + LTrim( Str( oControl:ItemCount ) ) ;
       WIDTH 260 ;
       HEIGHT 24 ;
       FONT 'Arial' ;
       SIZE 9 ;
       TRANSPARENT
 
-   @ 440, 300 BUTTON Button_4 ;
+   @ 540, 300 BUTTON Button_4 ;
       ACTION iif( oTabProp:Button_5:Enabled, iif( MsgStop( i18n( "Discard changes?" ), "OOHG IDE+" ), ThisWindow.Release(), NIL ), ThisWindow.Release() ) ;
       WIDTH 110 ;
       HEIGHT 28 ;
