@@ -1264,7 +1264,7 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 250 ;
             HEIGHT 24 ;
             CAPTION i18n( "Save form's position on drag" ) ;
-            TOOLTIP "Uncheck to avoid replacing variable-based row/col values with numbers when the form is moved interactively." ;
+            TOOLTIP i18n( "Uncheck to avoid replacing variable-based row/col values with numbers when the form is moved interactively." ) ;
             VALUE .T.
 
          @ 120, 20 LABEL label_30 ;
@@ -1284,7 +1284,14 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 250 ;
             HEIGHT 24 ;
             CAPTION i18n( "Save form's dimensions on size" ) ;
-            TOOLTIP "Uncheck to avoid replacing variable-based width/height values with numbers when the form is sized interactively." ;
+            TOOLTIP i18n( "Uncheck to avoid replacing variable-based width/height values with numbers when the form is sized interactively." ) ;
+            VALUE .T.
+
+         @ 155, 320 CHECKBOX chk_CtrlSizes ;
+            WIDTH 250 ;
+            HEIGHT 24 ;
+            CAPTION i18n( "Use Ctrl to size, Alt to move" ) ;
+            TOOLTIP i18n( "Uncheck to use Ctrl+ArrowKeys to move controls and Alt+ArrowKeys to size them." ) ;
             VALUE .T.
 
          @ 260, 20 BUTTON button_17 ;
@@ -1297,7 +1304,7 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 250 ;
             HEIGHT 24 ;
             CAPTION i18n( "Enable multi delete" ) ;
-            TOOLTIP "Check to enable the deletion of all selected controls (default is to delete only the first selected one)." ;
+            TOOLTIP i18n( "Check to enable the deletion of all selected controls (default is to delete only the first selected one)." ) ;
             VALUE .T.
 
       END PAGE

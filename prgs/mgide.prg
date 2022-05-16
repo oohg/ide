@@ -192,6 +192,7 @@ CLASS THMI
    DATA Form_Tree          INIT NIL
    DATA Form_Wait          INIT NIL
    DATA lCloseOnFormExit   INIT .F.
+   DATA lCtrlSizes         INIT .T.
    DATA lHideTT            INIT .F.
    DATA lMultiDelete       INIT .F.
    DATA lPsave             INIT .T.
@@ -1710,6 +1711,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:chk_SaveDefs:value  := ::lSaveDefaultValues
    ::Form_Prefer:chk_SaveDrag:value  := ::lSavePosOnDrag
    ::Form_Prefer:chk_SaveRedim:value := ::lSaveSizeonRed
+   ::Form_Prefer:chk_CtrlSizes:value := ::lCtrlSizes
    ::Form_Prefer:chk_MultiDel:value  := ::lMultiDelete
    ::Form_Prefer:tab_1:value         := 1
 
@@ -2138,6 +2140,7 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::lSaveDefaultValues := ::Form_Prefer:chk_SaveDefs:value
    ::lSavePosOnDrag     := ::Form_Prefer:chk_SaveDrag:value
    ::lSaveSizeonRed     := ::Form_Prefer:chk_SaveRedim:value
+   ::lCtrlSizes         := ::Form_Prefer:chk_CtrlSizes:value
    ::lMultiDelete       := ::Form_Prefer:chk_MultiDel:value
 
    ::Form_Prefer:Release()
@@ -5069,14 +5072,14 @@ LOCAL cOutput, nwidth, nheight, wq, nRAt, cRun, ll, i, cTextedit, nInterval
 
          DEFINE SPLITBOX
             DEFINE TOOLBAR 0 BUTTONSIZE 20, 20 FLAT
-               BUTTON button_2 TOOLTIP i18n( 'Exit (Esc)' )    PICTURE 'IDE_EXIT'  ACTION ::SaveAndExit()
-               BUTTON button_1 TOOLTIP i18n( 'Save (F2)' )     PICTURE 'IDE_SAVE'  ACTION ::SaveFile()
-               BUTTON button_3 TOOLTIP i18n( 'Find (Ctrl-F)' ) PICTURE 'IDE_FIND'  ACTION ::TxtSearch()
-               BUTTON button_4 TOOLTIP i18n( 'Next (F3)' )     PICTURE 'IDE_NEXT'  ACTION ::NextSearch()
-               BUTTON button_5 TOOLTIP i18n( 'Go (Ctrl-G)' )   PICTURE 'IDE_GO'    ACTION ::GoLine()
+               BUTTON button_2 TOOLTIP i18n( 'Exit (Esc)' )        PICTURE 'IDE_EXIT'  ACTION ::SaveAndExit()
+               BUTTON button_1 TOOLTIP i18n( 'Save (F2)' )         PICTURE 'IDE_SAVE'  ACTION ::SaveFile()
+               BUTTON button_3 TOOLTIP i18n( 'Find (Ctrl-F)' )     PICTURE 'IDE_FIND'  ACTION ::TxtSearch()
+               BUTTON button_4 TOOLTIP i18n( 'Next (F3)' )         PICTURE 'IDE_NEXT'  ACTION ::NextSearch()
+               BUTTON button_5 TOOLTIP i18n( 'Go (Ctrl-G)' )       PICTURE 'IDE_GO'    ACTION ::GoLine()
                nRAt := RAt( '.prg', cFile )
                IF nRAt > 0
-               BUTTON button_6 TOOLTIP 'Reformat (Ctrl-R)'     PICTURE 'IDE_REFOR' ACTION ::Reforma( ::Form_Edit:edit_1:Value )
+               BUTTON button_6 TOOLTIP i18n( 'Reformat (Ctrl-R)' ) PICTURE 'IDE_REFOR' ACTION ::Reforma( ::Form_Edit:edit_1:Value )
                ENDIF
             END TOOLBAR
          END SPLITBOX
