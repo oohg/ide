@@ -176,23 +176,34 @@ rem
 
    echo xHarbour: Compiling sources...
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\mgide    -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\dbucvc   -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\formedit -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\menued   -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
    "%HG_HRB%\%BIN_HRB%\harbour.exe" prgs\toolbed  -i%HG_HRB%\include;%HG_ROOT%\include;fmgs -n -w3 -gc0 -es2 -q0
+   if errorlevel 1 goto ERROR3
 
    echo GCC: Compiling...
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c mgide.c    -o mgide.o
+   if errorlevel 1 goto ERROR3
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c dbucvc.c   -o dbucvc.o
+   if errorlevel 1 goto ERROR3
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c formedit.c -o formedit.o
+   if errorlevel 1 goto ERROR3
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c menued.c   -o menued.o
+   if errorlevel 1 goto ERROR3
    gcc -I. -I%HG_HRB%\include -I%HG_ROOT%\include -Wall -c toolbed.c  -o toolbed.o
+   if errorlevel 1 goto ERROR3
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
    echo #define __VERSION_INFO >> _oohg_resconfig.h
    copy /b %HG_ROOT%\resources\ooHG.rc + mgide.rc _temp.rc %HG_SILENT%
    windres.exe -I %HG_ROOT%\INCLUDE -i _temp.rc -o _temp.o %HG_SILENT%
+   if errorlevel 1 goto ERROR3
 
    echo GCC: Linking...
    set HG_OBJS=%HG_HRB%\%LIB_HRB%\mainwin.o mgide.o dbucvc.o formedit.o menued.o toolbed.o _temp.o
