@@ -12,6 +12,123 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-05-17 21:07 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\compile.bat
+     ! /V switch.
+     + -D__XHARBOUR__ to bcc32 calls.
+     ! Resources file compilation.
+
+2022-05-17 21:02 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\mgide.rc
+     + Define __VERSION_INFO.
+
+2022-05-17 19:07 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\compile.bat
+     + Error checking.
+
+2022-05-16 19:17 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for future localization using i18n function.
+     ! RTE at method FirstCtrl.
+     * Some messages were improved.
+     ! TabPage CARGO property
+     + Support for TabPage tooltip and cargo properties.
+     + Support for new option that swaps Ctrl and Alt functionality
+       when moving and sizing controls with the arrow keys.
+     - Method ReadPageCargo.
+     ! RTE at method SaveTabpageProperties.
+
+2022-05-16 18:59 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\tabprop.fmg
+     + Support for future localization using i18n function.
+     + Support for TOOLTIP and CARGO properties to TAB pages.
+
+2022-05-16 18:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\mymenued.fmg
+   * ide\fmgs\mytoolbared.fmg
+     + Support for future localization using i18n function.
+     * The casing of some variables names.
+
+2022-05-16 18:52 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\mgide.rc
+     * Copyright updated.
+
+2022-05-16 18:45 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\menued.prg
+     * The casing of some variables names.
+
+2022-05-16 18:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+   * ide\fmgs\form_prefer.fmg
+     + Support for future localization using i18n function.
+     + New option to swap Ctrl and Alt functionality when moving
+       and sizing controls with the arrow keys.
+
+2022-05-16 18:37 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\toolbed.prg
+     * The casing of some variables names.
+
+2022-05-14 17:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Methods DelFirstCtrl and FirstCtrl.
+     + Support for deleting control from the controls list.
+     + Confirmation check before deleting a control.
+     * Data nHandleA was replaced by ::FirstCtrl.
+     ! ::aFontSizeFrm initialization.
+     + Support for ::Cargo to statusbar control.
+     * Do not use any event handler except OnClick and OnDblClick to
+       draw the design control outline.
+     + Support for 'Keyboard Jump (Px)' option.
+     * Method SelectControl was renamed as OutlineControls.
+     * Add support for loading the STATUSBAR control to
+       method LoadControls.
+     + Support for CARGO to form and controls.
+     + Support for HEADERCOLORS, TIMEOUT and NEWATROW to Browse.
+     + Support for ONMOUSEHOVER, HANDCURSOR and DEFAULT to Button.
+     + Support for ONMOUSEHOVER, NODESTROY and HANDCURSOR to CheckButton.
+     + Support for CUEBANNER and PLACEHOLDER to ComboBox, Spinner and
+       TextBox.
+     + Support for TIMEOUT and HEADERCOLORS to Grid.
+     + Support for ONMOUSEMOVE and ONMOUSEHOVER to Image.
+     + Support for CURSOR, ONMOUSELEAVE, ONMOUSEMOVE and ONMOUSEHOVER
+       to Label.
+     + Support for ONMOUSEHOVER, NODESTROY, HANDCURSOR and DEFAULT
+       to PicButton.
+     + Support for ONMOUSEHOVER, NODESTROY, HANDCURSOR to PicCheckButton.
+     + Support for HEADERCOLORS and TIMEOUT to XBrowse.
+     * Method DeleteControl was renamed to ConfirmDelete.
+     + The posibility to remove all the controls at once.
+
+2022-05-14 16:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+     + Support for 'Keyboard Jump (Px)' option. It sets the number
+       of pixels that LEFT, RIGHT, UP and DOWN keys will move a control
+       in the design form.
+
+2022-05-14 16:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+     ! Support for 'Own make tool' option.
+
+2022-05-14 16:08 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     - Macros supported by OOHG.
+     ! File not found error when EXE is renamed.
+     - Method LeaDatoLogicR was renamed as LeaLogR.
+     - Method LeaDatoR was renamed as LeaStrR.
+     * Some changes to improve readability.
+     + Support for new project options.
+     * Some messages were improved.
+     * Improve support for HBMK2.
+     * Improve exe building functions
+     * Improve SaveProject function.
+     * Improve validation of file names.
+     * Improve DO REPORT support.
+
+2022-05-14 15:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\*.prg
+   * ide\*.fmg
+     * Copyright updated.
+
 2021-07-06 20:50 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\build.bat
      ! Obsolete flag prevents execution.
