@@ -93,21 +93,21 @@ rem
    if errorlevel 1 goto ERROR3
 
    echo BCC32: Compiling sources...
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; mgide.c    > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ mgide.c    %HG_SILENT%
    if errorlevel 1 goto ERROR3
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; dbucvc.c   > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ dbucvc.c   %HG_SILENT%
    if errorlevel 1 goto ERROR3
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; formedit.c > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ formedit.c %HG_SILENT%
    if errorlevel 1 goto ERROR3
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; menued.c   > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ menued.c   %HG_SILENT%
    if errorlevel 1 goto ERROR3
-   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; toolbed.c  > nul
+   "%HG_BCC%\bin\bcc32.exe" -c -O2 -tW -tWM -M -d -a8 -OS -5 -6 -w -I%HG_HRB%\include;%HG_BCC%\include;%HG_ROOT%\include; -L%HG_HRB%\%LIB_HRB%;%HG_BCC%\lib; -D__XHARBOUR__ toolbed.c  %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
    echo BRC32: Compiling resources...
-   echo #define __VERSION_INFO > _temp.rc
-   echo. >> _temp.rc
-   copy /b _temp.rc + %HG_ROOT%\resources\oohg_bcc.rc + mgide.rc _temp.rc /y %HG_SILENT%
+   echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
+   echo. > %HG_ROOT%\resources\filler
+   copy /b mgide.rc + %HG_ROOT%\resources\filler + %HG_ROOT%\resources\oohg_bcc.rc _temp.rc /y %HG_SILENT%
    "%HG_BCC%\bin\brc32.exe" -i%HG_ROOT%\include -i%HG_ROOT%\resources -i%HG_BCC%\include -r _temp.rc %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
@@ -150,12 +150,12 @@ rem
 
 :CLEAN_XB
 
-   for %%a in ( *.tds )   do del %%a > nul
-   for %%a in ( *.c )     do del %%a > nul
-   for %%a in ( *.map )   do del %%a > nul
-   for %%a in ( *.obj )   do del %%a > nul
-   for %%a in ( b32.bc )  do del %%a > nul
-   for %%a in ( _temp.* ) do del %%a > nul
+   for %%a in ( *.tds )   do del %%a %HG_SILENT%
+   for %%a in ( *.c )     do del %%a %HG_SILENT%
+   for %%a in ( *.map )   do del %%a %HG_SILENT%
+   for %%a in ( *.obj )   do del %%a %HG_SILENT%
+   for %%a in ( b32.bc )  do del %%a %HG_SILENT%
+   for %%a in ( _temp.* ) do del %%a %HG_SILENT%
    goto END
 
 :COMPILE_XM
@@ -200,8 +200,8 @@ rem
 
    echo WindRes: Compiling resource file...
    echo #define oohgpath %HG_ROOT%\RESOURCES > _oohg_resconfig.h
-   echo #define __VERSION_INFO >> _oohg_resconfig.h
-   copy /b %HG_ROOT%\resources\ooHG.rc + mgide.rc _temp.rc %HG_SILENT%
+   echo. > %HG_ROOT%\resources\filler
+   copy /b mgide.rc + %HG_ROOT%\resources\filler + %HG_ROOT%\resources\oohg.rc _temp.rc /y %HG_SILENT%
    windres.exe -I %HG_ROOT%\INCLUDE -i _temp.rc -o _temp.o %HG_SILENT%
    if errorlevel 1 goto ERROR3
 
@@ -224,27 +224,28 @@ rem
 
 :CLEAN_XM
 
-   if exist _temp.o del _temp.o
-   if exist _temp.rc del _temp.rc
-   if exist _oohg_resconfig.h del _oohg_resconfig.h
-   del mgide.o
-   del mgide.c
-   del dbucvc.o
-   del dbucvc.c
-   del formedit.o
-   del formedit.c
-   del menued.o
-   del menued.c
-   del toolbed.o
-   del toolbed.c
+   if exist _temp.o del _temp.o %HG_SILENT%
+   if exist _temp.rc del _temp.rc %HG_SILENT%
+   if exist _oohg_resconfig.h del _oohg_resconfig.h %HG_SILENT%
+   del mgide.o %HG_SILENT%
+   del mgide.c %HG_SILENT%
+   del dbucvc.o %HG_SILENT%
+   del dbucvc.c %HG_SILENT%
+   del formedit.o %HG_SILENT%
+   del formedit.c %HG_SILENT%
+   del menued.o %HG_SILENT%
+   del menued.c %HG_SILENT%
+   del toolbed.o %HG_SILENT%
+   del toolbed.c %HG_SILENT%
    set "PATH=%HG_PATH%"
-   set HG_PATH=
    set HG_OBJS=
    set HG_LIBS=
    set HG_CFLAGS=
    set HG_XLIBS=
    set HG_WLIBS=
    set HG_SEARCH=
+   set HG_PATH=
+   set HG_SILENT=
    goto END
 
 :END
