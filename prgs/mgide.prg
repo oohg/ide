@@ -591,6 +591,11 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
       ACTIVATE WINDOW Form_Tree, Form_Wait, Form_Splash
    ELSEIF ! Empty( cParameter )
       // Other files (ch, fmg, prg, rc, rpt)
+      pmgFolder := OnlyFolder( cParameter )
+      IF ! Empty( pmgFolder )
+         ::cProjFolder := pmgFolder
+         DirChange( pmgFolder )
+      ENDIF
       ::lCloseOnFormExit := .T.
       ::Form_Tree:Add:Enabled := .F.
       ::Form_Tree:Button_1:Enabled := .F.
