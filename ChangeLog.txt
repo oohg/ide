@@ -12,6 +12,11 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-05-19 16:39 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     ! RTE when a form is opened using 'Open with'.
+   #31
+
 2022-05-17 21:07 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\compile.bat
      ! /V switch.
@@ -35,6 +40,7 @@
      + Support for TabPage tooltip and cargo properties.
      + Support for new option that swaps Ctrl and Alt functionality
        when moving and sizing controls with the arrow keys.
+     #29
      - Method ReadPageCargo.
      ! RTE at method SaveTabpageProperties.
 
@@ -42,6 +48,8 @@
    * ide\fmgs\tabprop.fmg
      + Support for future localization using i18n function.
      + Support for TOOLTIP and CARGO properties to TAB pages.
+   #28
+   #30
 
 2022-05-16 18:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\mymenued.fmg
@@ -210,6 +218,7 @@
    * ide\prgs\formedit.prg
      ! The tooltips of the Textbox's buttons is set to control's
        tooltip when this clause is set.
+   #21
 
 2020-01-14 17:51 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\mytoolbared.fmg
@@ -271,14 +280,17 @@
    * ide\prgs\formedit.prg
      + Validation to prevent a RTE caused by wrong format clause
        entered by user in Textbox control.
+   #20
 
 2019-06-15 18:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! Events of Checkbox control.
+   #19
 
 2019-03-29 17:49 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! RTE when saving newly created controls.
+   #18
 
 2019-03-29 00:26 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
@@ -297,10 +309,12 @@
      ! RADIOGROUP control is saved with wrong clauses.
      ! SCROLLBAR control is saved with wrong clauses.
      ! SLIDER control is saved with wrong clauses.
+   #17
 
 2019-03-21 13:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      ! TEXTBOX controls always shows it's action buttons.
+   #16
 
 2019-03-20 20:11 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
@@ -316,11 +330,12 @@
      + Support for new preferences.
      ! RTE when adding TEXTBOX, EDITBOX, RADIOGROUP or RICHEDITBOX
        controls to the form.
+   #15
 
 2019-03-08 17:54 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
    * ide\prgs\mgide.prg
-     + Option hbmk2 to build types (only for Harbour).
+     ! Option hbmk2 to build types (only for Harbour).
      ; The IDE will set PATH to Harbour and C Compiler BIN folders.
      ; To use this option you must create an hbp file with all the
        needed options, commands and switches. This file must have
@@ -328,6 +343,7 @@
      ; In order to use "Run" or "Build and Run" the executable must
        have the same name than the project, so remember to set in
        the hbp file the switch -o<project>.exe
+   #14
 
 2019-03-07 21:05 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
@@ -449,6 +465,7 @@
      * Removed "module" from Tree section names.
      - Removed fixed font and size from all controls.
      * Section entries of INI files are now enclosed between [].
+   #13
 
    * ide\fmgs\form_prefer.prg
      * Format.
@@ -553,6 +570,7 @@
      ! EXE is built but IDE can't find it.
      * Auxiliary .prg file is now deleted.
      * Always use waitrun to execute auxiliary .bat file.
+   #12
 
 2018-04-30 22:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
@@ -608,6 +626,7 @@
    * ide\prgs\toolbed.prg
      ! BUTTONSIZE is wrongly loaded from fmg.
      ! BUTTON's ACTION is wrongly loaded from fmg.
+   #11
 
 2017-11-13 20:43 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
@@ -619,12 +638,14 @@
    * ide\prgs\formedit.prg
      * Id.
      ! Last clauses of controls is lost upon load.
+   #9
    * ide\prgs\menued.prg
      * Id.
      * Use synchronized browse.
    * ide\prgs\toolbed.prg
      * Id.
      ! Empty ACTION clause.
+   #10
 
 2017-11-10 21:35 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
@@ -634,6 +655,9 @@
      ! Form's clauses are not identified.
      ! RTE at form's clauses identification phase.
      - Some commented code.
+   #8
+   #7
+   #6
 
 2017-11-10 21:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
@@ -644,6 +668,7 @@
      ! Errors identifying some form's keywords.
      ! Errors identifying actions associated with form's events when
        they are not codeblocks.
+   #5
 
 2017-11-02 20:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\ChangeLog.txt
