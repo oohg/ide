@@ -9637,9 +9637,9 @@ METHOD pHyperLink( i ) CLASS TFormEditor
 METHOD pImage( i ) CLASS TFormEditor
 
    LOCAL aBackColor, cAction, cBuffer, cCargo, cExclude, cHBitmap, cHelpId, cObj, cOnChange, cOnDblClick, cOnMClick, cOnMDClick
-   LOCAL cOnMouseMove, cOnRClick, cOnRDClick, cParent, cPicture, cSubClass, cToolTip, cVal, lBorder, lClientEdge, lEnabled
-   LOCAL lImageSize, lNo3DColors, lNoChkDepth, lNoDIBSection, lNoLoadTrans, lNoPRedraw, lNoResize, lRTL, lStretch, lTrans, lVisible
-   LOCAL lWhiteBack, nCol, nHeight, nRow, nWidth, oCtrl
+   LOCAL cOnMouseLeave, cOnMouseMove, cOnRClick, cOnRDClick, cParent, cPicture, cSubClass, cToolTip, cVal, lBorder, lClientEdge
+   LOCAL lEnabled, lImageSize, lNo3DColors, lNoChkDepth, lNoDIBSection, lNoLoadTrans, lNoPRedraw, lNoResize, lRTL, lStretch, lTrans
+   LOCAL lVisible, lWhiteBack, nCol, nHeight, nRow, nWidth, oCtrl
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -9692,6 +9692,8 @@ METHOD pImage( i ) CLASS TFormEditor
    cOnMouseMove        := ::ReadStringData( i, "ONMOUSEMOVE", cOnMouseMove )
    cOnMouseMove        := ::ReadStringData( i, "ON MOUSEHOVER", cOnMouseMove )
    cOnMouseMove        := ::ReadStringData( i, "ONMOUSEHOVER", cOnMouseMove )
+   cOnMouseLeave       := ::ReadStringData( i, "ON MOUSELEAVE", "" )
+   cOnMouseLeave       := ::ReadStringData( i, "ONMOUSELEAVE", cOnMouseLeave )
    lNoChkDepth         := ( ::ReadLogicalData( i, "NOCHECKDEPTH", "F") == "T" )
    lNoPRedraw          := ( ::ReadLogicalData( i, "NOPARENTREDRAW", "F") == "T" )
    cParent             := ::ReadStringData( i, "PARENT", "" )
@@ -9730,6 +9732,7 @@ METHOD pImage( i ) CLASS TFormEditor
    ::aOnRDClick[i]     := cOnRDClick
    ::aOnMDClick[i]     := cOnMDClick
    ::aOnMouseMove[i]   := cOnMouseMove
+   ::aOnMouseLeave[i]  := cOnMouseLeave
    ::aNoChkDepth[i]    := lNoChkDepth
    ::aNoPRedraw[i]     := lNoPRedraw
    ::aParent[i]        := cParent
@@ -15329,6 +15332,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aOnMouseMove[j] )
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON MOUSEMOVE " + AllTrim( ::aOnMouseMove[j] )
          ENDIF
+         IF NOTEMPTY( ::aOnMouseLeave[j] )
+           Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON MOUSELEAVE " + AllTrim( ::OnMouseLeave[j] )
+         ENDIF
          IF ::aNoChkDepth[j]
            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOCHECKDEPTH"
          ENDIF
@@ -20917,6 +20923,7 @@ METHOD EventsClick() CLASS TFormEditor
                        { "On DblClick",           ::aOnDblClick[j],                                                              1000 }, ;
                        { "On MClick",             ::aOnMClick[j],                                                                1000 }, ;
                        { "On MDblClick",          ::aOnMDClick[j],                                                               1000 }, ;
+                       { "On MouseLeave",         ::aOnMouseLeave[j],                                                            1000 }, ;
                        { "On MouseMove",          ::aOnMouseMove[j],                                                             1000 }, ;
                        { "On RClick",             ::aOnRClick[j],                                                                1000 }, ;
                        { "On RDblClick",          ::aOnRDClick[j],                                                               1000 } }
@@ -20936,6 +20943,8 @@ METHOD EventsClick() CLASS TFormEditor
       ::aOnDblClick[j]      := aResults[ ++k ]
       ::aOnMClick[j]        := aResults[ ++k ]
       ::aOnMDClick[j]       := aResults[ ++k ]
+      ::aOnMouseLeave[j]    := aResults[ ++k ]
+      ::aOnMouseMove[j]     := aResults[ ++k ]
       ::aOnRClick[j]        := aResults[ ++k ]
       ::aOnRDClick[j]       := aResults[ ++k ]
       EXIT
