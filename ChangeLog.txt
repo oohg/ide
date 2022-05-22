@@ -12,6 +12,23 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-05-21 22:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for clauses ALLOWEDIT and HEADERFONTCOLORS to Browse and
+       XBrowse controls.
+     + Support for clauses BARCOLOR and FONTCOLOR to ProgressBar and
+       ProgressMeter controls.
+     ! Clauses ONMOUSELEAVE and ONMOUSEMOVE of Label control are ignored.
+     ! Clause ONMOUSEMOVE of PICBUTTON control is ignored.
+   #27
+
+2022-05-21 21:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! OnMouseMove is not saved to fmg file.
+   #32
+     + Support for OnMouseLeave.
+   #34
+
 2022-05-19 16:39 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\mgide.prg
      ! RTE when a form is opened using 'Open with'.
