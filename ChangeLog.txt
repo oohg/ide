@@ -53,8 +53,9 @@
      + Support for future localization using i18n function.
      ! RTE at method FirstCtrl.
      * Some messages were improved.
-     ! TabPage CARGO property
+     ! TabPage CARGO property.
      + Support for TabPage tooltip and cargo properties.
+     #30
      + Support for new option that swaps Ctrl and Alt functionality
        when moving and sizing controls with the arrow keys.
      #29
@@ -123,6 +124,7 @@
      + Support for HEADERCOLORS and TIMEOUT to XBrowse.
      * Method DeleteControl was renamed to ConfirmDelete.
      + The posibility to remove all the controls at once.
+   #27
 
 2022-05-14 16:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\fmgs\form_prefer.fmg
