@@ -7810,6 +7810,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    cAction             := ::ReadStringData( i, "ON CLICK",cAction )
    cAction             := ::ReadStringData( i, "ONCLICK", cAction )
    lEdit               := ( ::ReadLogicalData( i, "EDIT", "F" ) == "T" )
+   lEdit               := ( ::ReadLogicalData( i, "ALLOWEDIT", iif( lEdit, "T", "F" ) ) == "T" )
    lInPlace            := ( ::ReadLogicalData( i, "INPLACE", "F" ) == "T" )
    lAppend             := ( ::ReadLogicalData( i, "APPEND", "F" ) == "T" )
    cOnHeadClick        := ::ReadStringData( i, "ON HEADCLICK", "" )
@@ -7853,6 +7854,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    cOnDelete           := ::ReadStringData( i, "ON DELETE", "" )
    cOnDelete           := ::ReadStringData( i, "ONDELETE", cOnDelete )
    cHeaderColors       := ::ReadStringData( i, "HEADERCOLORS", "" )
+   cHeaderColors       := ::ReadStringData( i, "HEADERFONTCOLORS", cHeaderColors )
    cHeaderImages       := ::ReadStringData( i, "HEADERIMAGES", "" )
    cHeaderImages       := ::ReadStringData( i, "HEADERIMAGE", cHeaderImages )
    cHdrImgAlign        := ::ReadStringData( i, "IMAGESALIGN", "" )
@@ -10658,6 +10660,10 @@ METHOD pProgressbar( i ) CLASS TFormEditor
    aBackColor          := UpperNIL( ::ReadOopData( i, "BACKCOLOR", aBackColor ) )
    aForeColor          := ::ReadStringData( i, "FORECOLOR", "NIL" )
    aForeColor          := UpperNIL( ::ReadOopData( i, "FORECOLOR", aForeColor ) )
+   aForeColor          := ::ReadStringData( i, "BARCOLOR", aForeColor )
+   aForeColor          := UpperNIL( ::ReadOopData( i, "BARCOLOR", aForeColor ) )
+   aForeColor          := ::ReadStringData( i, "FONTCOLOR", aForeColor )
+   aForeColor          := UpperNIL( ::ReadOopData( i, "FONTCOLOR", aForeColor ) )
    lRTL                := ( ::ReadLogicalData( i, "RTL", "F" ) == "T" )
    cMarquee            := ::ReadStringData( i, "MARQUEE", "" )
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
@@ -10717,6 +10723,10 @@ METHOD pProgressMeter( i ) CLASS TFormEditor
    aBackColor          := UpperNIL( ::ReadOopData( i, "BACKCOLOR", aBackColor ) )
    aForeColor          := ::ReadStringData( i, "FORECOLOR", "NIL" )
    aForeColor          := UpperNIL( ::ReadOopData( i, "FORECOLOR", aForeColor ) )
+   aForeColor          := ::ReadStringData( i, "BARCOLOR", aForeColor )
+   aForeColor          := UpperNIL( ::ReadOopData( i, "BARCOLOR", aForeColor ) )
+   aForeColor          := ::ReadStringData( i, "FONTCOLOR", aForeColor )
+   aForeColor          := UpperNIL( ::ReadOopData( i, "FONTCOLOR", aForeColor ) )
    uFontName           := ::ReadStringData( i, "FONT", "" )
    uFontName           := ::ReadStringData( i, "FONTNAME", uFontName )
    uFontName           := ::ReadOopData( i, "FONTNAME", uFontName )
@@ -12240,6 +12250,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cAction             := ::ReadStringData( i, "ON CLICK",cAction )
    cAction             := ::ReadStringData( i, "ONCLICK", cAction )
    lEdit               := ( ::ReadLogicalData( i, "EDIT", "F" ) == "T" )
+   lEdit               := ( ::ReadLogicalData( i, "ALLOWEDIT", iif( lEdit, "T", "F" ) ) == "T" )
    lInPlace            := ( ::ReadLogicalData( i, "INPLACE", "F" ) == "T" )
    lAppend             := ( ::ReadLogicalData( i, "APPEND", "F" ) == "T" )
    cOnHeadClick        := ::ReadStringData( i, "ON HEADCLICK", "" )
@@ -12283,6 +12294,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cOnDelete           := ::ReadStringData( i, "ON DELETE", "" )
    cOnDelete           := ::ReadStringData( i, "ONDELETE", cOnDelete )
    cHeaderColors       := ::ReadStringData( i, "HEADERCOLORS", "" )
+   cHeaderColors       := ::ReadStringData( i, "HEADERFONTCOLORS", cHeaderColors )
    cHeaderImages       := ::ReadStringData( i, "HEADERIMAGES", "" )
    cHdrImgAlign        := ::ReadStringData( i, "IMAGESALIGN", "" )
    cHdrImgAlign        := ::ReadStringData( i, "HEADERIMAGESALIGN", cHdrImgAlign )
@@ -20987,6 +20999,8 @@ METHOD EventsClick() CLASS TFormEditor
       k := 0
       ::aAction[j]          := aResults[ ++k ]
       ::aOnDblClick[j]      := aResults[ ++k ]
+      ::aOnMouseLeave[j]    := aResults[ ++k ]
+      ::aOnMouseMove[j]     := aResults[ ++k ]
       EXIT
 
    CASE TYPE_LISTBOX
@@ -21054,7 +21068,6 @@ METHOD EventsClick() CLASS TFormEditor
       ::aAction[j]          := aResults[ ++k ]
       ::aOnGotFocus[j]      := aResults[ ++k ]
       ::aOnLostFocus[j]     := aResults[ ++k ]
-      ::aOnMouseLeave[j]    := aResults[ ++k ]
       ::aOnMouseMove[j]     := aResults[ ++k ]
       EXIT
 
