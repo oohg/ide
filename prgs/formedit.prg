@@ -188,9 +188,10 @@
                               { "aGripperText",   "" }, ;
                               { "aHandCursor",    .F. }, ;
                               { "aHBitmap",       "" }, ;
+                              { "aHdrBackClrs",   "" }, ;
                               { "aHdrImgAlign",   "" }, ;
-                              { "aHeaderColors",  "" }, ;
-                              { "aHeaderImages",  "" }, ;
+                              { "aHdrFontClrs",   "" }, ;
+                              { "aHdrImages",     "" }, ;
                               { "aHeaders",       "{ 'one', 'two' }" }, ;
                               { "aHeight",        "" }, ;
                               { "aHelpID",        "" }, ;
@@ -7313,16 +7314,16 @@ METHOD pBrowse( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
    LOCAL cCargo, cColControls, cColumnInfo, cDefVal, cDeleteMsg, cDeleteWhen, cDynBackColor, cDynamicBlocks, cDynamicCtrls
-   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cForceRefresh, cHdrImgAlign
-   LOCAL cHeaderImages, cHeaderColors, cHeaders, cHelpId, cImage, cInputMask, cJustify, cNewAtRow, cNoFocusRect, cNoRefresh, cObj
-   LOCAL cOnAbortEdit, cOnAppend, cOnBfrEdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter
-   LOCAL cOnGotFocus, cOnHeadClick, cOnHeadDClick, cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh, cParent, cReadOnly
-   LOCAL cReplaceField, cSubClass, cSync, cTimeOut, cToolTip, cUnSync, cVal, cValid, cValidMess, cValue, cWhen, cWidths, cWorkArea
-   LOCAL lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete, lDescending, lDisableAltA, lEdit, lEditFV
-   LOCAL lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock
-   LOCAL lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL
-   LOCAL lRecCount, lSilent, lSingleBuffer, lStrikeout, lUnderline, lUpdateAll, lUpdateColors, lVisible, nCol, nFontSize, nHeight
-   LOCAL nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cForceRefresh
+   LOCAL cHdrImgAlign, cHdrImgs, cHdrBackClrs, cHdrFontClrs, cHdrs, cHelpId, cImage, cInputMask, cJustify, cNewAtRow, cNoFocusRect
+   LOCAL cNoRefresh, cObj, cOnAbortEdit, cOnAppend, cOnBfrEdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell
+   LOCAL cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick, cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh
+   LOCAL cParent, cReadOnly, cReplaceField, cSubClass, cSync, cTimeOut, cToolTip, cUnSync, cVal, cValid, cValidMess, cValue, cWhen
+   LOCAL cWidths, cWorkArea, lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete, lDescending
+   LOCAL lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic
+   LOCAL lKeysLkClp, lLikeExcel, lLock, lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels
+   LOCAL lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lRecCount, lSilent, lSingleBuffer, lStrikeout, lUnderline, lUpdateAll
+   LOCAL lUpdateColors, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -7331,7 +7332,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    cObj                := ::ReadStringData( i, "OBJECT", cObj )
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TOBrowse():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TOBrowse():nHeight ) ) ) )
-   cHeaders            := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
+   cHdrs               := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
    cWidths             := ::ReadStringData( i, "WIDTHS", "{ 100, 60 }")
    cWorkArea           := ::ReadStringData( i, "WORKAREA", "ALIAS()" )
    cFields             := ::ReadStringData( i, "FIELDS", "{ 'field1', 'field2' }" )
@@ -7420,10 +7421,11 @@ METHOD pBrowse( i ) CLASS TFormEditor
    cDeleteMsg          := ::ReadStringData( i, "DELETEMSG", "" )
    cOnDelete           := ::ReadStringData( i, "ON DELETE", "" )
    cOnDelete           := ::ReadStringData( i, "ONDELETE", cOnDelete )
-   cHeaderColors       := ::ReadStringData( i, "HEADERCOLORS", "" )
-   cHeaderColors       := ::ReadStringData( i, "HEADERFONTCOLORS", cHeaderColors )
-   cHeaderImages       := ::ReadStringData( i, "HEADERIMAGES", "" )
-   cHeaderImages       := ::ReadStringData( i, "HEADERIMAGE", cHeaderImages )
+   cHdrBackClrs        := ::ReadStringData( i, "HEADERBACKCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERFONTCOLORS", cHdrFontClrs )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGES", "" )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGE", cHdrImgs )
    cHdrImgAlign        := ::ReadStringData( i, "IMAGESALIGN", "" )
    cHdrImgAlign        := ::ReadStringData( i, "HEADERIMAGESALIGN", cHdrImgAlign )
    lFullMove           := ( ::ReadLogicalData( i, "FULLMOVE", "F" ) == "T" )
@@ -7497,7 +7499,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_BROWSE ]
    ::aCObj[i]          := cObj
-   ::aHeaders[i]       := cHeaders
+   ::aHeaders[i]       := cHdrs
    ::aWidths[i]        := cWidths
    ::aWorkArea[i]      := cWorkArea
    ::aFields[i]        := cFields
@@ -7555,8 +7557,9 @@ METHOD pBrowse( i ) CLASS TFormEditor
    ::aDeleteWhen[i]    := cDeleteWhen
    ::aDeleteMsg[i]     := cDeleteMsg
    ::aOnDelete[i]      := cOnDelete
-   ::aHeaderColors[i]  := cHeaderColors
-   ::aHeaderImages[i]  := cHeaderImages
+   ::aHdrBackClrs[i]   := cHdrBackClrs
+   ::aHdrFontClrs[i]   := cHdrFontClrs
+   ::aHdrImages[i]     := cHdrImgs
    ::aHdrImgAlign[i]   := cHdrImgAlign
    ::aFullMove[i]      := lFullMove
    ::aSelColor[i]      := aSelColor
@@ -8727,16 +8730,16 @@ METHOD pFrame( i ) CLASS TFormEditor
 METHOD pGrid( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
-   LOCAL cCargo, cColControls, cDeleteMsg, cDeleteWhen, cDynamicCtrls, cDynBackColor, cDynForecolor, cEditCell, cEditKeys, cEditKeysFun
-   LOCAL cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHeaderColors, cHeaderImages, cHeaders, cHelpId, cImage, cInputMask
-   LOCAL cItemCount, cItems, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBeforeIns, cOnBFREdtCell, cOnChange
-   LOCAL cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
+   LOCAL cCargo, cColControls, cDeleteMsg, cDeleteWhen, cDynamicCtrls, cDynBackColor, cDynForecolor, cEditCell, cEditKeys
+   LOCAL cEditKeysFun, cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHdrBackClrs, cHdrFontClrs, cHdrImgs, cHdrs, cHelpId, cImage
+   LOCAL cInputMask, cItemCount, cItems, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBeforeIns, cOnBFREdtCell
+   LOCAL cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
    LOCAL cOnHeadRClick, cOnInsert, cOnLostFocus, cOnQueryData, cOnRClick, cParent, cReadOnly, cSubClass, cTimeOut, cToolTip, cVal
    LOCAL cValid, cValidMess, cValue, cWhen, cWidths, lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete
-   LOCAL lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp
-   LOCAL lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoDefaultMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels
-   LOCAL lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent, lSingleBuffer, lStrikeout, lUnderline, lVirtual
-   LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic
+   LOCAL lKeysLkClp, lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines
+   LOCAL lNoModalEdit, lNoneUnsels, lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent, lSingleBuffer, lStrikeout
+   LOCAL lUnderline, lVirtual, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8745,7 +8748,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    cObj                := ::ReadStringData( i, "OBJECT", cObj )
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TGrid():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TGrid():nHeight ) ) ) )
-   cHeaders            := ::ReadStringData( i, "HEADERS", "{ 'one', 'two' }")
+   cHdrs            := ::ReadStringData( i, "HEADERS", "{ 'one', 'two' }")
    cWidths             := ::ReadStringData( i, "WIDTHS", "{ 80, 60 }")
    cInputMask          := ::ReadStringData( i, "INPUTMASK", "")
    cItems              := ::ReadStringData( i, "ITEMS", "")
@@ -8824,10 +8827,11 @@ METHOD pGrid( i ) CLASS TFormEditor
    lVisible            := ( Upper( ::ReadOopData( i, "VISIBLE", iif( lVisible, ".T.", ".F." ) ) ) == ".T." )
    cOnEnter            := ::ReadStringData( i, "ON ENTER", "" )
    cOnEnter            := ::ReadStringData( i, "ONENTER", cOnEnter )
-   cHeaderColors       := ::ReadStringData( i, "HEADERCOLORS", "" )
-   cHeaderColors       := ::ReadStringData( i, "HEADERFONTCOLORS", cHeaderColors )
-   cHeaderImages       := ::ReadStringData( i, "HEADERIMAGES", "" )
-   cHeaderImages       := ::ReadStringData( i, "HEADERIMAGE", cHeaderImages )
+   cHdrBackClrs        := ::ReadStringData( i, "HEADERBACKCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERFONTCOLORS", cHdrFontClrs )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGES", "" )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGE", cHdrImgs )
    cHdrImgAlign        := ::ReadStringData( i, "IMAGESALIGN", "" )
    cHdrImgAlign        := ::ReadStringData( i, "HEADERIMAGESALIGN", cHdrImgAlign )
    lFullMove           := ( ::ReadLogicalData( i, "FULLMOVE", "F" ) == "T" )
@@ -8907,7 +8911,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_GRID ]
    ::aCObj[i]          := cObj
-   ::aHeaders[i]       := cHeaders
+   ::aHeaders[i]       := cHdrs
    ::aWidths[i]        := cWidths
    ::aInputMask[i]     := cInputMask
    ::aItems[i]         := cItems
@@ -8957,8 +8961,9 @@ METHOD pGrid( i ) CLASS TFormEditor
    ::aNoTabStop[i]     := lNoTabStop
    ::aInvisible[i]     := ! lVisible
    ::aOnEnter[i]       := cOnEnter
-   ::aHeaderColors[i]  := cHeaderColors
-   ::aHeaderImages[i]  := cHeaderImages
+   ::aHdrBackClrs[i]   := cHdrBackClrs
+   ::aHdrFontClrs[i]   := cHdrFontClrs
+   ::aHdrImages[i]     := cHdrImgs
    ::aHdrImgAlign[i]   := cHdrImgAlign
    ::aFullMove[i]      := lFullMove
    ::aNavByCell[i]     := lByCell
@@ -11765,15 +11770,16 @@ METHOD pXBrowse( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
    LOCAL cCargo, cColControls, cColumnInfo, cDefVal, cDeleteMsg, cDeleteWhen, cDynamicBlocks, cDynamicCtrls, cDynBackColor
-   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHeaderColors
-   LOCAL cHeaderImages, cHeaders, cHelpId, cImage, cInputMask, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBfrEdtCell
-   LOCAL cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
-   LOCAL cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh, cParent, cReadOnly, cReplaceField, cSubClass, cTimeOut, cToolTip
-   LOCAL cVal, cValid, cValidMess, cValue, cWhen, cWidths, cWorkArea, lAppend, lBold, lBreak, lButtons, lByCell, lCellTT
-   LOCAL lCheckBoxes, lDelete, lDescending, lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols
-   LOCAL lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock, lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines
-   LOCAL lNoModalEdit, lNoShow, lNoShowEmpty, lNoTabStop, lNoVScroll, lPLM, lRecCount, lRTL, lSilent, lSingleBuffer, lStrikeout
-   LOCAL lUnderline, lUpdateColors, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign
+   LOCAL cHdrBackClrs, cHdrFontClrs, cHdrImgs, cHdrs, cHelpId, cImage, cInputMask, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend
+   LOCAL cOnBfrEdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick
+   LOCAL cOnHeadDClick, cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh, cParent, cReadOnly, cReplaceField, cSubClass
+   LOCAL cTimeOut, cToolTip, cVal, cValid, cValidMess, cValue, cWhen, cWidths, cWorkArea, lAppend, lBold, lBreak, lButtons, lByCell
+   LOCAL lCellTT, lCheckBoxes, lDelete, lDescending, lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols
+   LOCAL lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock, lNoDefaultMsg, lNoDeleteMsg, lNoHeaders
+   LOCAL lNoHScroll, lNoLines, lNoModalEdit, lNoShow, lNoShowEmpty, lNoTabStop, lNoVScroll, lPLM, lRecCount, lRTL, lSilent
+   LOCAL lSingleBuffer, lStrikeout, lUnderline, lUpdateColors, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -11782,7 +11788,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cObj                := ::ReadStringData( i, "OBJECT", cObj )
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TXBrowse():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TXBrowse():nHeight ) ) ) )
-   cHeaders            := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
+   cHdrs            := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
    cWidths             := ::ReadStringData( i, "WIDTHS", "{ 100, 60 }")
    cWorkArea           := ::ReadStringData( i, "WORKAREA", "ALIAS()" )
    cFields             := ::ReadStringData( i, "FIELDS", "{ 'field1', 'field2' }" )
@@ -11871,9 +11877,11 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cDeleteMsg          := ::ReadStringData( i, "DELETEMSG", "" )
    cOnDelete           := ::ReadStringData( i, "ON DELETE", "" )
    cOnDelete           := ::ReadStringData( i, "ONDELETE", cOnDelete )
-   cHeaderColors       := ::ReadStringData( i, "HEADERCOLORS", "" )
-   cHeaderColors       := ::ReadStringData( i, "HEADERFONTCOLORS", cHeaderColors )
-   cHeaderImages       := ::ReadStringData( i, "HEADERIMAGES", "" )
+   cHdrBackClrs        := ::ReadStringData( i, "HEADERBACKCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERCOLORS", "" )
+   cHdrFontClrs        := ::ReadStringData( i, "HEADERFONTCOLORS", cHdrFontClrs )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGES", "" )
+   cHdrImgs            := ::ReadStringData( i, "HEADERIMAGE", cHdrImgs )
    cHdrImgAlign        := ::ReadStringData( i, "IMAGESALIGN", "" )
    cHdrImgAlign        := ::ReadStringData( i, "HEADERIMAGESALIGN", cHdrImgAlign )
    lFullMove           := ( ::ReadLogicalData( i, "FULLMOVE", "F" ) == "T" )
@@ -11940,7 +11948,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_XBROWSE ]
    ::aCObj[i]          := cObj
-   ::aHeaders[i]       := cHeaders
+   ::aHeaders[i]       := cHdrs
    ::aWidths[i]        := cWidths
    ::aWorkArea[i]      := cWorkArea
    ::aFields[i]        := cFields
@@ -11998,8 +12006,9 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    ::aDeleteWhen[i]    := cDeleteWhen
    ::aDeleteMsg[i]     := cDeleteMsg
    ::aOnDelete[i]      := cOnDelete
-   ::aHeaderColors[i]  := cHeaderColors
-   ::aHeaderImages[i]  := cHeaderImages
+   ::aHdrBackClrs[i]   := cHdrBackClrs
+   ::aHdrFontClrs[i]   := cHdrFontClrs
+   ::aHdrImages[i]     := cHdrImgs
    ::aHdrImgAlign[i]   := cHdrImgAlign
    ::aFullMove[i]      := lFullMove
    ::aSelColor[i]      := aSelColor
@@ -13211,11 +13220,14 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aOnDelete[j] ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON DELETE " + AllTrim( ::aOnDelete[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderColors[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHeaderColors[j] )
+         IF NOTEMPTY( ::aHdrFontClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHdrFontClrs[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderImages[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHeaderImages[j] )
+         IF NOTEMPTY( ::aHdrBackClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERBACKCOLORS " + AllTrim( ::aHdrBackClrs[j] )
+         ENDIF
+         IF NOTEMPTY( ::aHdrImages[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHdrImages[j] )
          ENDIF
          IF NOTEMPTY( ::aHdrImgAlign[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGESALIGN " + AllTrim( ::aHdrImgAlign[j] )
@@ -14512,11 +14524,14 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aOnEnter[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON ENTER " + AllTrim( ::aOnEnter[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderColors[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHeaderColors[j] )
+         IF NOTEMPTY( ::aHdrFontClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHdrFontClrs[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderImages[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHeaderImages[j] )
+         IF NOTEMPTY( ::aHdrBackClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERBACKCOLORS " + AllTrim( ::aHdrBackClrs[j] )
+         ENDIF
+         IF NOTEMPTY( ::aHdrImages[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHdrImages[j] )
          ENDIF
          IF NOTEMPTY( ::aHdrImgAlign[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGESALIGN " + AllTrim( ::aHdrImgAlign[j] )
@@ -17278,11 +17293,14 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aOnDelete[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON DELETE " + AllTrim( ::aOnDelete[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderColors[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHeaderColors[j] )
+         IF NOTEMPTY( ::aHdrFontClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERCOLORS " + AllTrim( ::aHdrFontClrs[j] )
          ENDIF
-         IF NOTEMPTY( ::aHeaderImages[j] )
-            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHeaderImages[j] )
+         IF NOTEMPTY( ::aHdrBackClrs[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERBACKCOLORS " + AllTrim( ::aHdrBackClrs[j] )
+         ENDIF
+         IF NOTEMPTY( ::aHdrImages[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGES " + AllTrim( ::aHdrImages[j] )
          ENDIF
          IF NOTEMPTY( ::aHdrImgAlign[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEADERIMAGESALIGN " + AllTrim( ::aHdrImgAlign[j] )
@@ -17616,8 +17634,9 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "FixedWidths",        ::aFixedWidths[j],                                                             .F.  }, ;
                        { "FocusRect",          AScan( { ".T.", ".F." }, ::aFocusRect[j] ) + 1,                                { "NIL", ".T.", ".F." } }, ;
                        { "FullMove",           ::aFullMove[j],                                                                .F.  }, ;
-                       { "HeaderColors",       ::aHeaderColors[j],                                                            1000 }, ;
-                       { "HeaderImages",       ::aHeaderImages[j],                                                            1000 }, ;
+                       { "HeaderBackColors",   ::aHdrBackClrs[j],                                                             1000 }, ;
+                       { "HeaderColors",       ::aHdrFontClrs[j],                                                             1000 }, ;
+                       { "HeaderImages",       ::aHdrImages[j],                                                               1000 }, ;
                        { "HeaderImagesAlign",  ::aHdrImgAlign[j],                                                             1000 }, ;
                        { "Headers",            ::aHeaders[j],                                                                 1000 }, ;
                        { "HelpID",             ::aHelpID[j],                                                                  1000 }, ;
@@ -17707,8 +17726,9 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aFixedWidths[j]      := aResults[ ++k ]
       ::aFocusRect[j]        := { "NIL", ".T.", ".F." } [ aResults[ ++k ] ]
       ::aFullMove[j]         := aResults[ ++k ]
-      ::aHeaderColors[j]     := aResults[ ++k ]
-      ::aHeaderImages[j]     := aResults[ ++k ]
+      ::aHdrBackClrs[j]      := aResults[ ++k ]
+      ::aHdrFontClrs[j]      := aResults[ ++k ]
+      ::aHdrImages[j]        := aResults[ ++k ]
       ::aHdrImgAlign[j]      := aResults[ ++k ]
       ::aHeaders[j]          := aResults[ ++k ]
       ::aHelpID[j]           := aResults[ ++k ]
@@ -18335,8 +18355,9 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "FixedWidths",        ::aFixedWidths[j],                                                             .F.  }, ;
                        { "FocusRect",          AScan( { ".T.", ".F." }, ::aFocusRect[j] ) + 1,                                { "NIL", ".T.", ".F." } }, ;
                        { "FullMove",           ::aFullMove[j],                                                                .F.  }, ;
-                       { "HeaderColors",       ::aHeaderColors[j],                                                            1000 }, ;
-                       { "HeaderImages",       ::aHeaderImages[j],                                                            1000 }, ;
+                       { "HeaderBackColors",   ::aHdrBackClrs[j],                                                             1000 }, ;
+                       { "HeaderColors",       ::aHdrFontClrs[j],                                                             1000 }, ;
+                       { "HeaderImages",       ::aHdrImages[j],                                                               1000 }, ;
                        { "HeaderImagesAlign",  ::aHdrImgAlign[j],                                                             1000 }, ;
                        { "Headers",            ::aHeaders[j],                                                                 1000 }, ;
                        { "HelpID",             ::aHelpID[j],                                                                  1000 }, ;
@@ -18419,8 +18440,9 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aFocusRect[j]        := { "NIL", ".T.", ".F." } [ aResults[ ++k ] ]
       ::aFullMove[j]         := aResults[ ++k ]
       ::aHdrImgAlign[j]      := aResults[ ++k ]
-      ::aHeaderColors[j]     := aResults[ ++k ]
-      ::aHeaderImages[j]     := aResults[ ++k ]
+      ::aHdrBackClrs[j]      := aResults[ ++k ]
+      ::aHdrFontClrs[j]      := aResults[ ++k ]
+      ::aHdrImages[j]        := aResults[ ++k ]
       ::aHeaders[j]          := aResults[ ++k ]
       ::aHelpID[j]           := aResults[ ++k ]
       ::aImage[j]            := aResults[ ++k ]
@@ -19813,8 +19835,9 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "FixedWidths",        ::aFixedWidths[j],                                                             .F.  }, ;
                        { "FocusRect",          AScan( { ".T.", ".F." }, ::aFocusRect[j] ) + 1,                                { "NIL", ".T.", ".F." } }, ;
                        { "FullMove",           ::aFullMove[j],                                                                .F.  }, ;
-                       { "HeaderColors",       ::aHeaderColors[j],                                                            1000 }, ;
-                       { "HeaderImages",       ::aHeaderImages[j],                                                            1000 }, ;
+                       { "HeaderBackColors",   ::aHdrBackClrs[j],                                                             1000 }, ;
+                       { "HeaderColors",       ::aHdrFontClrs[j],                                                             1000 }, ;
+                       { "HeaderImages",       ::aHdrImages[j],                                                               1000 }, ;
                        { "HeaderImagesAlign",  ::aHdrImgAlign[j],                                                             1000 }, ;
                        { "Headers",            ::aHeaders[j],                                                                 1000 }, ;
                        { "HelpID",             ::aHelpID[j],                                                                  1000 }, ;
@@ -19899,8 +19922,9 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aFixedWidths[j]      := aResults[ ++k ]
       ::aFocusRect[j]        := { "NIL", ".T.", ".F." } [ aResults[ ++k ] ]
       ::aFullMove[j]         := aResults[ ++k ]
-      ::aHeaderColors[j]     := aResults[ ++k ]
-      ::aHeaderImages[j]     := aResults[ ++k ]
+      ::aHdrBackClrs[j]      := aResults[ ++k ]
+      ::aHdrFontClrs[j]      := aResults[ ++k ]
+      ::aHdrImages[j]        := aResults[ ++k ]
       ::aHdrImgAlign[j]      := aResults[ ++k ]
       ::aHeaders[j]          := aResults[ ++k ]
       ::aHelpID[j]           := aResults[ ++k ]
