@@ -354,6 +354,7 @@
                               { "aReadOnly",      .F. }, ;
                               { "aReadOnlyArray", "" }, ;
                               { "aRecCount",      .F. }, ;
+                              { "aRedrawOnAdd",   .F. }, ;
                               { "aRefresh",       "NIL" }, ;
                               { "aReplaceField",  "" }, ;
                               { "aRightAlign",    .F. }, ;
@@ -12035,8 +12036,8 @@ METHOD pTree( i ) CLASS TFormEditor
    LOCAL cOnCheckChg, cOnCollapse, cOnDblClick, cOnDrop, cOnEnter, cOnExpand, cOnGotFocus, cOnLabelEdit, cOnLostFocus, cParent
    LOCAL cSubClass, cToolTip, cVal, cValid, cValue, lBold, lBreak, lCheckBoxes, lEditLabels, lEnabled, lEnableDrag, lEnableDrop
    LOCAL lFullRowSel, lHotTrack, lItalic, lItemIds, lNoBorder, lNoButtons, lNoHScroll, lNoLines, lNoRootButton, lNoScroll
-   LOCAL lNoTabStop, lOwnTT, lRTL, lSelBold, lSingleExpand, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow
-   LOCAL nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lNoTabStop, lOwnTT, lRedrawOnAdd, lRTL, lSelBold, lSingleExpand, lStrikeout, lUnderline, lVisible, nCol, nFontSize, nHeight
+   LOCAL nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    cObj                := ::ReadStringData( i, "OBJ", "" )
@@ -12108,6 +12109,7 @@ METHOD pTree( i ) CLASS TFormEditor
    lNoLines            := ( ::ReadLogicalData( i, "NOLINES", "F" ) == "T" )
    lEnableDrag         := ( ::ReadLogicalData( i, "ENABLEDRAG", "F" ) == "T" )
    lEnableDrop         := ( ::ReadLogicalData( i, "ENABLEDROP", "F" ) == "T" )
+   lRedrawOnAdd        := ( ::ReadLogicalData( i, "REDRAWONADD", "F" ) == "T" )
    aTarget             := ::ReadStringData( i, "TARGET", "" )
    lSingleExpand       := ( ::ReadLogicalData( i, "SINGLEEXPAND", "F" ) == "T" )
    lNoBorder           := ::ReadLogicalData( i, "BORDERLESS", "F" )
@@ -12172,6 +12174,7 @@ METHOD pTree( i ) CLASS TFormEditor
    ::aNoLines[i]       := lNoLines
    ::aDrag[i]          := lEnableDrag
    ::aDrop[i]          := lEnableDrop
+   ::aRedrawOnAdd[i]   := lRedrawOnAdd
    ::aTarget[i]        := aTarget
    ::aSingleExpand[i]  := lSingleExpand
    ::aNoBorder[i]      := lNoBorder
@@ -12935,6 +12938,7 @@ METHOD Save( lSaveAs ) CLASS TFormEditor
    Output += iif( ::lFnocaption, " ;" + CRLF + Space( nSpacing ) + "NOCAPTION", "" )
    Output += iif( ::lFHelpButton, " ;" + CRLF + Space( nSpacing ) + "HELPBUTTON", "")
    Output += iif( ::lFRTL, " ;" + CRLF + Space( nSpacing ) + "RTL", "")
+   Output += iif( ::lFBorder, " ;" + CRLF + Space( nSpacing ) + "BORDER", "")
    Output += iif( ::lFBreak, " ;" + CRLF + Space( nSpacing ) + "BREAK", "")
    Output += iif( ::lFFocused, " ;" + CRLF + Space( nSpacing ) + "FOCUSED", "")
    Output += iif( ::lFClientArea, " ;" + CRLF + Space( nSpacing ) + "CLIENTAREA", "")
@@ -17463,6 +17467,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aDrop[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ENABLEDROP"
          ENDIF
+         IF ::aRedrawOnAdd[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "REDRAWONADD"
+         ENDIF
          IF NOTEMPTY( ::aTarget[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "TARGET " + AllTrim( ::aTarget[j] )
          ENDIF
@@ -20151,6 +20158,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
                        { "OwnToolTip",         ::aOwnTT[j],                                                                   .F.  }, ;
                        { "Parent",             ::aParent[j],                                                                  1000 }, ;
+                       { "RedrawOnAdd",        ::aRedrawOnAdd[j],                                                             .F.  }, ;
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SelBold",            ::aSelBold[j],                                                                 .F.  }, ;
                        { "SelColor",           ::aSelColor[j],                                                                1000 }, ;
@@ -20197,6 +20205,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aNoTabStop[j]        := aResults[ ++k ]
       ::aOwnTT[j]            := aResults[ ++k ]
       ::aParent[j]           := aResults[ ++k ]
+      ::aRedrawOnAdd[j]      := aResults[ ++k ]
       ::aRTL[j]              := aResults[ ++k ]
       ::aSelBold[j]          := aResults[ ++k ]
       ::aSelColor[j]         := aResults[ ++k ]
