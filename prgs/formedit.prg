@@ -160,6 +160,7 @@
                               { "aFields",        "" }, ;
                               { "aFile",          "" }, ;
                               { "aFileType",      "" }, ;
+                              { "aFillRect",      "NIL" }, ;
                               { "aFirstItem",     .F. }, ;
                               { "aFit",           .F. }, ;
                               { "aFitImg",        .F. }, ;
@@ -3748,7 +3749,7 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       ENDIF
       oCtrl:FontColor  := ::myIde:StrToColor( ::aFontColor[i] )
       oCtrl:BackColor  := ::myIde:StrToColor( ::aBackColor[i] )
-      oCtrl:OnClick    := { || ::DrawOutline( oCtrl ) }
+      oCtrl:OnChange   := { || ::DrawOutline( oCtrl ) }   // OnClick codeblock is ignored
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_CHECKBUTTON
@@ -7813,10 +7814,10 @@ METHOD pButton( i ) CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD pCheckBox( i ) CLASS TFormEditor
 
-   LOCAL aBackColor, aFontColor, cBackground, cCaption, cCargo, cField, cFocusRect, cFontName, cHelpID, cNoFocusRect, cObj
-   LOCAL cOnChange, cOnGotFocus, cOnLostFocus, cOOHGDraw, cParent, cSubClass, cToolTip, cVal, cValue, cWinDraw, l3State, lAutoSize
-   LOCAL lBold, lEnabled, lItalic, lLeftJust, lNoTabStop, lRTL, lStrikeout, lTrans, lUnderline, lVisible, nCol, nFontSize, nHeight
-   LOCAL nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL aBackColor, aFontColor, cBackground, cCaption, cCargo, cField, cFillRect, cFocusRect, cFontName, cHelpID, cNoFillRect
+   LOCAL cNoFocusRect, cObj, cOnChange, cOnGotFocus, cOnLostFocus, cOOHGDraw, cParent, cSubClass, cToolTip, cVal, cValue, cWinDraw
+   LOCAL l3State, lAutoSize, lBold, lEnabled, lItalic, lLeftJust, lNoTabStop, lRTL, lStrikeout, lTrans, lUnderline, lVisible, nCol
+   LOCAL nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -7883,6 +7884,8 @@ METHOD pCheckBox( i ) CLASS TFormEditor
    cParent             := ::ReadStringData( i, "PARENT", "" )
    cParent             := ::ReadStringData( i, "OF", cParent )
    cCargo              := ::ReadCargo( i, "LASTFORM.LASTCONTROL.CARGO" )
+   cFillRect           := ::ReadLogicalData( i, "FILLRECT", "N" )
+   cNoFillRect         := ::ReadLogicalData( i, "NOFILLRECT", "N" )
 
    /* Save properties */
    ::aCtrlType[i]      := ::ControlType[ TYPE_CHECKBOX ]
@@ -7919,6 +7922,7 @@ METHOD pCheckBox( i ) CLASS TFormEditor
    ::aNoFocusRect[i]   := ( cFocusRect == "F" .AND. cNoFocusRect == "T" )
    ::aParent[i]        := cParent
    ::aCargo[i]         := cCargo
+   ::aFillRect[i]      := iif( cFillRect == cNoFillRect, "NIL", iif( cFillRect == "T" .OR. cNoFillRect == "F", "YES", "NO" ) )
 
    /* Create control */
    oCtrl               := ::CreateControl( AScan( ::ControlType, ::aCtrlType[i] ), i, nWidth, nHeight, NIL )
@@ -13352,7 +13356,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aCheckBoxes[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CHECKBOXES"
          ENDIF
-         IF NOTEMPTY( ::aOnCheckChg[j] ) 
+         IF NOTEMPTY( ::aOnCheckChg[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON CHECKCHANGE " + AllTrim( ::aOnCheckChg[j] )
          ENDIF
          IF NOTEMPTY( ::aOnRowRefresh[j] ) 
@@ -13655,6 +13659,11 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aNoFocusRect[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOFOCUSRECT"
+         ENDIF
+         IF ::aFillRect[j] == "YES"
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FILLRECT"
+         ELSEIF ::aFillRect[j] == "NO"
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOFILLRECT"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
             Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
@@ -14425,7 +14434,7 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( AllTrim( ::aDynBackColor[j] ) )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DYNAMICBACKCOLOR " + AllTrim( ::aDynBackColor[j] )
          ENDIF
-         IF NOTEMPTY( AllTrim( ::aDynForeColor[j] ) ) 
+         IF NOTEMPTY( AllTrim( ::aDynForeColor[j] ) )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DYNAMICFORECOLOR " + AllTrim( ::aDynForeColor[j] )
          ENDIF
          IF NOTEMPTY( ::aOnGotFocus[j] )
@@ -17884,6 +17893,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Disabled",           ::aDisabled[j],                                                                .F.  }, ;
                        { "DrawBy",             AScan( { "OOHGDRAW", "WINDRAW" }, ::aDrawBy[j] ) + 1,                          { "NIL", "OOHGDRAW", "WINDRAW" } }, ;
                        { "Field",              ::aField[j],                                                                   1000 }, ;
+                       { "FillRect",           AScan( { "YES", "NO" }, ::aFillRect[j] ) + 1,                                  { "NIL", "YES", "NO" } }, ;
                        { "HelpID",             ::aHelpID[j],                                                                  1000 }, ;
                        { "Invisible",          ::aInvisible[j],                                                               .F.  }, ;
                        { "LeftAlign",          ::aLeftJust[j],                                                                .F.  }, ;
@@ -17916,6 +17926,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aDisabled[j]         := aResults[ ++k ]
       ::aDrawBy[j]           := { "NIL", "OOHGDRAW", "WINDRAW" } [ aResults[ ++k ] ]
       ::aField[j]            := aResults[ ++k ]
+      ::aFillRect[j]         := { "NIL", "YES", "NO" } [ aResults[ ++k ] ]
       ::aHelpID[j]           := aResults[ ++k ]
       ::aInvisible[j]        := aResults[ ++k ]
       ::aLeftJust[j]         := aResults[ ++k ]
