@@ -3635,11 +3635,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
 
    DO CASE
    CASE nControlType == TYPE_ACTIVEX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TActiveX(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            <progid>, <.notabstop.>, <.disabled.>, <.invisible.> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aProgID[i], "C", cName ), nWidth, nHeight, ;
                   NIL, NIL, .F., .F., .F., ;
@@ -3652,12 +3647,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
 //TODO: Ctrl+OnClick = agregar a ::oCtrlList:value + drawoutline del nuevo
 
    CASE nControlType == TYPE_ANIGIF
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TAniGIF(), [ <subclass>() ] ):Define( ;
-            <(name)>, <(parent)>, <col>, <row>, <filename>, <width>, <height>, ;
-            <{action}>, <helpid>, <.invisible.>, <.whitebackground.>, <.rtl.>, ;
-            <backcolor>, <tooltip>, <.border.>, <.clientedge.>, <.disabled.> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aFile[i], "C", cName ), nWidth, nHeight, ;
                   NIL, NIL, .F., ::aBorder[i], ::aClientEdge[i], ;
@@ -3672,12 +3661,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_ANIMATEBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TAnimateBox(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            <.autoplay.>, <.center.>, <.transparent.>, <(file)>, <helpid>, ;
-            <.invisible.>, <.notabstop.>, <.disabled.>, <.rtl.>, <tooltip> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aFile[i], "C", cName ), nWidth, nHeight, ;
                   NIL, NIL, .F., .F., .F., ;
@@ -3687,42 +3670,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_BROWSE
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( iif( <.bycell.>, TOBrowseByCell(), TOBrowse() ), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <headers>, ;
-            <widths>, <Fields>, <value>, <fontname>, <fontsize>, <tooltip>, ;
-            <{change}>, <{dblclick}>, <aHeadClick>, <{gotfocus}>, ;
-            <{lostfocus}>, <(workarea)>, <.delete.>, <.style.>, <aImage>, ;
-            <aJust>, <helpid>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <.break.>, <backcolor>, <fontcolor>, <.lock.>, ;
-            <.inplace.>, <.novsb.>, <.append.>, <aReadOnly>, ;
-            <aValidFields>, <aValidMessages>, <.edit.>, <dynamicbackcolor>, ;
-            <aWhenFields>, <dynamicforecolor>, <inputmask>, <.rtl.>, ;
-            <{onappend}>, <{editcell}>, <editcontrols>, <replacefields>, ;
-            <.reccount.>, <columninfo>, ! <.noshowheaders.>, <{enter}>, ;
-            <.disabled.>, <.notabstop.>, <.invisible.>, <.descending.>, ;
-            <{bWhenDel}>, <DelMsg>, <{onDelete}>, <aHeaderImages>, ;
-            <aImgAlign>, <.fullmove.>, <aSelectedColors>, <aEditKeys>, ;
-            iif( <.forcerefresh.>, 0, iif( <.norefresh.>, 1, NIL ) ), ;
-            ! <.bffr.>, ;
-            iif( Upper( #<focus> ) == "NOFOCUSRECT", .F., ;
-            iif( Upper( #<focus> ) == "FOCUSRECT", .T., NIL ) ), ;
-            <.plm.>, iif( Upper( #<sync> ) == "UNSYNCHRONIZED", .F., ;
-            iif( Upper( #<sync> ) == "SYNCHRONIZED", .T., NIL ) ), ;
-            <.fixedcols.>, <.nodelmsg.>, <.updall.>, <{abortedit}>, <{click}>, ;
-            <.fixedwidths.>, iif( Upper( #<blocks> ) == "FIXEDBLOCKS", .T., ;
-            iif( Upper( #<blocks> ) == "DYNAMICBLOCKS", .F., NIL ) ), ;
-            <{bBefMov}>, <{bAftMov}>, <{bBefSiz}>, <{bAftSiz}>, <{bBefAut}>, ;
-            <.excel.>, <.buts.>, <.upcol.>, ;
-            iif( Upper( #<edtctrls> ) == "FIXEDCONTROLS", .T., ;
-            iif( Upper( #<edtctrls> ) == "DYNAMICCONTROLS", .F., NIL ) ), ;
-            <{bheadrclick}>, <.extdbl.>, <.nomodal.>, <.silent.>, ;
-            ! <.disalta.>, <.noshow.>, ;
-            <.none.>, <.cbe.>, <{rclick}>, ;
-            <.checkboxes.>, <{checkchange}>, <{rowrefresh}>, <aDefVal>, ;
-            <{editend}>, ! <.efv.>, <{beforedit}>, <{edtval}>, <.klc.>, ;
-            <.ctt.>, <.nohsb.>, <aHeadDblClick> )
-*/
       aHeaders := ::StrToValueCtrl( ::aHeaders[i], "A", { "Head1", "Head2" }, 1, 0, "C" )
       FOR j := 1 TO Len( aHeaders )
          IF Empty( aHeaders[j] )
@@ -3762,22 +3709,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
 //TODO: hacer igual en GRID y XBROWSE
 
    CASE nControlType == TYPE_BUTTON
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TButton(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <caption>, <{action}>, ;
-            <width>, <height>, <fontname>, <fontsize>, <tooltip>, <{gotfocus}>, <{lostfocus}>, ;
-            <.flat.>, <.notabstop.>, <helpid>, <.invisible.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <.rtl.>, <.noprefix.>, ;
-            <.disabled.>, <buffer>, <hbitmap>, <bitmap>, <.lnoldtr.>, ;
-            <.stretch.>, <.cancel.>, <"imgalign">, <.multiline.>, ;
-            iif( #<drawby> == "OOHGDRAW", .T., iif( #<drawby> == "WINDRAW", .F., NIL ) ), ;
-            <aimagemargin>, <{onmousemove}>, <.no3dcolors.>, <.autofit.>, ;
-            ! <.ldib.>, <backcolor>, <.nohotlight.>, <.solidbk.>, <fontcolor>, ;
-            {<"txth">, <"txtv">}, <.noover.>, <atextmargin>, <.fittxt.>, <.fitimg.>, ;
-            <.imgsize.>, <.ltransp.>, <.lnofocus.>, <.lnoimglst.>, <.nodestroy.>, ;
-            <.lhand.>, <.ldefault.> )
-*/
-
       oCtrl := TButton():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aCaption[i], "C", cName ), NIL, nWidth, nHeight, NIL, NIL, ;
                   ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, NIL, ::aFlat[i], .F., NIL, .F., ::aFontBold[i], ;
@@ -3802,16 +3733,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_CHECKBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TCheckBox(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <caption>, <value>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, [<width>], [<height>], <{lostfocus}>, ;
-            <{gotfocus}>, <helpid>, <.invisible.>, <.notabstop.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <(field)>, <backcolor>, ;
-            <fontcolor>, <.transparent.>, <.autosize.>, <.rtl.>, <.disabled.>, ;
-            <.threestate.>, <.left.>, iif( #<drawby> == "OOHGDRAW", .T., ;
-            iif( #<drawby> == "WINDRAW", .F., NIL ) ), <bkgrnd>, <.lnofr.> )
-*/
       oCtrl := TCheckBox():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aCaption[i], "C", cName ), ::StrToValueCtrl( ::aValue[i], "L", NIL ), ;
                   NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, nWidth, nHeight, NIL, NIL, ;
@@ -3830,20 +3751,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_CHECKBUTTON
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TButtonCheck(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <caption>, <value>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, [<width>], [<height>], <{lostfocus}>, ;
-            <{gotfocus}>, <helpid>, <.invisible.>, <.notabstop.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <(field)>, <.rtl.>, ;
-            <bitmap>, <buffer>, <hbitmap>, <.lnoldtr.>, <.stretch.>, ;
-            <.no3dcolors.>, <.forcescale.>, ! <.lDIB.>, <backcolor>, <.disabled.>, ;
-            iif( #<drawby> == "OOHGDRAW", .T., iif( #<drawby> == "WINDRAW", .F., NIL ) ), ;
-            <aImageMargin>, <{onmousemove}>, <"imgalign">, <.multiline.>, ;
-            <.flat.>, <.nohotlight.>, <.solidbk.>, <fontcolor>, {<"txth">, <"txtv">}, ;
-            <.noover.>, <atextmargin>, <.fittxt.>, <.fitimg.>, <.imgsize.>, ;
-            <.ltransp.>, <.lnofocus.>, <.lnoimglst.>, <.nodestroy.>, <.lhand.> )
-*/
       oCtrl := TButtonCheck():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aCaption[i], "C", cName ), ::StrToValueCtrl( ::aValue[i], "L", NIL ), NIL, NIL, ;
                   ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, nWidth, nHeight, NIL, NIL, NIL, .F., .F., ::aFontBold[i], ;
@@ -3868,16 +3775,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_CHECKLIST
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TCheckList(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <aRows>, ;
-            <value>, <fontname>, <fontsize>, <tooltip>, <{change}>, ;
-            <{gotfocus}>, <{lostfocus}>, <aImage>, <just>, <.break.>, ;
-            <helpid>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <backcolor>, <fontcolor>, <.rtl.>, ;
-            <.disabled.>, <.notabstop.>, <.invisible.>, <.sort.>, ;
-            <.descending.>, <aSelectedColors>, ! <.bffr.>, <{click}> )
-*/
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
             aImages := { "ZZZ_AAAOOHG" }
@@ -3923,25 +3820,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_COMBOBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TCombo(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <rows>, <value>, ;
-            <fontname>, <fontsize>, <tooltip>, <{changeprocedure}>, <height>,  <{gotfocus}>, ;
-            <{lostfocus}>, <{enter}>, <helpid>, <.invisible.>, <.notabstop.>, ;
-            <.sort.>,<.bold.>, <.italic.>, <.underline.>, <.strikeout.>, ;
-            <(itemsource)>, <(valuesource)>, <.displayedit.>, ;
-            <{displaychng}>, <.break.>, <grippertext>, <aImage>, <.rtl.>, <textheight>, ;
-            <.disabled.>, <.firstitem.>, <.fit.>, <backcolor>, <fontcolor>, ;
-            <listwidth>, <{listdisplay}>, <{listclose}>, <{imagesource}>, ;
-            <{itemimagenumber}>, <.delay.>, <.incremental.>, <.winsize.>, ;
-            iif( Upper( #<rfrsh> ) == "NOREFRESH", .F., ;
-            iif( Upper( #<rfrsh> ) == "REFRESH", .T., NIL ) ), ;
-            <(sourceorder)>, <{refresh}>, <nLapse>, <max>, <editheight>, ;
-            <optheight>, <.nohscroll.>, <.noclone.>, <.NoTrans.>, <{cancel}>, ;
-            iif( Upper( #<index> ) == "INDEXISVALUE", .T., ;
-            iif( Upper( #<index> ) == "SOURCEISVALUE", .F., NIL ) ), ;
-            <.autosize.> )
-*/
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
             aImages := { "ZZZ_AAAOOHG" }
@@ -3984,15 +3862,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:oListBox:OnRClick := { || ::oDesignFormMenu:Activate() }
 
    CASE nControlType == TYPE_DATEPICKER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TDatePick(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <v>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, <{lostfocus}>, ;
-            <{gotfocus}>, <.shownone.>, <.updown.>, <.rightalign.>, <helpid>, ;
-            <.invisible.>, <.notabstop.>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <(field)>, <{enter}>, <.rtl.>, <.disabled.>, ;
-            <.noborder.>, <min>, <max>, <cDateFormat>, <{valid}> )
-*/
       oCtrl := TDatePick():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, ;
                   ::StrToValueCtrl( ::aValue[i], "D", NIL ), NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, NIL, ;
                   NIL, ::aShowNone[i], ::aUpDown[i], ::aRightAlign[i], NIL, .F., .F., ::aFontBold[i], ::aFontItalic[i], ;
@@ -4009,15 +3878,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       /* The control ignores double clicks. Use right click instead. */
 
    CASE nControlType == TYPE_EDITBOX
-/*
-      [ <obj> := ] TEdit():Define( <(name)>, <(parent)>, <col>, <row>, <width>, ;
-            <height>, <value>, <fontname>, <fontsize>, <tooltip>, <maxlength>, <{gotfocus}>, ;
-            <{change}>, <{lostfocus}>, <.readonly.>, <.break.>, <helpid>, ;
-            <.invisible.>, <.notabstop.>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <(field)>, <backcolor>, <fontcolor>, <.novscroll.>, ;
-            <.nohscroll.>, <.rtl.>, <.noborder.>, <focusedpos>, <{hscroll}>, ;
-            <{vscroll}>, <.disabled.>, <nInsType> )
-*/
       oCtrl := TEdit():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, ;
                   ::StrToValueCtrl( ::aValue[i], "C", cName ), NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ;
                   ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), NIL, NIL, NIL, ::aReadOnly[i], .F., NIL, .F., .F., ;
@@ -4036,14 +3896,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_FRAME
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TFrame(), [ <subclass>() ] ): ;
-         Define( <(name)>, <(parent)>, <row>, <col>, <width>, <height>, <caption>, ;
-         <fontname>, <fontsize>, <.opaque.>, <.bold.>, <.italic.>, ;
-         <.underline.>, <.strikeout.>, <backcolor>, <fontcolor>, ;
-         <.transparent.>, <.rtl.>, <.invisible.>, <.disabled.>, <tooltip>, ;
-         <area> )
-*/
       oCtrl := TFrame():Define( cName, ::oDesignForm:Name, _OOHG_MouseRow, _OOHG_MouseCol, nWidth, nHeight, ;
                   ::StrToValueCtrl( ::aCaption[i], "C", cName ), NIL, NIL, ::aOpaque[i], ::aFontBold[i], ::aFontItalic[i], ;
                   ::aFontUnderline[i], ::aFontStrikeout[i], NIL, NIL, ::aTransparent[i], ::aRTL[i], .F., .F., NIL, NIL )
@@ -4059,34 +3911,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
 //TODO: ver como hacer para move y size
 
    CASE nControlType == TYPE_GRID
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( iif( <.bycell.>, TGridByCell(), ;
-            iif( <.multiselect.>, TGridMulti(), TGrid() ) ), ;
-            [ <subclass>() ] ):Define( <(name)>, <(parent)>, <col>, <row>, ;
-            <width>, <height>, <headers>, <widths>, <rows>, <value>, <fontname>, ;
-            <fontsize>, <tooltip>, <{change}>, <{dblclick}>, <aHeadClick>, ;
-            <{gotfocus}>, <{lostfocus}>, <.style.>, <aImage>, <aJust>, ;
-            <.break.>, <helpid>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <.ownerdata.>, <{dispinfo}>, <itemcount>, <.edit.>, ;
-            <backcolor>, <fontcolor>, <dynamicbackcolor>, <dynamicforecolor>, ;
-            <inputmask>, <.rtl.>, <.inplace.>, <editcontrols>, <aReadOnly>, ;
-            <aValidFields>, <aValidMessages>, <{editcell}>, <aWhenFields>, ;
-            <.disabled.>, <.notabstop.>, <.invisible.>, ! <.noshowheaders.>, ;
-            <{enter}>, <a[j]s>, <aImgAlign>, <.fullmove.>, ;
-            <aSelectedColors>, <aEditKeys>, <.checkboxes.>, <{checkchange}>, ;
-            ! <.bffr.>, iif( #<focus> == "NOFOCUSRECT", .F., ;
-            iif( #<focus> == "FOCUSRECT", .T., NIL ) ), ;
-            <.plm.>, <.fixedcols.>, <{abortedit}>, <{click}>, <.fixedwidths.>, ;
-            <{bBefMov}>, <{bAftMov}>, <{bBefSiz}>, <{bAftSiz}>, <{bBefAut}>, ;
-            <.excel.>, <.buts.>, <.delete.>, <{onDelete}>, <{bWhenDel}>, ;
-            <DelMsg>, <.nodelmsg.>, <.append.>, <{onappend}>, <.nomodal.>, ;
-            <.fixctrls.>, <{bheadrclick}>, ! <.noclick.>, ! <.norclick.>, ;
-            <.extdbl.>, <.silent.>, <.alta.>, <.noshow.>, <.none.>, <.cbe.>, ;
-            <{rclick}>, <{oninsert}>, <{editend}>, ! <.efv.>, <{beforedit}>, ;
-            <{edtval}>, <.klc.>, <.ctt.>, <.nohsb.>, <.novsb.>, <{beforeins}>, ;
-            <aHeadDblClick> )
-*/
-
       aHeaders := ::StrToValueCtrl( ::aHeaders[i], "A", { "Head1", "Head2" }, 1, 0, "C" )
       FOR j := 1 TO Len( aHeaders )
          IF Empty( aHeaders[j] )
@@ -4124,15 +3948,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnRClick    := { || ::oDesignFormMenu:Activate() }
 
    CASE nControlType == TYPE_HOTKEYBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( THotKeyBox(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            <value>, <fontname>, <fontsize>, <tooltip>, <{lostfocus}>, ;
-            <{gotfocus}>, <{change}>, <{enter}>, <helpid>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <backcolor>, ;
-            <fontcolor>, <.invisible.>, <.notabstop.>, <.rtl.>, <.disabled.>, ;
-            <.noalt.> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, cName, nWidth, nHeight, NIL, NIL, ;
                   ::aFontBold[i], .F., .F., ;
                   .F., .F., .F., WHITE, NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ::aFontItalic[i], ;
@@ -4149,14 +3964,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_HYPERLINK
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( THyperLink(), [ <subclass>() ] ): ;
-         Define( <(name)>, <(parent)>, <col>, <row>, <value>, <address>, ;
-         <width>, <height>, <fontname>, <fontsize>, <.bold.>, <.border.>, ;
-         <.clientedge.>, <.hscroll.>, <.vscroll.>, <.transparent.>, ;
-         [ <backcolor> ], [ <fontcolor> ], <tooltip>, <helpid>, ;
-         <.invisible.>, <.italic.>, <.autosize.>, <.handcursor.>, <.rtl.> )
-*/
       oCtrl := THyperLink():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aValue[i], "C", cName ), ::StrToValueCtrl( ::aAddress[i], "C", "https://oohg.github.io/" ), ;
                   nWidth, nHeight, NIL, NIL, ::aFontBold[i], ::aBorder[i], ::aClientEdge[i], ::aHScroll[i], ::aVScroll[i], ;
@@ -4174,16 +3981,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_IMAGE
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TImage(), [ <subclass>() ] ):Define( ;
-            <(name)>, <(parent)>, <col>, <row>, <filename>, <width>, <height>, ;
-            <{action}>, <helpid>, <.invisible.>, <.stretch.>, ;
-            <.whitebackground.>, <.rtl.>, <backcolor>, <buffer>, <hbitmap>, ;
-            ! <.noresize.>, <.imagesize.>, <tooltip>, <.border.>, ;
-            <.clientedge.>, <.notrans.>, <.no3dcolors.>, <.nodib.>, <.style.>, ;
-            <area>, <.disabled.>, <{change}>, <{rclk}>, <{mclk}>, <{dblclk}>, ;
-            <{rdblclk}>, <{mdblclk}>, <.nocheck.>, <.noredraw.> )
-*/
       cPicture := ::StrToValueCtrl( ::aPicture[i], "C", NIL )
       IF Empty( cPicture ).OR. ! File( cPicture )
          cPicture := "ZZZ_AAAOOHG"
@@ -4198,14 +3995,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_IPADDRESS
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TIPAddress(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            [ <value> ], <fontname>, <fontsize>, <tooltip>, <{lostfocus}>, ;
-            <{gotfocus}>, <{change}>, <helpid>, <.invisible.>, <.notabstop.>, ;
-            <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, <.rtl.>, ;
-            <.disabled.>, <fontcolor>, <backcolor> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aValue[i], "C", cName ), nWidth, nHeight, NIL, NIL, ::aFontBold[i], .F., .F., ;
                   .F., .F., .F., WHITE, NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ::aFontItalic[i], ;
@@ -4222,16 +4011,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_LABEL
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TLabel(), [ <subclass>() ] ):Define( ;
-            <(name)>, <(parent)>, <col>, <row>, <value>, <width>, <height>, ;
-            <fontname>, <fontsize>, <.bold.>, <.border.>, <.clientedge.>, ;
-            <.hscroll.>, <.vscroll.>, <.transparent.>, [ <backcolor> ], ;
-            [ <fontcolor> ], <{action}>, <tooltip>, <helpid>, <.invisible.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <.autosize.>, ;
-            <.rightalign.>, <.centeralign.>, <.rtl.>, <.nowordwrap.>, ;
-            <.noprefix.>, <picture>, <.disabled.>, <.lcenteralign.> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
                   ::StrToValueCtrl( ::aValue[i], "C", cName ), nWidth, nHeight, NIL, NIL, ::aFontBold[i], ;
                   ::aBorder[i], ::aClientEdge[i], ;
@@ -4251,18 +4030,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_LISTBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( ;
-            iif( <.multiselect.>, TListMulti(), TList() ), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <aRows>, ;
-            <value>, <fontname>, <fontsize>, <tooltip>, <{change}>, ;
-            <{dblclick}>, <{gotfocus}>, <{lostfocus}>, .F., ;
-            <helpid>, <.invisible.>, <.notabstop.>, <.sort.>, ;
-            <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, ;
-            <backcolor>, <fontcolor>, <.rtl.>, <.disabled.>, <{enter}>, ;
-            <aImage>, <textheight>, <.fit.>, <.novscroll.>, <.multicolumn.>, ;
-            <nColWidth>, <.multitab.>, <aWidth>, <.dragitems.> )
-*/
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
             aImages := { "ZZZ_AAAOOHG" }
@@ -4316,16 +4083,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_MONTHCALENDAR
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( iif( <.multiselect.>, ;
-            TMonthCalMulti(), TMonthCal() ), [ <subclass>() ] ):Define( ;
-            <(name)>, <(parent)>, <col>, <row>, 0, 0, <v>, <fontname>, <fontsize>, ;
-            <tooltip>, <.notoday.>, <.notodaycircle.>, <.weeknumbers.>, <{change}>, ;
-            <helpid>, <.invisible.>, <.notabstop.>, <.bold.>, <.italic.>, ;
-            <.underline.>, <.strikeout.>, <.rtl.>, <.disabled.>, <fontcolor>, ;
-            <backcolor>, <titlefontcolor>, <titlebackcolor>, <trailingfontcolor>, ;
-            <backgroundcolor>, <{viewchg}>, <{gotfocus}>, <{lostfocus}> )
-*/
       IF ::aMultiSelect[i]
          oCtrl := TMonthCalMulti():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, ;
                      ::StrToValueCtrl( ::aValue[i], "D", Date() ), NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ;
@@ -4352,21 +4109,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick        := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PICBUTT
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TButton(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <caption>, <{action}>, ;
-            <width>, <height>, <fontname>, <fontsize>, <tooltip>, <{gotfocus}>, <{lostfocus}>, ;
-            <.flat.>, <.notabstop.>, <helpid>, <.invisible.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <.rtl.>, <.noprefix.>, ;
-            <.disabled.>, <buffer>, <hbitmap>, <bitmap>, <.lnoldtr.>, ;
-            <.stretch.>, <.cancel.>, <"imgalign">, <.multiline.>, ;
-            iif( #<drawby> == "OOHGDRAW", .T., iif( #<drawby> == "WINDRAW", .F., NIL ) ), ;
-            <aimagemargin>, <{onmousemove}>, <.no3dcolors.>, <.autofit.>, ;
-            ! <.ldib.>, <backcolor>, <.nohotlight.>, <.solidbk.>, <fontcolor>, ;
-            {<"txth">, <"txtv">}, <.noover.>, <atextmargin>, <.fittxt.>, <.fitimg.>, ;
-            <.imgsize.>, <.ltransp.>, <.lnofocus.>, <.lnoimglst.>, <.nodestroy.>, ;
-            <.lhand.>, <.ldefault.> )
-*/
       cPicture := ::StrToValueCtrl( ::aPicture[i], "C", NIL )
       IF Empty( cPicture ).OR. ! File( cPicture )
          cPicture := "ZZZ_AAAOOHG"
@@ -4394,20 +4136,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PICCHECKBUTT
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TButtonCheck(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <caption>, <value>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, [<width>], [<height>], <{lostfocus}>, ;
-            <{gotfocus}>, <helpid>, <.invisible.>, <.notabstop.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <(field)>, <.rtl.>, ;
-            <bitmap>, <buffer>, <hbitmap>, <.lnoldtr.>, <.stretch.>, ;
-            <.no3dcolors.>, <.autofit.>, ! <.ldib.>, <backcolor>, <.disabled.>, ;
-            iif( #<drawby> == "OOHGDRAW", .T., iif( #<drawby> == "WINDRAW", .F., NIL ) ), ;
-            <aimagemargin>, <{onmousemove}>, <"imgalign">, <.multiline.>, ;
-            <.flat.>, <.nohotlight.>, <.solidbk.>, <fontcolor>, {<"txth">, <"txtv">}, ;
-            <.noover.>, <atextmargin>, <.fittxt.>, <.fitimg.>, <.imgsize.>, ;
-            <.ltransp.>, <.lnofocus.>, <.lnoimglst.>, <.nodestroy.>, <.lhand.> )
-*/
       cPicture := ::StrToValueCtrl( ::aPicture[i], "C", NIL )
       IF Empty( cPicture ).OR. ! File( cPicture )
          cPicture := "ZZZ_AAAOOHG"
@@ -4425,14 +4153,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PICTURE
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TPicture(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <filename>, <width>, <height>, ;
-            <buffer>, <hbitmap>, <.stretch.>, <.scale.>, <.imagesize.>, ;
-            <.border.>, <.clientedge.>, <backcolor>, <{action}>, <tooltip>, ;
-            <helpid>, <.rtl.>, <.invisible.>, <.notrans.>, <.no3dcolors.>, ;
-            <.nodib.>, <.style.>, <area>, <.disabled.> )
-*/
       cPicture := ::StrToValueCtrl( ::aPicture[i], "C", NIL )
       IF Empty( cPicture ).OR. ! File( cPicture )
          cPicture := "ZZZ_AAAOOHG"
@@ -4446,14 +4166,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PLAYER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TPlayer(), [ <subclass>() ] ): ;
-         Define( <(name)>, <(parent)>, <(file)>, <col>, <row>, <width>, <height>, ;
-         <.noautosizewindow.>, <.noautosizemovie.>, <.noerrordlg.>, ;
-         <.nomenu.>, <.noopen.>, <.noplaybar.>, <.showall.>, <.showmode.>, ;
-         <.showname.>, <.showposition.>, <helpid>, <.invisible.>, ;
-         <.notabstop.>, <.disabled.>, <.rtl.> )
-*/
        oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, cName, ;
                   nWidth, nHeight, NIL, NIL, .F., .F., .F., ;
                   .F., .F., .F., WHITE, NIL, NIL, NIL, NIL, .F., .F., .F., .F., .F., .F., .F., ;
@@ -4462,12 +4174,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PROGRESSBAR
-/*
-      [ <obj> := ] TProgressBar():Define( <(name)>, <(parent)>, <col>, ;
-            <row>, <width>, <height>, <lo>, <hi>, <tooltip>, <.vertical.>, ;
-            <.smooth.>, <helpid>, <.invisible.>, <v>, [ <backcolor> ], ;
-            [ <barcolor> ], <.rtl.>, <nVelocity> )
-*/
       IF ( j := At( ",", ::aRange[i] ) ) > 0
          nMin := Val( SubStr( ::aRange[i], 1, j - 1 ) )
          nMax := Val( SubStr( ::aRange[i], j + 1 ) )
@@ -4489,14 +4195,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_PROGRESSMETER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TProgressMeter(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <lo>, <hi>, ;
-            <v>, <tooltip>, <fontname>, <fontsize>, <.bold.>, <.italic.>, ;
-            <.underline.>, <.strikeout.>, <forecolor>, <backcolor>, ;
-            <{action}>, <helpid>, <.invisible.>, <.rtl.>, <.clientedge.>, ;
-            <.disabled.> )
-*/
       IF ( j := At( ",", ::aRange[i] ) ) > 0
          nMin := Val( SubStr( ::aRange[i], 1, j - 1 ) )
          nMax := Val( SubStr( ::aRange[i], j + 1 ) )
@@ -4524,17 +4222,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_RADIOGROUP
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TRadioGroup(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <aOptions>, <value>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, <width>, ;
-            <spacing>, <helpid>, <.invisible.>, <.notabstop.>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <backcolor>, ;
-            <fontcolor>, <.transparent.>, <.autosize.>, <.horizontal.>, ;
-            <.disabled.>, <.rtl.>, <height>, iif( #<drawby> == "OOHGDRAW", .T., ;
-            iif( #<drawby> == "WINDRAW", .F., NIL ) ), <bkgrnd>, <.left.>, ;
-            <aReadOnly>, <.lnofr.>, <nLimit>, <nShift> )
-*/
       IF NOTEMPTY( ::aOptions[i] )
          aItems := ::StrToValueCtrl( ::aOptions[i], "A", { cName, "item2" }, 1, 0, "C" )
          FOR j := 1 to Len( aItems )
@@ -4568,16 +4255,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_RICHEDITBOX
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TEditRich(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, , , <width>, <height>, <value>, <fontname>, <fontsize>, ;
-            <tooltip>, <maxlength>, <{gotfocus}>, <{change}>, <{lostfocus}>, ;
-            <.readonly.>, <.break.>, <helpid>, <.invisible.>, <.notabstop.>, ;
-            <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, <(field)>, ;
-            <backcolor>, <.rtl.>, <.disabled.>, <{selchange}>, <fontcolor>, ;
-            <.nohidesel.>, <focusedpos>, <.novscroll.>, <.nohscroll.>, <(file)>, ;
-            iif( <.plain.>, 1, <type> ), <{hscroll}>, <{vscroll}>, <nInsType>, <nVer> )
-*/
       oCtrl := TEditRich():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, ;
                   ::StrToValueCtrl( ::aValue[i], "N", cName ), NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ;
                   ::StrToValueCtrl( ::aMaxLength[i], "N", NIL ), NIL, NIL, NIL, .T., .F., NIL, .F., .F., ;
@@ -4595,15 +4272,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_SCROLLBAR
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TScrollBar(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            <min>, <max>, <{change}>, <{lineup}>, <{linedown}>, <{pageup}>, ;
-            <{pagedown}>, <{top}>, <{bottom}>, <{thumb}>, <{track}>, ;
-            <{endtrack}>, <helpid>, <.invisible.>, <tooltip>, <.rtl.>, ;
-            iif( <.horz.>, 0, iif( <.vert.>, 1, NIL ) ), <.attached.>, ;
-            <value>, <disabled>, <lineskip>, <pageskip>, <.auto.> )
-*/
       oCtrl := TScrollBar():Define( cName, ::oDesignForm:Name, ;
                   _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, NIL, NIL, NIL, NIL, NIL, NIL, NIL, NIL, ;
                   NIL, NIL, NIL, NIL, NIL, .F., ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), ::aRTL[i], ;
@@ -4621,13 +4289,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick  := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_SLIDER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TSlider(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <lo>, <hi>, ;
-            <value>, <tooltip>, <{change}>, <.vertical.>, <.noticks.>, ;
-            <.both.>, <.top.>, <.left.>, <helpid>, <.invisible.>, ;
-            <.notabstop.>, <backcolor>, <.rtl.>, <.disabled.> )
-*/
       IF ( j := At( ",", ::aRange[i] ) ) > 0
          nMin := Val( SubStr( ::aRange[i], 1, j - 1 ) )
          nMax := Val( SubStr( ::aRange[i], j + 1 ) )
@@ -4648,14 +4309,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_SPINNER
-/*
-      [ <obj> := ] TSpinner():Define( <(name)>, <(parent)>, <col>, <row>, <width>, ;
-            <value>, <fontname>, <fontsize>, <rl>, <rh>, <tooltip>, <{change}>, ;
-            <{lostfocus}>, <{gotfocus}>, <height>, <helpid>, <.invisible.>, ;
-            <.notabstop.>, <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, ;
-            <.wrap.>, <.readonly.>, <inc>, <backcolor>, <fontcolor>, <.rtl.>, ;
-            <.noborder.>, <.disabled.>, <.boundtext.> )
-*/
       IF ( j := At( ",", ::aRange[i] ) ) > 0
          nMin := Val( SubStr( ::aRange[i], 1, j - 1 ) )
          nMax := Val( SubStr( ::aRange[i], j + 1 ) )
@@ -4683,17 +4336,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick  := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TAB
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TTab(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, {}, {}, ;
-            <value>, <fontname>, <fontsize>, <tooltip>, <{change}>, <.buttons.>, <.flat.>, ;
-            <.hottrack.>, <.vertical.>, <.notabstop.>,, <.bold.>, <.italic.>, ;
-            <.underline.>, <.strikeout.>, {}, <.rtl.>, <.internals.>, ;
-            <.invisible.>, <.disabled.>, <.multiline.>, <.noproc.>, ;
-            <.right.>, <.bottom.>, <{rclick}>, <.ragged.>, <.fwidth.>, NIL, ;
-            <nw>, <nh>, <min>, <hor>, <ver>, NIL, <.il.>, <.ll.>, <.rj.>, <.so.>, ;
-            <{click}>, <cargo> )
-*/
       oCtrl := TTab():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, {}, {}, ;
                   NIL, NIL, NIL, i18n( "Right click on header area to change properties and events or to move/size." ), NIL, ;
                   ::aButtons[i], ::aFlat[i], ::aHotTrack[i], ::aVertical[i], .F., NIL, ::aFontBold[i], ::aFontItalic[i], ;
@@ -4739,15 +4381,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnRClick  := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TEXTARRAY
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TTextArray(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, ;
-            <rowcount>, <colcount>, <.border.>, <.clientedge.>, <fontcolor>, ;
-            <backcolor>, <{action}>, <fontname>, <fontsize>, <.bold.>, ;
-            <.italic.>, <.underline.>, <.strikeout.>, <tooltip>, <helpid>, ;
-            <.invisible.>, <.rtl.>, <value>, <.notabstop.>, <.disabled.>, ;
-            <{gotfocus}>, <{lostfocus}> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, cName, nWidth, nHeight, NIL, NIL, ;
                   ::aFontBold[i], ::aBorder[i], ::aClientEdge[i], ;
                   .F.,.F., .F., WHITE, NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ::aFontItalic[i], ;
@@ -4767,19 +4400,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TEXTBOX
-/*
-      [ <obj> := ] DefineTextBox( <(name)>, <(parent)>, <col>, <row>, <width>, ;
-            <height>, <value>, <fontname>, <fontsize>, <tooltip>, <maxlength>, ;
-            <.upper.>, <.lower.>, <.password.>, <{lostfocus}>, <{gotfocus}>, ;
-            <{change}>, <{enter}>, <.RightAlign.>, <helpid>, <.readonly.>, ;
-            <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, <(field)>, ;
-            <backcolor>, <fontcolor>, <.invisible.>, <.notabstop.>, <.rtl.>, ;
-            <.autoskip.>, <.noborder.>, <focusedpos>, <.disabled.>, <{valid}>, ;
-            <.date.>, <.numeric.>, <inputmask>, <format>, [ <subclass>() ], ;
-            <{action}>, <abitmap>, <btnwidth>, <{action2}>, <{bWhen}>, ;
-            <.centeralign.>, <year>, <{textfilled}>, <nInsType>, <.place.>, ;
-            <.nocm.>, <tb1>, <tb2> )
-*/
       IF NOTEMPTY( ::aImage[i] )
          IF Empty( aImages := ::StrToValueCtrl( ::aImage[i], "A", NIL, 1, 0, "C" ) )
             aImages := { "ZZZ_AAAOOHG", "ZZZ_AAAOOHG" }
@@ -4820,15 +4440,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick  := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TIMEPICKER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TTimePick(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <col>, <row>, <width>, <height>, <v>, ;
-            <fontname>, <fontsize>, <tooltip>, <{change}>, <{lostfocus}>, ;
-            <{gotfocus}>, <.shownone.>, .T., .F., <helpid>, ;
-            <.invisible.>, <.notabstop.>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <(field)>, <{enter}>, <.rtl.>, <.disabled.>, ;
-            <.noborder.>, <cTimeFormat> )
-*/
       oCtrl := TTimePick():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, nWidth, nHeight, NIL, NIL, ;
                   NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, NIL, NIL, ::aShowNone[i], .T., .F., NIL, .F., .F., ;
                   ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, NIL, ::aRTL[i], .F., ;
@@ -4845,10 +4456,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TIMER
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TTimer(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <interval>, <{action}>, <.disabled.>, <.once.> )
-*/
       oCtrl := TLabel():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, cName, nWidth, nHeight, ;
                   NIL, NIL, .F., .F., .F., ;
                   .F., .F., .F., WHITE, NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ;
@@ -4857,19 +4464,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_TREE
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( TTree(), [ <subclass>() ] ): ;
-            Define( <(name)>, <(parent)>, <row>, <col>, <width>, <height>, ;
-            <{change}>, <tooltip>, <fontname>, <fontsize>, <{gotfocus}>, ;
-            <{lostfocus}>, <{dblclick}>, <.break.>, <value>, <helpid>, ;
-            <aImgNode>, <aImgItem>, <.norootbut.>, <.bold.>, <.italic.>, <.underline.>, ;
-            <.strikeout.>, <.itemids.>, <.rtl.>, <{enter}>, <.disabled.>, ;
-            <.invisible.>, <.notabstop.>, <fontcolor>, <backcolor>, <.fullrowsel.>, ;
-            <.checkboxes.>, <.editlabels.>, <.noHScr.>, <.noScr.>, <.hott.>, ;
-            <.nolines.>, <.nobuts.>, <.drag.>, <.single.>, <.noborder.>, <selcolor>, ;
-            <{labeledit}>, <{valid}>, <{checkchange}>, <pixels>, <.selbold.>, ;
-            <.drop.>, <aTarget>, <{ondrop}>, <.own.> )
-*/
       oCtrl := TTree():Define( cName, ::oDesignForm:Name, _OOHG_MouseRow, _OOHG_MouseCol, nWidth, nHeight, NIL, ;
                   ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, NIL, NIL, NIL, NIL, .F., NIL, NIL, NIL, NIL, ;
                   ::aNoRootButton[i], ::aFontBold[i], ::aFontItalic[i],  ::aFontUnderline[i], ::aFontStrikeout[i], ;
@@ -4894,38 +4488,6 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
 
    CASE nControlType == TYPE_XBROWSE
-/*
-      [ <obj> := ] _OOHG_SelectSubClass( iif( <.bycell.>, TXBrowseByCell(), ;
-            TXBrowse() ), [ <subclass>() ] ):Define( <(name)>, <(parent)>, ;
-            <col>, <row>, <width>, <height>, <headers>, <widths>, <Fields>, ;
-            <(workarea)>, <value>, <.delete.>, <.lock.>, <.novscroll.>, ;
-            <.append.>, <{onappend}>, <replacefields>, <fontname>, <fontsize>, ;
-            <tooltip>, <{change}>, <{dblclick}>, <aHeadClick>, <{gotfocus}>, ;
-            <{lostfocus}>, <.style.>, <aImage>, <aJust>, <.break.>, <helpid>, ;
-            <.bold.>, <.italic.>, <.underline.>, <.strikeout.>, <.edit.>, ;
-            <backcolor>, <fontcolor>, <dynamicbackcolor>, <dynamicforecolor>, ;
-            <Picture>, <.rtl.>, <.inplace.>, <editcontrols>, <aReadOnly>, ;
-            <aValidFields>, <aValidMessages>, <{editcell}>, <aWhenFields>, ;
-            <.reccount.>, <columninfo>, ! <.noshowheaders.>, <{enter}>, ;
-            <.disabled.>, <.notabstop.>, <.invisible.>, <.descending.>, ;
-            <{bWhenDel}>, <DelMsg>, <{onDelete}>, <a[j]s>, ;
-            <aImgAlign>, <.fullmove.>, <aSelectedColors>, <aEditKeys>, ;
-            ! <.bffr.>, ;
-            iif( upper( #<focus> ) == "NOFOCUSRECT", .F., ;
-            iif( upper( #<focus> ) == "FOCUSRECT", .T., NIL ) ), ;
-            <.plm.>, <.fixedcols.>, <{abortedit}>, <{click}>, <.fixedwidths.>, ;
-            iif( upper( #<blocks> ) == "FIXEDBLOCKS", .T., ;
-            iif( upper( #<blocks> ) == "DYNAMICBLOCKS", .F., NIL ) ), ;
-            <{bBefMov}>, <{bAftMov}>, <{bBefSiz}>, <{bAftSiz}>, <{bBefAut}>, ;
-            <.excel.>, <.buts.>, <.nodelmsg.>, ;
-            iif( upper( #<edtctrls> ) == "FIXEDCONTROLS", .T., ;
-            iif( upper( #<edtctrls> ) == "DYNAMICCONTROLS", .F., NIL ) ), ;
-            <.noshowempty.>, <.upcol.>, <{bheadrclick}>, <.nomodal.>, ;
-            <.extdbl.>, <.silent.>, ! Upper( #<alta> ) == "DISABLEALTA", ;
-            <.noshow.>, <{rclick}>, <.checkboxes.>, <{checkchange}>, ;
-            <{rowrefresh}>, <aDefVal>, <{editend}>, ! <.efv.>, <{beforedit}>, ;
-            <{edtval}>, <.klc.>, <.ctt.>, <.nohsb.>, <aHeadDblClick> )
-*/
       aHeaders := ::StrToValueCtrl( ::aHeaders[i], "A", { "Head1", "Head2" }, 1, 0, "C" )
       FOR j := 1 TO Len( aHeaders )
          IF Empty( aHeaders[j] )
