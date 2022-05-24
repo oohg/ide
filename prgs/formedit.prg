@@ -8733,7 +8733,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    LOCAL cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
    LOCAL cOnHeadRClick, cOnInsert, cOnLostFocus, cOnQueryData, cOnRClick, cParent, cReadOnly, cSubClass, cTimeOut, cToolTip, cVal
    LOCAL cValid, cValidMess, cValue, cWhen, cWidths, lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete
-   LOCAL lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp
+   LOCAL lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp
    LOCAL lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoDefaultMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels
    LOCAL lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent, lSingleBuffer, lStrikeout, lUnderline, lVirtual
    LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
@@ -8878,6 +8878,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    lExtDblClick        := ( ::ReadLogicalData( i, "EXTDBLCLICK", "F" ) == "T" )
    lSilent             := ( ::ReadLogicalData( i, "SILENT", "F" ) == "T" )
    lEnableAltA         := ( ::ReadLogicalData( i, "ENABLEALTA", "F" ) == "T" )
+   lDisableAltA        := ( ::ReadLogicalData( i, "DISABLEALTA", "F" ) == "T" )
    lNoShow             := ( ::ReadLogicalData( i, "NOSHOWALWAYS", "F" ) == "T" )
    lNoneUnsels         := ( ::ReadLogicalData( i, "NONEUNSELS", "F" ) == "T" )
    lCBE                := ( ::ReadLogicalData( i, "CHANGEBEFOREEDIT", "F" ) == "T" )
@@ -8994,7 +8995,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    ::aNoRClickOnChk[i] := lNoRClickOnChk
    ::aExtDblClick[i]   := lExtDblClick
    ::aSilent[i]        := lSilent
-   ::aEnableAltA[i]    := lEnableAltA
+   ::aEnableAltA[i]    := lEnableAltA .AND. ! lDisableAltA
    ::aNoShowAlways[i]  := lNoShow
    ::aNoneUnsels[i]    := lNoneUnsels
    ::aChgBefEdit[i]    := lCBE
