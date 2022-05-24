@@ -151,6 +151,7 @@
                               { "aEditHeight",    "" }, ;
                               { "aEditLikeExcel", .F. }, ;
                               { "aEditKeys",      "" }, ;
+                              { "aEditKeysFun",   "" }, ;
                               { "aEditLabels",    .F. }, ;
                               { "aEnableAltA",    .F. }, ;
                               { "aExclude",       "" }, ;
@@ -247,6 +248,7 @@
                               { "aNoClickOnChk",  .F. }, ;
                               { "aNoClone",       .F. }, ;
                               { "aNoContext",     .F. }, ;
+                              { "aNoDefMsg",      .F. }, ;
                               { "aNodeImages",    "" }, ;
                               { "aNoDelMsg",      .F. }, ;
                               { "aNoDestroy",     .F. }, ;
@@ -7746,14 +7748,14 @@ METHOD pBrowse( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
    LOCAL cCargo, cColControls, cColumnInfo, cDefVal, cDeleteMsg, cDeleteWhen, cDynBackColor, cDynamicBlocks, cDynamicCtrls
-   LOCAL cDynForecolor, cEditCell, cEditKeys, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cForceRefresh, cHdrImgAlign
+   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cForceRefresh, cHdrImgAlign
    LOCAL cHeaderImages, cHeaderColors, cHeaders, cHelpId, cImage, cInputMask, cJustify, cNewAtRow, cNoFocusRect, cNoRefresh, cObj
    LOCAL cOnAbortEdit, cOnAppend, cOnBfrEdtCell, cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter
    LOCAL cOnGotFocus, cOnHeadClick, cOnHeadDClick, cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh, cParent, cReadOnly
    LOCAL cReplaceField, cSubClass, cSync, cTimeOut, cToolTip, cUnSync, cVal, cValid, cValidMess, cValue, cWhen, cWidths, cWorkArea
    LOCAL lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete, lDescending, lDisableAltA, lEdit, lEditFV
    LOCAL lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock
-   LOCAL lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL
+   LOCAL lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL
    LOCAL lRecCount, lSilent, lSingleBuffer, lStrikeout, lUnderline, lUpdateAll, lUpdateColors, lVisible, nCol, nFontSize, nHeight
    LOCAL nRow, nWidth, oCtrl, uFontName, uFontSize
 
@@ -7862,6 +7864,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    lFullMove           := ( ::ReadLogicalData( i, "FULLMOVE", "F" ) == "T" )
    aSelColor           := UpperNIL( ::ReadStringData( i, "SELECTEDCOLORS", "" ) )
    cEditKeys           := ::ReadStringData( i, "EDITKEYS", "" )
+   cEditKeysFun        := ::ReadStringData( i, "EDITKEYSFUN", "" )
    cForceRefresh       := ::ReadLogicalData( i, "FORCEREFRESH", "N" )
    cNoRefresh          := ::ReadLogicalData( i, "NOREFRESH", "N" )
    lSingleBuffer       := ( ::ReadLogicalData( i, "SINGLEBUFFER", "F" ) == "T" )
@@ -7871,6 +7874,7 @@ METHOD pBrowse( i ) CLASS TFormEditor
    cSync               := ::ReadLogicalData( i, "SYNCHRONIZED", "N" )
    cUnSync             := ::ReadLogicalData( i, "UNSYNCHRONIZED", "N" )
    lFixedCols          := ( ::ReadLogicalData( i, "FIXEDCOLS", "F" ) == "T" )
+   lNoDefaultMsg       := ( ::ReadLogicalData( i, "NODEFAULTMSG", "F" ) == "T" )
    lNoDeleteMsg        := ( ::ReadLogicalData( i, "NODELETEMSG", "F" ) == "T" )
    lUpdateAll          := ( ::ReadLogicalData( i, "UPDATEALL", "F" ) == "T" )
    cOnAbortEdit        := ::ReadStringData( i, "ON ABORTEDIT", "" )
@@ -7992,12 +7996,14 @@ METHOD pBrowse( i ) CLASS TFormEditor
    ::aFullMove[i]      := lFullMove
    ::aSelColor[i]      := aSelColor
    ::aEditKeys[i]      := cEditKeys
+   ::aEditKeysFun[i]   := cEditKeysFun
    ::aRefresh[i]       := iif( cForceRefresh == cNoRefresh, "NIL", iif( cForceRefresh == "T" .OR. cNoRefresh == "F", "REFRESH_FORCE", "REFRESH_NO" ) )
    ::aSingleBuffer[i]  := lSingleBuffer
    ::aFocusRect[i]     := iif( cFocusRect == cNoFocusRect, "NIL", iif( cFocusRect == "T" .OR. cNoFocusRect == "F", ".T.", ".F." ) )
    ::aPLM[i]           := lPLM
    ::aSync[i]          := iif( cUnSync == cSync, "NIL", iif( cSync == "T" .OR. cUnSync == "F", ".T.", ".F." ) )
    ::aFixedCols[i]     := lFixedCols
+   ::aNoDefMsg[i]      := lNoDefaultMsg
    ::aNoDelMsg[i]      := lNoDeleteMsg
    ::aUpdate[i]        := lUpdateAll
    ::aOnAbortEdit[i]   := cOnAbortEdit
@@ -9156,14 +9162,14 @@ METHOD pFrame( i ) CLASS TFormEditor
 METHOD pGrid( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
-   LOCAL cCargo, cColControls, cDeleteMsg, cDeleteWhen, cDynamicCtrls, cDynBackColor, cDynForecolor, cEditCell, cEditKeys
+   LOCAL cCargo, cColControls, cDeleteMsg, cDeleteWhen, cDynamicCtrls, cDynBackColor, cDynForecolor, cEditCell, cEditKeys, cEditKeysFun
    LOCAL cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHeaderColors, cHeaderImages, cHeaders, cHelpId, cImage, cInputMask
    LOCAL cItemCount, cItems, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBeforeIns, cOnBFREdtCell, cOnChange
    LOCAL cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
    LOCAL cOnHeadRClick, cOnInsert, cOnLostFocus, cOnQueryData, cOnRClick, cParent, cReadOnly, cSubClass, cTimeOut, cToolTip, cVal
    LOCAL cValid, cValidMess, cValue, cWhen, cWidths, lAppend, lBold, lBreak, lButtons, lByCell, lCBE, lCellTT, lCheckBoxes, lDelete
    LOCAL lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols, lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp
-   LOCAL lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels
+   LOCAL lLikeExcel, lMultiSelect, lNoClickOnChk, lNoDeleteMsg, lNoDefaultMsg, lNoHeaders, lNoHScroll, lNoLines, lNoModalEdit, lNoneUnsels
    LOCAL lNoRClickOnChk, lNoShow, lNoTabStop, lNoVScroll, lPLM, lRTL, lSilent, lSingleBuffer, lStrikeout, lUnderline, lVirtual
    LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
@@ -9264,6 +9270,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    lByCell             := ( ::ReadLogicalData( i, "CELLNAVIGATION", iif( lByCell, "T", "F" ) ) == "T" )
    aSelColor           := UpperNIL( ::ReadStringData( i, "SELECTEDCOLORS", "" ) )
    cEditKeys           := ::ReadStringData( i, "EDITKEYS", "" )
+   cEditKeysFun        := ::ReadStringData( i, "EDITKEYSFUN", "" )
    lCheckBoxes         := ( ::ReadLogicalData( i, "CHECKBOXES", "F" ) == "T" )
    cOnCheckChg         := ::ReadStringData( i, "ON CHECKCHANGE", "" )
    cOnCheckChg         := ::ReadStringData( i, "ONCHECKCHANGE", cOnCheckChg )
@@ -9288,6 +9295,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    cDeleteMsg          := ::ReadStringData( i, "DELETEMSG", "" )
    cOnDelete           := ::ReadStringData( i, "ON DELETE", "" )
    cOnDelete           := ::ReadStringData( i, "ONDELETE", cOnDelete )
+   lNoDefaultMsg       := ( ::ReadLogicalData( i, "NODEFAULTMSG", "F" ) == "T" )
    lNoDeleteMsg        := ( ::ReadLogicalData( i, "NODELETEMSG", "F" ) == "T" )
    lAppend             := ( ::ReadLogicalData( i, "APPEND", "F" ) == "T" )
    lAppend             := ( ::ReadLogicalData( i, "ALLOWAPPEND", iif( lAppend, "T", "F" ) ) == "T" )
@@ -9390,6 +9398,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    ::aNavByCell[i]     := lByCell
    ::aSelColor[i]      := aSelColor
    ::aEditKeys[i]      := cEditKeys
+   ::aEditKeysFun[i]   := cEditKeysFun
    ::aCheckBoxes[i]    := lCheckBoxes
    ::aOnCheckChg[i]    := cOnCheckChg
    ::aSingleBuffer[i]  := lSingleBuffer
@@ -9409,6 +9418,7 @@ METHOD pGrid( i ) CLASS TFormEditor
    ::aDeleteWhen[i]    := cDeleteWhen
    ::aDeleteMsg[i]     := cDeleteMsg
    ::aOnDelete[i]      := cOnDelete
+   ::aNoDefMsg[i]      := lNoDefaultMsg
    ::aNoDelMsg[i]      := lNoDeleteMsg
    ::aAppend[i]        := lAppend
    ::aOnAppend[i]      := cOnAppend
@@ -12187,13 +12197,13 @@ METHOD pXBrowse( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, aSelColor, cAction, cAfterColMove, cAfterColSize, cBeforeAutoFit, cBeforeColMove, cBeforeColSize
    LOCAL cCargo, cColControls, cColumnInfo, cDefVal, cDeleteMsg, cDeleteWhen, cDynamicBlocks, cDynamicCtrls, cDynBackColor
-   LOCAL cDynForecolor, cEditCell, cEditKeys, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHeaderColors
+   LOCAL cDynForecolor, cEditCell, cEditKeys, cEditKeysFun, cFields, cFixedBlocks, cFixedCtrls, cFocusRect, cFontName, cHdrImgAlign, cHeaderColors
    LOCAL cHeaderImages, cHeaders, cHelpId, cImage, cInputMask, cJustify, cNoFocusRect, cObj, cOnAbortEdit, cOnAppend, cOnBfrEdtCell
    LOCAL cOnChange, cOnCheckChg, cOnDblClick, cOnDelete, cOnEditCell, cOnEditEnd, cOnEnter, cOnGotFocus, cOnHeadClick, cOnHeadDClick
    LOCAL cOnHeadRClick, cOnLostFocus, cOnRClick, cOnRowRefresh, cParent, cReadOnly, cReplaceField, cSubClass, cTimeOut, cToolTip
    LOCAL cVal, cValid, cValidMess, cValue, cWhen, cWidths, cWorkArea, lAppend, lBold, lBreak, lButtons, lByCell, lCellTT
    LOCAL lCheckBoxes, lDelete, lDescending, lDisableAltA, lEdit, lEditFV, lEnableAltA, lEnabled, lExtDblClick, lFixedCols
-   LOCAL lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines
+   LOCAL lFixedWidths, lFullMove, lInPlace, lItalic, lKeysLkClp, lLikeExcel, lLock, lNoDefaultMsg, lNoDeleteMsg, lNoHeaders, lNoHScroll, lNoLines
    LOCAL lNoModalEdit, lNoShow, lNoShowEmpty, lNoTabStop, lNoVScroll, lPLM, lRecCount, lRTL, lSilent, lSingleBuffer, lStrikeout
    LOCAL lUnderline, lUpdateColors, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
@@ -12301,6 +12311,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    lFullMove           := ( ::ReadLogicalData( i, "FULLMOVE", "F" ) == "T" )
    aSelColor           := UpperNIL( ::ReadStringData( i, "SELECTEDCOLORS", "" ) )
    cEditKeys           := ::ReadStringData( i, "EDITKEYS", "" )
+   cEditKeysFun        := ::ReadStringData( i, "EDITKEYSFUN", "" )
    lSingleBuffer       := ( ::ReadLogicalData( i, "SINGLEBUFFER", "F" ) == "T" )
    cFocusRect          := ::ReadLogicalData( i, "FOCUSRECT", "F" )
    cNoFocusRect        := ::ReadLogicalData( i, "NOFOCUSRECT", "F" )
@@ -12318,6 +12329,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cBeforeAutoFit      := ::ReadStringData( i, "BEFOREAUTOFIT", "" )
    lLikeExcel          := ( ::ReadLogicalData( i, "EDITLIKEEXCEL", "F" ) == "T" )
    lButtons            := ( ::ReadLogicalData( i, "USEBUTTONS", "F" ) == "T" )
+   lNoDefaultMsg       := ( ::ReadLogicalData( i, "NODEFAULTMSG", "F" ) == "T" )
    lNoDeleteMsg        := ( ::ReadLogicalData( i, "NODELETEMSG", "F" ) == "T" )
    cFixedCtrls         := ::ReadLogicalData( i, "FIXEDCONTROLS", "N" )
    cDynamicCtrls       := ::ReadLogicalData( i, "DYNAMICCONTROLS", "N" )
@@ -12424,6 +12436,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    ::aFullMove[i]      := lFullMove
    ::aSelColor[i]      := aSelColor
    ::aEditKeys[i]      := cEditKeys
+   ::aEditKeysFun[i]   := cEditKeysFun
    ::aSingleBuffer[i]  := lSingleBuffer
    ::aFocusRect[i]     := iif( cFocusRect == cNoFocusRect, "NIL", iif( cFocusRect == "T" .OR. cNoFocusRect == "F", ".T.", ".F." ) )
    ::aPLM[i]           := lPLM
@@ -12438,6 +12451,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    ::aBeforeAutoFit[i] := cBeforeAutoFit
    ::aEditLikeExcel[i] := lLikeExcel
    ::aUseButtons[i]    := lButtons
+   ::aNoDefMsg[i]      := lNoDefaultMsg
    ::aNoDelMsg[i]      := lNoDeleteMsg
    ::aFixedCtrls[i]    := iif( cDynamicCtrls == cFixedCtrls, "NIL", iif( cFixedCtrls == "T" .OR. cDynamicCtrls == "F", ".T.", ".F." ) )
    ::aShowNone[i]      := lNoShowEmpty
@@ -13646,6 +13660,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aEditKeys[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYS " + AllTrim( ::aEditKeys[j] )
          ENDIF
+         IF NOTEMPTY( ::aEditKeysFun[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYSFUN " + AllTrim( ::aEditKeysFun[j] )
+         ENDIF
          IF ::aRefresh[j] == "REFRESH_FORCE"
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FORCEREFRESH"
          ELSEIF ::aRefresh[j] == "REFRESH_NO"
@@ -13664,6 +13681,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aFixedCols[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "FIXEDCOLS"
+         ENDIF
+         IF ::aNoDefMsg[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODEFAULTMSG"
          ENDIF
          IF ::aNoDelMsg[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODELETEMSG"
@@ -14951,6 +14971,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aEditKeys[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYS " + AllTrim( ::aEditKeys[j] )
          ENDIF
+         IF NOTEMPTY( ::aEditKeysFun[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYSFUN " + AllTrim( ::aEditKeysFun[j] )
+         ENDIF
          IF ::aCheckBoxes[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CHECKBOXES"
          ENDIF
@@ -15004,6 +15027,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF NOTEMPTY( ::aOnDelete[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "ON DELETE " + AllTrim( ::aOnDelete[j] )
+         ENDIF
+         IF ::aNoDefMsg[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODEFAULTMSG"
          ENDIF
          IF ::aNoDelMsg[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODELETEMSG"
@@ -17698,6 +17724,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aEditKeys[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYS " + AllTrim( ::aEditKeys[j] )
          ENDIF
+         IF NOTEMPTY( ::aEditKeysFun[j] )
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EDITKEYSFUN " + AllTrim( ::aEditKeysFun[j] )
+         ENDIF
          IF ::aSingleBuffer[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SINGLEBUFFER"
          ENDIF
@@ -17738,6 +17767,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aUseButtons[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "USEBUTTONS"
+         ENDIF
+         IF ::aNoDefMsg[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODEFAULTMSG"
          ENDIF
          IF ::aNoDelMsg[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NODELETEMSG"
@@ -18002,6 +18034,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "EditCellValue",      ::aEditCellValue[j],                                                           .F.  }, ;
                        { "EditFirstVisible",   ::aEditFirstVis[j],                                                            .F.  }, ;
                        { "EditKeys",           ::aEditKeys[j],                                                                1000 }, ;
+                       { "EditKeysFun",        ::aEditKeysFun[j],                                                             1000 }, ;
                        { "EditLikeExcel",      ::aEditLikeExcel[j],                                                           .F.  }, ;
                        { "ExtDblClick",        ::aExtDblClick[j],                                                             .F.  }, ;
                        { "Fields",             ::aFields[j],                                                                  1000 }, ;
@@ -18025,6 +18058,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Lock",               ::aLock[j],                                                                    .F.  }, ;
                        { "NavigateByCell",     ::aNavByCell[j],                                                               .F.  }, ;
                        { "NewAtRow",           ::aNewAtRow[j],                                                                1000 }, ;
+                       { "NoDefaultMsg",       ::aNoDefMsg[j],                                                                .F.  }, ;
                        { "NoDeleteMsg",        ::aNoDelMsg[j],                                                                .F.  }, ;
                        { "NoHeaders",          ::aNoHeaders[j],                                                               .F.  }, ;
                        { "NoHScroll",          ::aNoHScroll[j],                                                               .F.  }, ;
@@ -18091,6 +18125,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aEditCellValue[j]    := aResults[ ++k ]
       ::aEditFirstVis[j]     := aResults[ ++k ]
       ::aEditKeys[j]         := aResults[ ++k ]
+      ::aEditKeysFun[j]      := aResults[ ++k ]
       ::aEditLikeExcel[j]    := aResults[ ++k ]
       ::aExtDblClick[j]      := aResults[ ++k ]
       ::aFields[j]           := aResults[ ++k ]
@@ -18114,6 +18149,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aLock[j]             := aResults[ ++k ]
       ::aNavByCell[j]        := aResults[ ++k ]
       ::aNewAtRow[j]         := aResults[ ++k ]
+      ::aNoDefMsg[j]         := aResults[ ++k ]
       ::aNoDelMsg[j]         := aResults[ ++k ]
       ::aNoHeaders[j]        := aResults[ ++k ]
       ::aNoHScroll[j]        := aResults[ ++k ]
@@ -18718,6 +18754,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "EditCellValue",      ::aEditCellValue[j],                                                           1000 }, ;
                        { "EditFirstVisible",   ::aEditFirstVis[j],                                                            .F.  }, ;
                        { "EditKeys",           ::aEditKeys[j],                                                                1000 }, ;
+                       { "EditKeysFun",        ::aEditKeysFun[j],                                                             1000 }, ;
                        { "EditLikeExcel",      ::aEditLikeExcel[j],                                                           .F.  }, ;
                        { "EnableAltA",         ::aEnableAltA[j],                                                              .F.  }, ;
                        { "ExtDblClick",        ::aExtDblClick[j],                                                             .F.  }, ;
@@ -18742,6 +18779,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "MultiSelect",        ::aMultiSelect[j],                                                             .F.  }, ;
                        { "NavigateByCell",     ::aNavByCell[j],                                                               .F.  }, ;
                        { "NoClickOnCheckBox",  ::aNoClickOnChk[j],                                                            .F.  }, ;
+                       { "NoDefaultMsg",       ::aNoDefMsg[j],                                                                .F.  }, ;
                        { "NoDeleteMsg",        ::aNoDelMsg[j],                                                                .F.  }, ;
                        { "NoHeaders",          ::aNoHeaders[j],                                                               .F.  }, ;
                        { "NoHScroll",          ::aNoHScroll[j],                                                               .F.  }, ;
@@ -18799,6 +18837,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aEditCellValue[j]    := aResults[ ++k ]
       ::aEditFirstVis[j]     := aResults[ ++k ]
       ::aEditKeys[j]         := aResults[ ++k ]
+      ::aEditKeysFun[j]      := aResults[ ++k ]
       ::aEditLikeExcel[j]    := aResults[ ++k ]
       ::aEnableAltA[j]       := aResults[ ++k ]
       ::aExtDblClick[j]      := aResults[ ++k ]
@@ -18823,6 +18862,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aMultiSelect[j]      := aResults[ ++k ]
       ::aNavByCell[j]        := aResults[ ++k ]
       ::aNoClickOnChk[j]     := aResults[ ++k ]
+      ::aNoDefMsg[j]         := aResults[ ++k ]
       ::aNoDelMsg[j]         := aResults[ ++k ]
       ::aNoHeaders[j]        := aResults[ ++k ]
       ::aNoHScroll[j]        := aResults[ ++k ]
@@ -20189,6 +20229,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "EditCellValue",      ::aEditCellValue[j],                                                           1000 }, ;
                        { "EditFirstVisible",   ::aEditFirstVis[j],                                                            .F.  }, ;
                        { "EditKeys",           ::aEditKeys[j],                                                                1000 }, ;
+                       { "EditKeysFun",        ::aEditKeysFun[j],                                                             1000 }, ;
                        { "EditLikeExcel",      ::aEditLikeExcel[j],                                                           .F.  }, ;
                        { "ExtDblClick",        ::aExtDblClick[j],                                                             .F.  }, ;
                        { "Fields",             ::aFields[j],                                                                  1000 }, ;
@@ -20211,6 +20252,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "KeysLikeClipper",    ::aKeysLkClp[j],                                                               .F.  }, ;
                        { "Lock",               ::aLock[j],                                                                    .F.  }, ;
                        { "NavigateBycell",     ::aNavByCell[j],                                                               .F.  }, ;
+                       { "NoDefaultMsg",       ::aNoDefMsg[j],                                                                .F.  }, ;
                        { "NoDeleteMsg",        ::aNoDelMsg[j],                                                                .F.  }, ;
                        { "NoHeaders",          ::aNoHeaders[j],                                                               .F.  }, ;
                        { "NoHScroll",          ::aNoHScroll[j],                                                               .F.  }, ;
@@ -20273,6 +20315,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aEditCellValue[j]    := aResults[ ++k ]
       ::aEditFirstVis[j]     := aResults[ ++k ]
       ::aEditKeys[j]         := aResults[ ++k ]
+      ::aEditKeysFun[j]      := aResults[ ++k ]
       ::aEditLikeExcel[j]    := aResults[ ++k ]
       ::aExtDblClick[j]      := aResults[ ++k ]
       ::aFields[j]           := aResults[ ++k ]
@@ -20295,6 +20338,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aKeysLkClp[j]        := aResults[ ++k ]
       ::aLock[j]             := aResults[ ++k ]
       ::aNavByCell[j]        := aResults[ ++k ]
+      ::aNoDefMsg[j]         := aResults[ ++k ]
       ::aNoDelMsg[j]         := aResults[ ++k ]
       ::aNoHeaders[j]        := aResults[ ++k ]
       ::aNoHScroll[j]        := aResults[ ++k ]
