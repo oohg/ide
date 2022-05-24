@@ -12,6 +12,44 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-05-24 20:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for FILLRECT and NOFILLRECT clauses for CheckBox control.
+   #27
+     ! Click on CheckBox control does not outline it.
+   #35
+
+2022-05-23 21:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for HEADERBACKCOLORS to Grid, Browse and XBrowse controls.
+   #27
+
+2022-05-23 21:37 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for DISABLEALTA to Grid controls.
+
+2022-05-23 21:26 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     - Some comments.
+
+2022-05-23 21:22 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for REDRAWONADD to Tree control.
+     ! Form's BORDER property is not saved.
+   #27
+
+2022-05-23 21:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for BORDER to forms.
+     % Use an index instead of fixed numbers to access form's properties.
+   #27
+
+2022-05-23 21:03 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for EDITKEYSFUN and NODEFAULTMSG to Grid, Browse and
+       XBrowse controls.
+   #27
+
 2022-05-21 22:48 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Support for clauses ALLOWEDIT and HEADERFONTCOLORS to Browse and
