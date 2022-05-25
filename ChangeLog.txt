@@ -12,6 +12,11 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-05-25 19:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     + Support for AUTOWIDTH and AUTOHEIGHT to Label control.
+   #27
+
 2022-05-24 20:21 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Support for FILLRECT and NOFILLRECT clauses for CheckBox control.
