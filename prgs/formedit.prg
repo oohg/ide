@@ -87,10 +87,12 @@
                               { "aAlignV",        "NIL" }, ;
                               { "aAppend",        .F. }, ;
                               { "aAttached",      .F. }, ;
+                              { "aAutoHeight",    .F. }, ;
                               { "aAutoMove",      .F. }, ;
                               { "aAutoPlay",      .F. }, ;
                               { "aAutoSize",      .F. }, ;
                               { "aAutoSkip",      .F. }, ;
+                              { "aAutoWidth",     .F. }, ;
                               { "aBackColor",     "NIL" }, ;
                               { "aBackground",    "" }, ;
                               { "aBackgroundClr", "NIL" }, ;
@@ -437,7 +439,7 @@
 #define TYPE_DATEPICKER         12
 #define TYPE_TEXTBOX            13
 #define TYPE_EDITBOX            14
-#define TYPE_LABEL             15
+#define TYPE_LABEL              15
 #define TYPE_PLAYER             16
 #define TYPE_PROGRESSBAR        17
 #define TYPE_RADIOGROUP         18
@@ -4019,7 +4021,8 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
                   ::aHScroll[i], ::aVScroll[i], ::aTransparent[i], NIL, NIL, NIL, ;
                   ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, .F., ::aFontItalic[i], ::aFontUnderline[i], ;
                   ::aFontStrikeout[i], ::aAutoSize[i], ::aRightAlign[i], ::aCenterAlign[i], ::aRTL[i], ::aNoWrap[i], ;
-                  ::aNoPrefix[i], ::StrToValueCtrl( ::aInputMask[i], "C", NIL ), .F., ::aVCenter[i] )
+                  ::aNoPrefix[i], ::StrToValueCtrl( ::aInputMask[i], "C", NIL ), .F., ::aVCenter[i], NIL, ;
+                  NIL, NIL, NIL, ::aAutoWidth[i], ::aAutoHeight[i] )
       IF ! Empty( ::aFontName[i] )
          oCtrl:FontName := ::aFontName[i]
       ENDIF
@@ -9433,9 +9436,9 @@ METHOD pIPAddress( i ) CLASS TFormEditor
 METHOD pLabel( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cAction, cCargo, cCursor, cFontName, cHelpId, cInputMask, cObj, cOnDblClick, cOnMouseLeave
-   LOCAL cOnMouseMove, cParent, cSubClass, cToolTip, cVal, cValue, lAutoSize, lBold, lBorder, lCenterAlign, lClientEdge, lEnabled
-   LOCAL lHScroll, lItalic, lNoPrefix, lNoWrap, lRightAlign, lRTL, lStrikeout, lTrans, lUnderline, lVCenter, lVisible, lVScroll
-   LOCAL nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cOnMouseMove, cParent, cSubClass, cToolTip, cVal, cValue, lAutoHeight, lAutoSize, lAutoWidth, lBold, lBorder, lCenterAlign
+   LOCAL lClientEdge, lEnabled, lHScroll, lItalic, lNoPrefix, lNoWrap, lRightAlign, lRTL, lStrikeout, lTrans, lUnderline, lVCenter
+   LOCAL lVisible, lVScroll, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -9448,7 +9451,9 @@ METHOD pLabel( i ) CLASS TFormEditor
    cAction             := ::ReadStringData( i, "ACTION", "" )
    cAction             := ::ReadStringData( i, "ON CLICK",cAction )
    cAction             := ::ReadStringData( i, "ONCLICK", cAction )
+   lAutoHeight         := ( ::ReadLogicalData( i, "AUTOHEIGHT", "F" ) == "T" )
    lAutoSize           := ( ::ReadLogicalData( i, "AUTOSIZE", "F" ) == "T" )
+   lAutoWidth          := ( ::ReadLogicalData( i, "AUTOWIDTH", "F" ) == "T" )
    uFontName           := ::ReadStringData( i, "FONT", "" )
    uFontName           := ::ReadStringData( i, "FONTNAME", uFontName )
    uFontName           := ::ReadOopData( i, "FONTNAME", uFontName )
@@ -9511,7 +9516,9 @@ METHOD pLabel( i ) CLASS TFormEditor
    ::aCObj[i]          := cObj
    ::aValue[i]         := cValue
    ::aAction[i]        := cAction
+   ::aAutoHeight[i]    := lAutoHeight
    ::aAutoSize[i]      := lAutoSize
+   ::aAutoWidth[i]     := lAutoWidth
    ::aFontName[i]      := cFontName
    ::aFontNameFrm[i]   := uFontName
    ::aFontSize[i]      := nFontSize
@@ -15067,6 +15074,12 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          ENDIF
          IF ::aAutoSize[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "AUTOSIZE"
+         ELSEIF ::aAutoHeight[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "AUTOHEIGHT"
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "WIDTH " + LTrim( Str( nWidth ) )
+         ELSEIF ::aAutoWidth[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "AUTOWIDTH"
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEIGHT " + LTrim( Str( nHeight ) )
          ELSE
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "WIDTH " + LTrim( Str( nWidth ) )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "HEIGHT " + LTrim( Str( nHeight ) )
@@ -18694,7 +18707,9 @@ METHOD PropertiesClick() CLASS TFormEditor
    CASE TYPE_LABEL
       aData       := { { "Name",               ::aName[j],                                                                    1000 }, ;
                        { "Obj",                ::aCObj[j],                                                                    1000 }, ;
+                       { "AutoHeight",         ::aAutoHeight[j],                                                              .F.  }, ;
                        { "AutoSize",           ::aAutoSize[j],                                                                .F.  }, ;
+                       { "AutoWidth",          ::aAutoWidth[j],                                                               .F.  }, ;
                        { "Border",             ::aBorder[j],                                                                  .F.  }, ;
                        { "Cargo",              ::aCargo[j],                                                                   1000 }, ;
                        { "CenterAlign",        ::aCenterAlign[j],                                                             .F.  }, ;
@@ -18729,7 +18744,9 @@ METHOD PropertiesClick() CLASS TFormEditor
       k := 1
       ::aName[j]             := iif( ! ::IsUnique( aResults[k], j ), ::aName[j], AllTrim( aResults[k] ) )
       ::aCObj[j]             := aResults[ ++k ]
+      ::aAutoHeight[j]       := aResults[ ++k ]
       ::aAutoSize[j]         := aResults[ ++k ]
+      ::aAutoWidth[j]        := aResults[ ++k ]
       ::aBorder[j]           := aResults[ ++k ]
       ::aCargo[j]            := aResults[ ++k ]
       ::aCenterAlign[j]      := aResults[ ++k ]
