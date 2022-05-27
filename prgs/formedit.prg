@@ -2653,11 +2653,11 @@ METHOD SetFontTypeIDE( si ) CLASS TFormEditor
          RETURN NIL
       ENDIF
       oControl := ::oDesignForm:aControls[ia]
-      ::aFontName[si]      := ""
-      ::aFontNameFrm[si]   := ""
-      ::aFontSize[si]      := 0
-      ::aFontSizeFrm[si]   := ""
-      ::aFontColor[si]     := "NIL"
+      ::aFontName[si]      := ::myIde:cFormDefFontName
+      ::aFontNameFrm[si]   := ::myIde:cFormDefFontName
+      ::aFontSize[si]      := ::myIde:nFormDefFontSize
+      ::aFontSizeFrm[si]   := LTrim( Str( ::aFontSize[si] ) )
+      ::aFontColor[si]     := ::myIde:cFormDefFontColor
       ::aFontBold[si]      := .F.
       ::aFontItalic[si]    := .F.
       ::aFontUnderline[si] := .F.
