@@ -1099,7 +1099,8 @@ DEFINE WINDOW TEMPLATE ;
             WIDTH 30 ;
             HEIGHT 24 ;
             CAPTION "..." ;
-            ACTION ResetPreferredFont( ::Form_prefer, @aFont ) ;
+            ACTION ( aFont := { '', 0, .F., .F., NIL, .F., .F., 0 }, ;
+                     ::Form_prefer:text_font:value := ::a_OOHG_DefaultFont[1] + " " + LTrim( Str( ::a_OOHG_DefaultFont[2] ) ) ) ;
             TOOLTIP i18n( "Set OOHG's default font as default for newly created forms." )
 
          @ 120, 20 LABEL label_21 ;
