@@ -3732,21 +3732,16 @@ METHOD CreateControl( nControlType, i, nWidth, nHeight, aCtrls ) CLASS TFormEdit
 
    CASE nControlType == TYPE_CHECKBOX
       oCtrl := TCheckBox():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
-                  ::StrToValueCtrl( ::aCaption[i], "C", cName ), ::StrToValueCtrl( ::aValue[i], "L", NIL ), ;
-                  NIL, NIL, ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, nWidth, nHeight, NIL, NIL, ;
-                  NIL, .F., .F., ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], ;
-                  NIL, NIL, NIL, ::aTransparent[i], ::aAutoSize[i], ::aRTL[i], .F., ::a3State[i], ::aLeftJust[i], ;
-                  iif( ::aDrawBy[i] == "OOHGDRAW", .T., iif( ::aDrawBy[i] == "WINDRAW", .F., NIL ) ), NIL, ::aNoFocusRect[i] )
-      IF ! Empty( ::aFontName[i] )
-         oCtrl:FontName := ::aFontName[i]
-      ENDIF
-      IF ::aFontSize[i] > 0
-         oCtrl:FontSize := ::aFontSize[i]
-      ENDIF
-      oCtrl:FontColor  := ::myIde:StrToColor( ::aFontColor[i] )
-      oCtrl:BackColor  := ::myIde:StrToColor( ::aBackColor[i] )
-      oCtrl:OnChange   := { || ::DrawOutline( oCtrl ) }   // OnClick codeblock is ignored
+                  ::StrToValueCtrl( ::aCaption[i], "C", cName ), ::StrToValueCtrl( ::aValue[i], "L", NIL ), ::aFontName[i], ;
+                  ::aFontSize[i], ::StrToValueCtrl( ::aToolTip[i], "C", NIL ), NIL, nWidth, nHeight, NIL, NIL, NIL, .F., .F., ;
+                  ::aFontBold[i], ::aFontItalic[i], ::aFontUnderline[i], ::aFontStrikeout[i], NIL, ;
+                  ::myIde:StrToColor( ::aBackColor[i] ), ::myIde:StrToColor( ::aFontColor[i] ), ::aTransparent[i], ::aAutoSize[i], ;
+                  ::aRTL[i], .F., ::a3State[i], ::aLeftJust[i], ;
+                  iif( ::aDrawBy[i] == "OOHGDRAW", .T., iif( ::aDrawBy[i] == "WINDRAW", .F., NIL ) ), NIL, ::aNoFocusRect[i], ;
+                  iif( ::aFillRect[i] == "YES", .T., iif( ::aFillRect[i] == "NO", .F., NIL ) ) )
+      oCtrl:OnChange   := { || ::DrawOutline( oCtrl ) }   // OnClick codeblock is ignored by the control so we use OnChange
       oCtrl:OnDblClick := { || ::DrawOutline( oCtrl ), ::PropertiesClick() }
+      oCtrl:Redraw()
 
    CASE nControlType == TYPE_CHECKBUTTON
       oCtrl := TButtonCheck():Define( cName, ::oDesignForm:Name, _OOHG_MouseCol, _OOHG_MouseRow, ;
