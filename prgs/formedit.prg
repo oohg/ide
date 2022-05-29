@@ -562,14 +562,6 @@ CLASS TFormEditor
    DATA lFSplitChild         INIT .F.
    DATA lFStretch            INIT .F.
    DATA lFTopmost            INIT .F.
-   DATA nFHeight             INIT 0
-   DATA nFMaxHeight          INIT 0
-   DATA nFMaxWidth           INIT 0
-   DATA nFMinHeight          INIT 0
-   DATA nFMinWidth           INIT 0
-   DATA nFVirtualH           INIT 0
-   DATA nFVirtualW           INIT 0
-   DATA nFWidth              INIT 0
 
    /* Values of the form's events */
    DATA cFDblClickProcedure  INIT ""
@@ -784,7 +776,7 @@ CLASS TFormEditor
    METHOD TranslateConstant
    METHOD ValCellPos
    METHOD ValGlobalPos
-   METHOD VerifyBar
+   METHOD VerifyStatusBar
 
    ENDCLASS
 
@@ -943,7 +935,7 @@ METHOD EditForm( myIde, cFullName, nEditorIndex, lWait ) CLASS TFormEditor
          ACTION ::StatPropEvents() ;
          WIDTH 30 ;
          HEIGHT 28 ;
-         TOOLTIP i18n( "Statusbar Properties" ) ;
+         TOOLTIP i18n( "StatusBar Properties" ) ;
          DISABLED
 
       @ 0,444 FRAME frame_3 ;
@@ -1352,13 +1344,13 @@ METHOD EditForm( myIde, cFullName, nEditorIndex, lWait ) CLASS TFormEditor
          TOOLTIP "Animated GIF" ;
          ON CHANGE ::ControlClick( 39 )
 
-      @ 377, 00 CHECKBUTTON Control_Statusbar ;
+      @ 377, 00 CHECKBUTTON Control_StatusBar ;
          PICTURE "IDE_STATBAR" ;
          VALUE .F. ;
          WIDTH 28 ;
          HEIGHT 28 ;
          TOOLTIP "StatusBar On" ;
-         ON CHANGE ::VerifyBar()
+         ON CHANGE ::VerifyStatusBar()
 
    END WINDOW
 
@@ -2541,7 +2533,7 @@ METHOD SetFontType( si ) CLASS TFormEditor
          ::oDesignForm:FontColor := aFont[5]
       ENDIF
    ELSEIF si == -1
-      /* Statusbar colors */
+      /* StatusBar colors */
       aFont := GetFont( ::cSFontName, ::nSFontSize, ::lSBold, ::lSItalic, { 0, 0, 0 }, ::lSUnderline, ::lSStrikeout, 0 )
       IF aFont[1] == "" .AND. aFont[2] == 0 .AND. ( ! aFont[3] ) .AND.  ( ! aFont[4] ) .AND. ;
          aFont[5, 1] == NIL .AND. aFont[5, 2] == NIL .AND.  aFont[5, 3] == NIL .AND. ;
@@ -2566,7 +2558,7 @@ METHOD SetFontType( si ) CLASS TFormEditor
          ::lSItalic := aFont[4]
          ::oDesignForm:StatusBar:FontItalic := aFont[4]
       ENDIF
-      // TODO: Statusbar color
+      // TODO: StatusBar color
       IF ::lSUnderline <> aFont[6]
          ::lSUnderline := aFont[6]
          ::oDesignForm:StatusBar:FontUnderline := aFont[6]
@@ -2639,13 +2631,13 @@ METHOD SetFontTypeIDE( si ) CLASS TFormEditor
       ::lSItalic    := .F.
       ::lSUnderline := .F.
       ::lSStrikeout := .F.
-      ::oDesignForm:Statusbar:FontName      := ""
-      ::oDesignForm:Statusbar:FontSize      := 0
-      ::oDesignForm:Statusbar:FontBold      := .F.
-      ::oDesignForm:Statusbar:FontItalic    := .F.
-      ::oDesignForm:Statusbar:FontUnderline := .F.
-      ::oDesignForm:Statusbar:FontStrikeout := .F.
-      ::oDesignForm:Statusbar:Release()
+      ::oDesignForm:StatusBar:FontName      := ""
+      ::oDesignForm:StatusBar:FontSize      := 0
+      ::oDesignForm:StatusBar:FontBold      := .F.
+      ::oDesignForm:StatusBar:FontItalic    := .F.
+      ::oDesignForm:StatusBar:FontUnderline := .F.
+      ::oDesignForm:StatusBar:FontStrikeout := .F.
+      ::oDesignForm:StatusBar:Release()
       ::CreateStatusBar()
    ELSE
       cName := ::aControlW[si]
@@ -2692,13 +2684,13 @@ METHOD SetFontTypeOOHG( si ) CLASS TFormEditor
       ::lSItalic    := .F.
       ::lSUnderline := .F.
       ::lSStrikeout := .F.
-      ::oDesignForm:Statusbar:FontName      := ::myIde:a_OOHG_DefaultFont[1]
-      ::oDesignForm:Statusbar:FontSize      := ::myIde:a_OOHG_DefaultFont[2]
-      ::oDesignForm:Statusbar:FontBold      := .F.
-      ::oDesignForm:Statusbar:FontItalic    := .F.
-      ::oDesignForm:Statusbar:FontUnderline := .F.
-      ::oDesignForm:Statusbar:FontStrikeout := .F.
-      ::oDesignForm:Statusbar:Release()
+      ::oDesignForm:StatusBar:FontName      := ::myIde:a_OOHG_DefaultFont[1]
+      ::oDesignForm:StatusBar:FontSize      := ::myIde:a_OOHG_DefaultFont[2]
+      ::oDesignForm:StatusBar:FontBold      := .F.
+      ::oDesignForm:StatusBar:FontItalic    := .F.
+      ::oDesignForm:StatusBar:FontUnderline := .F.
+      ::oDesignForm:StatusBar:FontStrikeout := .F.
+      ::oDesignForm:StatusBar:Release()
       ::CreateStatusBar()
    ELSE
       cName := ::aControlW[si]
@@ -2774,6 +2766,7 @@ METHOD SetBackColorIDE( si ) CLASS TFormEditor
       ::oDesignForm:&( ::aControlW[si] ):BackColor := NIL
    ENDIF
    ::lIsFormModified := .T.
+
    RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -2794,6 +2787,7 @@ METHOD SetBackColorOOHG( si ) CLASS TFormEditor
       ::oDesignForm:&( ::aControlW[si] ):BackColor := NIL
    ENDIF
    ::lIsFormModified := .T.
+
    RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -2851,18 +2845,18 @@ METHOD GOtherColors( si, nColor ) CLASS TFormEditor
    RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-METHOD VerifyBar() CLASS TFormEditor
+METHOD VerifyStatusBar() CLASS TFormEditor
 
    IF ::lSStat
-      ::oDesignForm:Statusbar:Release()
+      ::oDesignForm:StatusBar:Release()
       ::lSStat := .F.
       ::Form_Main:btn_Status:Enabled := .F.
-      ::oCtrlBox:Control_Statusbar:ToolTip := "StatusBar On"
+      ::oCtrlBox:Control_StatusBar:ToolTip := "StatusBar On"
    ELSE
       ::CreateStatusBar()
       ::lSStat := .T.
       ::Form_Main:btn_Status:Enabled := .T.
-      ::oCtrlBox:Control_Statusbar:ToolTip := "StatusBar Off"
+      ::oCtrlBox:Control_StatusBar:ToolTip := "StatusBar Off"
    ENDIF
    ::lIsFormModified := .T.
    ::oDesignForm:SetFocus()
@@ -2992,7 +2986,7 @@ METHOD StatPropEvents() CLASS TFormEditor
                     { "Style",                           AScan( { "FLAT", "RAISED" }, ::cSKStyle ) + 1,          { "NIL", "FLAT", "RAISED" } }, ;
                     { "ToolTip",                         ::cSKToolTip,                                           1000 }, ;
                     { "Width",                           ::nSKWidth,                                             1000 } }
-   cTitle      := DQM( ::cFName + ".fmg" ) + i18n( " - Properties of Form's Statusbar" )
+   cTitle      := DQM( ::cFName + ".fmg" ) + i18n( " - Properties of Form's StatusBar" )
    aLabels     := Array( Len( aData ) )
    aInitValues := Array( Len( aData ) )
    aFormats    := Array( Len( aData ) )
@@ -3000,7 +2994,7 @@ METHOD StatPropEvents() CLASS TFormEditor
    aStat1      := { i18n( "Set Font/Colors ." ), {|| ::SetFontType( -1 ) }, i18n( "Change font and colors." ) }
    aStat2      := { i18n( "Use Defaults    ." ), {|| ::SetFontTypeIDE( -1 ) }, i18n( "Use default font and default colors." ) }
    /* get data */
-   aResults    := ::myIde:myInputWindow( cTitle, aLabels, aInitValues, aFormats, "ClientHeightUsed = " + LTrim( Str( Abs( ::oDesignForm:Statusbar:ClientHeightUsed ) ) ), aStat1, aStat2 )
+   aResults    := ::myIde:myInputWindow( cTitle, aLabels, aInitValues, aFormats, "ClientHeightUsed = " + LTrim( Str( Abs( ::oDesignForm:StatusBar:ClientHeightUsed ) ) ), aStat1, aStat2 )
    IF aResults[1] == NIL
       ::ControlClick( 1 )
       RETURN NIL
@@ -3045,7 +3039,7 @@ METHOD StatPropEvents() CLASS TFormEditor
    ::cSKToolTip     := aResults[ ++k ]
    ::nSKWidth       := aResults[ ++k ]
 
-   ::oDesignForm:Statusbar:Release()
+   ::oDesignForm:StatusBar:Release()
    ::CreateStatusBar()
 
    ::lIsFormModified := .T.
@@ -3061,7 +3055,7 @@ METHOD IsUnique( cName, nExclude ) CLASS TFormEditor
    cName := Lower( AllTrim( cName ) )
 
    FOR i := 1 TO ::nControlW
-      IF ::aControlW[i] == cName .AND. i # nExclude   
+      IF ::aControlW[i] == cName .AND. i # nExclude
          RETURN .F.
       ENDIF
    NEXT i
@@ -4935,8 +4929,8 @@ METHOD KeyboardMoveSize() CLASS TFormEditor
       ON KEY CTRL+DOWN  OF ( ::oDesignForm:Name ) ACTION ::KeyHandler( "DJ" )
    ENDIF
 
-   IF _IsControlDefined( "Statusbar", ::oDesignForm:Name )
-      ::oDesignForm:Statusbar:Release()
+   IF _IsControlDefined( "StatusBar", ::oDesignForm:Name )
+      ::oDesignForm:StatusBar:Release()
    ENDIF
    DEFINE STATUSBAR OF ( ::oDesignForm:Name )
       STATUSITEM ""
@@ -5006,7 +5000,7 @@ METHOD KeyHandler( cPar ) CLASS TFormEditor
             oControl:Height := oControl:Height + ::myIde:nPxSize
             ::lIsFormModified := .T.
          ENDCASE
-         IF _IsControlDefined( "Statusbar", ::oDesignForm:Name )
+         IF _IsControlDefined( "StatusBar", ::oDesignForm:Name )
             ::oDesignForm:StatusBar:Item( 1, i18n( " Row = " ) + LTrim( Str( oControl:Row ) ) + ;
                                              i18n( "  Col = " ) + LTrim( Str( oControl:Col ) ) + ;
                                              i18n( "  Width = " ) + LTrim( Str( oControl:Width ) ) + ;
@@ -5542,7 +5536,7 @@ STATIC FUNCTION CStr( xExp )
 
    ENDSWITCH
 
-RETURN ""
+   RETURN ""
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD OutlineControls() CLASS TFormEditor
@@ -6480,7 +6474,7 @@ METHOD DrawPoints() CLASS TFormEditor
    nWidth  := ::oDesignForm:ClientWidth
 
    IF _IsControlDefined( "StatusBar", ::oDesignForm:Name )
-      nHeight -= ::oDesignForm:Statusbar:ClientHeightUsed
+      nHeight -= ::oDesignForm:StatusBar:ClientHeightUsed
    ENDIF
 
    FOR i := 1 to ::myTbEditor:Count
