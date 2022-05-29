@@ -352,6 +352,7 @@
                               { "aPicture",       "" }, ;
                               { "aPlainText",     .F. }, ;
                               { "aPLM",           .F. }, ;
+                              { "aPostParent",    .F. }, ;
                               { "aProgID",        "" }, ;
                               { "aRaggedRight",   .F. }, ;
                               { "aRange",         "" }, ;
@@ -8352,8 +8353,8 @@ METHOD pEditbox( i ) CLASS TFormEditor
 METHOD pFrame( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cCaption, cCargo, cExclude, cFontName, cObj, cParent, cSubClass, cToolTip, cVal, lBold, lEnabled
-   LOCAL lItalic, lOpaque, lRTL, lStrikeout, lTrans, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
-   LOCAL uFontSize
+   LOCAL lItalic, lOpaque, lPostParent, lRTL, lStrikeout, lTrans, lUnderline, lVisible, nCol, nFontSize, nHeight, nRow, nWidth
+   local oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8397,6 +8398,7 @@ METHOD pFrame( i ) CLASS TFormEditor
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
    cToolTip            := ::ReadStringData( i, "TOOLTIP", "" )
    cToolTip            := ::ReadOopData( i, "TOOLTIP", cToolTip )
+   lPostParent         := ( ::ReadLogicalData( i, "POSTPARENT", "F" ) == "T" )
    cExclude            := ::ReadStringData( i, "EXCLUDEAREA", "" )
    cParent             := ::ReadStringData( i, "PARENT", "" )
    cParent             := ::ReadStringData( i, "OF", cParent )
@@ -8423,6 +8425,7 @@ METHOD pFrame( i ) CLASS TFormEditor
    ::aDisabled[i]      := ! lEnabled
    ::aSubClass[i]      := cSubClass
    ::aToolTip[i]       := cToolTip
+   ::aPostParent[i]    := lPostParent
    ::aExclude[i]       := cExclude
    ::aParent[i]        := cParent
    ::aCargo[i]         := cCargo
@@ -14382,6 +14385,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             IF NOTEMPTY( ::aExclude[j] )
               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "EXCLUDEAREA " + AllTrim( ::aExclude[j] )
             ENDIF
+            IF ::aPostParent[j]
+               Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "POSTPARENT"
+            ENDIF
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
             Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
@@ -18329,6 +18335,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Invisible",          ::aInvisible[j],                                                               .F.  }, ;
                        { "Opaque",             ::aOpaque[j],                                                                  .F.  }, ;
                        { "Parent",             ::aParent[j],                                                                  1000 }, ;
+                       { "PostParent",         ::aPostParent[j],                                                              .F.  }, ;
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SubClass",           ::aSubClass[j],                                                                1000 }, ;
                        { "ToolTip",            ::aToolTip[j],                                                                 1000 }, ;
@@ -18353,6 +18360,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aInvisible[j]        := aResults[ ++k ]
       ::aOpaque[j]           := aResults[ ++k ]
       ::aParent[j]           := aResults[ ++k ]
+      ::aPostParent[j]       := aResults[ ++k ]
       ::aRTL[j]              := aResults[ ++k ]
       ::aSubClass[j]         := aResults[ ++k ]
       ::aToolTip[j]          := aResults[ ++k ]
