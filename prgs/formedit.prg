@@ -728,6 +728,7 @@ CLASS TFormEditor
    METHOD pProgressBar
    METHOD pProgressMeter
    METHOD pRadioGroup
+   METHOD pStatusBar
    METHOD PreProcessDefineWindow
    METHOD pRichedit
    METHOD PrintBrief
@@ -2925,9 +2926,9 @@ METHOD CreateStatusBar() CLASS TFormEditor
          IF ::nSDWidth > 0
             nWidth := ::nSDWidth
          ELSEIF "yyyy" $ Lower( Set( _SET_DATEFORMAT ) )
-            nWidth := 95
+            nWidth := ::nSDWidth := 95
          ELSE
-            nWidth := 75
+            nWidth := ::nSDWidth := 75
          ENDIF
          _SetStatusItem( DToC( Date() ), nWidth, NIL, ::StrToValueCtrl( ::cSDToolTip, "C", NIL ), NIL, ::cSDStyle, ::cSDAlign )
       ENDIF
@@ -2968,7 +2969,7 @@ METHOD StatPropEvents() CLASS TFormEditor
                     { "Date",                            ::lSDate,                                               .F.  }, ;
                     { "Style",                           AScan( { "FLAT", "RAISED" }, ::cSDStyle ) + 1,          { "NIL", "FLAT", "RAISED" } }, ;
                     { "ToolTip",                         ::cSDToolTip,                                           1000 }, ;
-                    { "Width",                           ::nSDWidth,                                             1000 }, ;
+                    { "Width",                           ::nSDWidth,                                             "999" }, ;
                     { i18n( "**** CLOCK clause" ),       NIL,                                                    NIL  }, ;
                     { "Action",                          ::cSCAction,                                            1000 }, ;
                     { "Align",                           AScan( { "CENTER", "LEFT", "RIGHT" }, ::cSCAlign ) + 1, { "NIL", "CENTER", "LEFT", "RIGHT" } }, ;
@@ -2977,7 +2978,7 @@ METHOD StatPropEvents() CLASS TFormEditor
                     { "Icon",                            ::cSCImage,                                             1000 }, ;
                     { "Style",                           AScan( { "FLAT", "RAISED" }, ::cSCStyle ) + 1,          { "NIL", "FLAT", "RAISED" } }, ;
                     { "ToolTip",                         ::cSCToolTip,                                           1000 }, ;
-                    { "Width",                           ::nSCWidth,                                             1000 }, ;
+                    { "Width",                           ::nSCWidth,                                             "999" }, ;
                     { i18n( "**** KEYBOARD clause" ),    NIL,                                                    NIL  }, ;
                     { "Action",                          ::cSKAction,                                            1000 }, ;
                     { "Align",                           AScan( { "CENTER", "LEFT", "RIGHT" }, ::cSKAlign ) + 1, { "NIL", "CENTER", "LEFT", "RIGHT" } }, ;
@@ -2985,7 +2986,7 @@ METHOD StatPropEvents() CLASS TFormEditor
                     { "Keyboard",                        ::lSKeyboard,                                           .F.  }, ;
                     { "Style",                           AScan( { "FLAT", "RAISED" }, ::cSKStyle ) + 1,          { "NIL", "FLAT", "RAISED" } }, ;
                     { "ToolTip",                         ::cSKToolTip,                                           1000 }, ;
-                    { "Width",                           ::nSKWidth,                                             1000 } }
+                    { "Width",                           ::nSKWidth,                                             "999" } }
    cTitle      := DQM( ::cFName + ".fmg" ) + i18n( " - Properties of Form's StatusBar" )
    aLabels     := Array( Len( aData ) )
    aInitValues := Array( Len( aData ) )
@@ -2995,14 +2996,14 @@ METHOD StatPropEvents() CLASS TFormEditor
    aStat2      := { i18n( "Use Defaults    ." ), {|| ::SetFontTypeIDE( -1 ) }, i18n( "Use default font and default colors." ) }
    /* get data */
    aResults    := ::myIde:myInputWindow( cTitle, aLabels, aInitValues, aFormats, "ClientHeightUsed = " + LTrim( Str( Abs( ::oDesignForm:StatusBar:ClientHeightUsed ) ) ), aStat1, aStat2 )
-   IF aResults[1] == NIL
+   IF aResults[2] == NIL
       ::ControlClick( 1 )
       RETURN NIL
    ENDIF
 
    k := 1
-   ::cSCargo        := aResults[ ++k ]
    ::cSCObj         := aResults[ ++k ]
+   ::cSCargo        := aResults[ ++k ]
    ::lSNoAutoAdjust := aResults[ ++k ]      // TODO: cambiar a ::cS... y ver otros lugares donde se usan las variables
    ::cSSubClass     := aResults[ ++k ]
    ::lSTop          := aResults[ ++k ]
@@ -5560,300 +5561,9 @@ METHOD OutlineControls() CLASS TFormEditor
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD LoadControls() CLASS TFormEditor
 
-   LOCAL i, lItem, cType, cLine, nWidth, cAction, cIcon, lFlat, lRaised, lAmPm
-   LOCAL cToolTip, lCenter, lLeft, lRight, cCaption, nProcess
+   LOCAL i, cType
 
    ::oDesignForm:SetRedraw( .F. )
-
-   /* Load statusbar data */
-   FOR i := 1 TO Len( ::aLine )
-      IF At( " DEFINE STATUSBAR ", Upper( ::aLine[i] ) ) == 1
-         ::lSStat := .T.
-         ::Form_Main:btn_Status:Enabled := .T.
-         ::oCtrlBox:Control_Statusbar:ToolTip := i18n( "StatusBar Off" )
-
-         ::cSCargo        := ::ReadCargo( i, "LASTFORM.STATUSBAR.CARGO" )
-         ::cSCObj         := ::ReadStringData( i, "OBJ", "" )
-         ::lSTop          := ( ::ReadLogicalData( i, "TOP", "F" ) == "T" )
-         ::lSNoAutoAdjust := ( ::ReadLogicalData( i, "NOAUTOADJUST", "F" ) == "T" )
-         ::cSSubClass     := ::ReadStringData( i, "SUBCLASS", "" )
-         ::cSFontNameFrm  := ::ReadStringData( i, "FONT", "" )
-         ::cSFontName     := ::StrToValueForm( ::cSFontNameFrm, "C", "" )
-         ::cSFontSizeFrm  := ::ReadStringData( i, "SIZE", "" )
-         ::nSFontSize     := ::StrToValueCtrl( ::cSFontSizeFrm, "N", 0, 1, 9999 )
-         ::lSBold         := ( ::ReadLogicalData( i, "BOLD", "F" ) == "T" )
-         ::lSItalic       := ( ::ReadLogicalData( i, "ITALIC", "F" ) == "T" )
-         ::lSUnderline    := ( ::ReadLogicalData( i, "UNDERLINE", "F" ) == "T" )
-         ::lSStrikeout    := ( ::ReadLogicalData( i, "STRIKEOUT", "F" ) == "T" )
-         lItem            := .F.
-         ::cSCaption      := "{ "
-         ::cSWidth        := "{ "
-         ::cSAction       := "{ "
-         ::cSIcon         := "{ "
-         ::cSStyle        := "{ "
-         ::cSToolTip      := "{ "
-         ::cSAlign        := "{ "
-         ::lSKeyboard     := .F.
-         ::nSKWidth       := 0
-         ::cSKAction      := ""
-         ::cSKToolTip     := ""
-         ::cSKImage       := ""
-         ::cSKStyle       := ""
-         ::cSKAlign       := ""
-         ::lSDate         := .F.
-         ::nSDWidth       := 0
-         ::cSDAction      := ""
-         ::cSDToolTip     := ""
-         ::cSDStyle       := ""
-         ::cSDAlign       := ""
-         ::lSTime         := .F.
-         ::nSCWidth       := 0
-         ::cSCAction      := ""
-         ::cSCToolTip     := ""
-         ::lSCAmPm        := .F.
-         ::cSCImage       := ""
-         ::cSCStyle       := ""
-         ::cSCAlign       := ""
-
-         i ++
-         DO WHILE i <= Len( ::aLine )
-            cLine := Upper( ::aLine[i] )
-            IF At( " END STATUSBAR ", cLine ) == 1
-               EXIT
-            ENDIF
-
-            IF At( " STATUSITEM ", cLine ) == 1
-               lItem := .T.
-               nProcess := 1
-               cCaption := RTrim( SubStr( ::aLine[i], 13 ) )
-            ELSEIF At( " KEYBOARD ", cLine ) == 1 .AND. ! ::lSKeyboard
-               ::lSKeyboard := .T.
-               nProcess := 2
-               cCaption := RTrim( SubStr( ::aLine[i], 11 ) )
-            ELSEIF At( " DATE ", cLine ) == 1 .AND. ! ::lSDate
-               ::lSDate := .T.
-               nProcess := 3
-               cCaption := RTrim( SubStr( ::aLine[i], 7 ) )
-            ELSEIF At( " CLOCK ", cLine ) == 1 .AND. ! ::lSTime
-               ::lSTime := .T.
-               nProcess := 4
-               cCaption := RTrim( SubStr( ::aLine[i], 8 ) )
-            ELSE
-               nProcess := 0
-            ENDIF
-
-            IF nProcess > 0
-               nWidth   := 0
-               cAction  := ""
-               cIcon    := ""
-               lFlat    := .F.
-               lRaised  := .F.
-               cToolTip := ""
-               lCenter  := .F.
-               lLeft    := .F.
-               lRight   := .F.
-               lAmPm    := .F.
-
-               IF Right( cCaption, 1 ) == ";"
-                  cCaption := AllTrim( SubStr( cCaption, 1, Len( cCaption ) - 1 ) )
-
-                  i ++
-                  DO WHILE i <= Len( ::aLine )
-                     cLine := Upper( ::aLine[i] )
-                     IF At( " END STATUSBAR ", cLine ) == 1 .OR. At( " STATUSITEM ", cLine ) == 1 .OR. At( " KEYBOARD ", cLine ) == 1 .OR. At( " DATE ", cLine ) == 1 .OR. At( " CLOCK ", cLine ) == 1
-                        EXIT
-                     ELSEIF At( " WIDTH ", cLine ) == 1
-                        nWidth := RTrim( SubStr( ::aLine[i], 8 ) )
-                        i ++
-                        IF Right( nWidth, 1 ) == ";"
-                           nWidth := Val( AllTrim( SubStr( nWidth, 1, Len( nWidth ) - 1 ) ) )
-                        ELSE
-                           nWidth := Val( AllTrim( nWidth ) )
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " ACTION ", cLine ) == 1
-                        cAction := RTrim( SubStr( ::aLine[i], 9 ) )
-                        i ++
-                        IF Right( cAction, 1 ) == ";"
-                           cAction := AllTrim( SubStr( cAction, 1, Len( cAction ) - 1 ) )
-                        ELSE
-                           cAction := AllTrim( cAction )
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " ICON ", cLine ) == 1
-                        cIcon := RTrim( SubStr( ::aLine[i], 7 ) )
-                        i ++
-                        IF Right( cIcon, 1 ) == ";"
-                           cIcon := AllTrim( SubStr( cIcon, 1, Len( cIcon ) - 1 ) )
-                        ELSE
-                           cIcon := AllTrim( cIcon )
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " AMPM ", cLine ) == 1
-                        lAmPm := RTrim( SubStr( ::aLine[i], 7 ) )
-                        i ++
-                        IF Right( lAmPm, 1 ) == ";"
-                           lAmPm := AllTrim( SubStr( lAmPm, 1, Len( lAmPm ) - 1 ) )
-                           IF Empty( lAmPm )
-                              lAmPm := .T.
-                           ELSE
-                              lAmPm := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lAmPm := .T.
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " FLAT ", cLine ) == 1
-                        lFlat := RTrim( SubStr( ::aLine[i], 7 ) )
-                        i ++
-                        IF Right( lFlat, 1 ) == ";"
-                           lFlat := AllTrim( SubStr( lFlat, 1, Len( lFlat ) - 1 ) )
-                           IF Empty( lFlat )
-                              lFlat := .T.
-                           ELSE
-                              lFlat := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lFlat := .T.
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " RAISED ", cLine ) == 1
-                        lRaised := RTrim( SubStr( ::aLine[i], 9 ) )
-                        i ++
-                        IF Right( lRaised, 1 ) == ";"
-                           lRaised := AllTrim( SubStr( lRaised, 1, Len( lRaised ) - 1 ) )
-                           IF Empty( lRaised )
-                              lRaised := .T.
-                           ELSE
-                              lRaised := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lRaised := .T.
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " TOOLTIP ", cLine ) == 1
-                        cToolTip := RTrim( SubStr( ::aLine[i], 10 ) )
-                        i ++
-                        IF Right( cToolTip, 1 ) == ";"
-                           cToolTip := AllTrim( SubStr( cToolTip, 1, Len( cToolTip ) - 1 ) )
-                        ELSE
-                           cToolTip := AllTrim( cToolTip )
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " CENTER ", cLine ) == 1
-                        lCenter := RTrim( SubStr( ::aLine[i], 9 ) )
-                        i ++
-                        IF Right( lCenter, 1 ) == ";"
-                           lCenter := AllTrim( SubStr( lCenter, 1, Len( lCenter ) - 1 ) )
-                           IF Empty( lCenter )
-                              lCenter := .T.
-                           ELSE
-                              lCenter := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lCenter := .T.
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " LEFT ", cLine ) == 1
-                        lLeft := RTrim( SubStr( ::aLine[i], 7 ) )
-                        i ++
-                        IF Right( lLeft, 1 ) == ";"
-                           lLeft := AllTrim( SubStr( lLeft, 1, Len( lLeft ) - 1 ) )
-                           IF Empty( lLeft )
-                              lLeft := .T.
-                           ELSE
-                              lLeft := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lLeft := .T.
-                           EXIT
-                        ENDIF
-                     ELSEIF At( " RIGHT ", cLine ) == 1
-                        lRight := RTrim( SubStr( ::aLine[i], 8 ) )
-                        i ++
-                        IF Right( lRight, 1 ) == ";"
-                           lRight := AllTrim( SubStr( lRight, 1, Len( lRight ) - 1 ) )
-                           IF Empty( lRight )
-                              lRight := .T.
-                           ELSE
-                              lRight := .T.
-                              EXIT
-                           ENDIF
-                        ELSE
-                           lRight := .T.
-                           EXIT
-                        ENDIF
-                     ELSE
-                        i ++
-                        EXIT
-                     ENDIF
-                  ENDDO
-               ELSE
-                  cCaption := AllTrim( cCaption )
-                  i ++
-               ENDIF
-
-               IF nProcess == 1          /* STATUSITEM */
-                  ::cSCaption += iif( Empty( cCaption ), SQM( " " ), cCaption ) + ", "
-                  ::cSWidth   += iif( nWidth > 0, LTrim( Str( nWidth ) ), "0" ) + ", "
-                  ::cSAction  += iif( Empty( cAction ), SQM( "" ), StrToStr( cAction ) ) + ", "
-                  ::cSIcon    += iif( Empty( cIcon ), SQM( "" ), cIcon ) + ", "
-                  ::cSStyle   += iif( lFlat, SQM( "FLAT" ), iif( lRaised, SQM( "RAISED" ), SQM( "" ) ) ) + ", "
-                  ::cSToolTip += iif( Empty( cToolTip ), SQM( "" ), cToolTip ) + ", "
-                  ::cSAlign   += iif( lLeft, SQM( "LEFT" ), iif( lRight, SQM( "RIGHT" ), iif( lCenter, SQM( "CENTER" ), SQM( "" ) ) ) ) + ", "
-               ELSEIF nProcess == 2      /* KEYBOARD */
-                  ::nSKWidth   := nWidth
-                  ::cSKAction  := cAction
-                  ::cSKToolTip := cToolTip
-                  ::cSKImage   := cIcon
-                  ::cSKStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
-                  ::cSKAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
-               ELSEIF nProcess == 3      /* DATE */
-                  ::nSDWidth   := nWidth
-                  ::cSDAction  := cAction
-                  ::cSDToolTip := cToolTip
-                  ::cSDStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
-                  ::cSDAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
-               ELSE                      /* CLOCK */
-                  ::nSCWidth   := nWidth
-                  ::cSCAction  := cAction
-                  ::cSCToolTip := cToolTip
-                  ::lSCAmPm    := lAmPm
-                  ::cSCImage   := cIcon
-                  ::cSCStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
-                  ::cSCAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
-               ENDIF
-            ELSE
-               i ++
-            ENDIF
-         ENDDO
-
-         IF ! lItem
-            ::cSCaption += "' ' }"
-            ::cSWidth   += "'' }"
-            ::cSAction  += "'' }"
-            ::cSIcon    += "'' }"
-            ::cSStyle   += "'' }"
-            ::cSToolTip += "'' }"
-            ::cSAlign   += "'' }"
-         ELSE
-            ::cSCaption := SubStr( ::cSCaption, 1, Len( ::cSCaption ) - 2 ) + " }"
-            ::cSWidth   := SubStr( ::cSWidth, 1, Len( ::cSWidth ) - 2 ) + " }"
-            ::cSAction  := SubStr( ::cSAction, 1, Len( ::cSAction ) - 2 ) + " }"
-            ::cSIcon    := SubStr( ::cSIcon, 1, Len( ::cSIcon ) - 2 ) + " }"
-            ::cSStyle   := SubStr( ::cSStyle, 1, Len( ::cSStyle ) - 2 ) + " }"
-            ::cSToolTip := SubStr( ::cSToolTip, 1, Len( ::cSToolTip ) - 2 ) + " }"
-            ::cSAlign   := SubStr( ::cSAlign, 1, Len( ::cSAlign ) - 2 ) + " }"
-         ENDIF
-
-         EXIT
-      ENDIF
-   NEXT i
 
    /* Controls */
    FOR i := 1 TO ::nControlW
@@ -5877,7 +5587,12 @@ METHOD LoadControls() CLASS TFormEditor
       */
       DO CASE
       CASE cType == "STATUSBAR"
-         /* Do nothing */
+         IF ! ::lSStat
+            ::lSStat := .T.
+            ::Form_Main:btn_Status:Enabled := .T.
+            ::oCtrlBox:Control_StatusBar:ToolTip := i18n( "StatusBar Off" )
+            ::pStatusBar( i )
+         ENDIF
       CASE cType == "TOOLBAR"
          /* Do nothing */
       CASE cType == "TBBUTTON"
@@ -10487,6 +10202,291 @@ METHOD pRadiogroup( i ) CLASS TFormEditor
    oCtrl:Col           := nCol
 
    ::AddCtrlToTabPage( i, nRow, nCol )
+
+   RETURN NIL
+
+/*--------------------------------------------------------------------------------------------------------------------------------*/
+METHOD pStatusBar( i ) CLASS TFormEditor
+
+   LOCAL cToolTip, lCenter, lLeft, lRight, cCaption, nProcess, lItem := .F., cLine, nWidth, cAction, cIcon, lFlat, lRaised, lAmPm
+
+   ::cSCargo        := ::ReadCargo( i, "LASTFORM.STATUSBAR.CARGO" )
+   ::cSCObj         := ::ReadStringData( i, "OBJ", "" )
+   ::lSTop          := ( ::ReadLogicalData( i, "TOP", "F" ) == "T" )
+   ::lSNoAutoAdjust := ( ::ReadLogicalData( i, "NOAUTOADJUST", "F" ) == "T" )
+   ::cSSubClass     := ::ReadStringData( i, "SUBCLASS", "" )
+   ::cSFontNameFrm  := ::ReadStringData( i, "FONT", "" )
+   ::cSFontName     := ::StrToValueForm( ::cSFontNameFrm, "C", "" )
+   ::cSFontSizeFrm  := ::ReadStringData( i, "SIZE", "" )
+   ::nSFontSize     := ::StrToValueCtrl( ::cSFontSizeFrm, "N", 0, 1, 9999 )
+   ::lSBold         := ( ::ReadLogicalData( i, "BOLD", "F" ) == "T" )
+   ::lSItalic       := ( ::ReadLogicalData( i, "ITALIC", "F" ) == "T" )
+   ::lSUnderline    := ( ::ReadLogicalData( i, "UNDERLINE", "F" ) == "T" )
+   ::lSStrikeout    := ( ::ReadLogicalData( i, "STRIKEOUT", "F" ) == "T" )
+   ::cSCaption      := "{ "
+   ::cSWidth        := "{ "
+   ::cSAction       := "{ "
+   ::cSIcon         := "{ "
+   ::cSStyle        := "{ "
+   ::cSToolTip      := "{ "
+   ::cSAlign        := "{ "
+   ::lSKeyboard     := .F.
+   ::nSKWidth       := 0
+   ::cSKAction      := ""
+   ::cSKToolTip     := ""
+   ::cSKImage       := ""
+   ::cSKStyle       := ""
+   ::cSKAlign       := ""
+   ::lSDate         := .F.
+   ::nSDWidth       := 0
+   ::cSDAction      := ""
+   ::cSDToolTip     := ""
+   ::cSDStyle       := ""
+   ::cSDAlign       := ""
+   ::lSTime         := .F.
+   ::nSCWidth       := 0
+   ::cSCAction      := ""
+   ::cSCToolTip     := ""
+   ::lSCAmPm        := .F.
+   ::cSCImage       := ""
+   ::cSCStyle       := ""
+   ::cSCAlign       := ""
+
+   i ++
+   DO WHILE i <= Len( ::aLine )
+      cLine := Upper( ::aLine[i] )
+      IF At( " END STATUSBAR ", cLine ) == 1
+         EXIT
+      ENDIF
+
+      IF At( " STATUSITEM ", cLine ) == 1
+         lItem := .T.
+         nProcess := 1
+         cCaption := RTrim( SubStr( ::aLine[i], 13 ) )
+      ELSEIF At( " KEYBOARD ", cLine ) == 1 .AND. ! ::lSKeyboard
+         ::lSKeyboard := .T.
+         nProcess := 2
+         cCaption := RTrim( SubStr( ::aLine[i], 11 ) )
+      ELSEIF At( " DATE ", cLine ) == 1 .AND. ! ::lSDate
+         ::lSDate := .T.
+         nProcess := 3
+         cCaption := RTrim( SubStr( ::aLine[i], 7 ) )
+      ELSEIF At( " CLOCK ", cLine ) == 1 .AND. ! ::lSTime
+         ::lSTime := .T.
+         nProcess := 4
+         cCaption := RTrim( SubStr( ::aLine[i], 8 ) )
+      ELSE
+         nProcess := 0
+      ENDIF
+
+      IF nProcess > 0
+         nWidth   := 0
+         cAction  := ""
+         cIcon    := ""
+         lFlat    := .F.
+         lRaised  := .F.
+         cToolTip := ""
+         lCenter  := .F.
+         lLeft    := .F.
+         lRight   := .F.
+         lAmPm    := .F.
+
+         IF Right( cCaption, 1 ) == ";"
+            cCaption := AllTrim( SubStr( cCaption, 1, Len( cCaption ) - 1 ) )
+
+            i ++
+            DO WHILE i <= Len( ::aLine )
+               cLine := Upper( ::aLine[i] )
+               IF At( " END STATUSBAR ", cLine ) == 1 .OR. At( " STATUSITEM ", cLine ) == 1 .OR. At( " KEYBOARD ", cLine ) == 1 .OR. At( " DATE ", cLine ) == 1 .OR. At( " CLOCK ", cLine ) == 1
+                  EXIT
+               ELSEIF At( " WIDTH ", cLine ) == 1
+                  nWidth := RTrim( SubStr( ::aLine[i], 8 ) )
+                  i ++
+                  IF Right( nWidth, 1 ) == ";"
+                     nWidth := Val( AllTrim( SubStr( nWidth, 1, Len( nWidth ) - 1 ) ) )
+                  ELSE
+                     nWidth := Val( AllTrim( nWidth ) )
+                     EXIT
+                  ENDIF
+               ELSEIF At( " ACTION ", cLine ) == 1
+                  cAction := RTrim( SubStr( ::aLine[i], 9 ) )
+                  i ++
+                  IF Right( cAction, 1 ) == ";"
+                     cAction := AllTrim( SubStr( cAction, 1, Len( cAction ) - 1 ) )
+                  ELSE
+                     cAction := AllTrim( cAction )
+                     EXIT
+                  ENDIF
+               ELSEIF At( " ICON ", cLine ) == 1
+                  cIcon := RTrim( SubStr( ::aLine[i], 7 ) )
+                  i ++
+                  IF Right( cIcon, 1 ) == ";"
+                     cIcon := AllTrim( SubStr( cIcon, 1, Len( cIcon ) - 1 ) )
+                  ELSE
+                     cIcon := AllTrim( cIcon )
+                     EXIT
+                  ENDIF
+               ELSEIF At( " AMPM ", cLine ) == 1
+                  lAmPm := RTrim( SubStr( ::aLine[i], 7 ) )
+                  i ++
+                  IF Right( lAmPm, 1 ) == ";"
+                     lAmPm := AllTrim( SubStr( lAmPm, 1, Len( lAmPm ) - 1 ) )
+                     IF Empty( lAmPm )
+                        lAmPm := .T.
+                     ELSE
+                        lAmPm := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lAmPm := .T.
+                     EXIT
+                  ENDIF
+               ELSEIF At( " FLAT ", cLine ) == 1
+                  lFlat := RTrim( SubStr( ::aLine[i], 7 ) )
+                  i ++
+                  IF Right( lFlat, 1 ) == ";"
+                     lFlat := AllTrim( SubStr( lFlat, 1, Len( lFlat ) - 1 ) )
+                     IF Empty( lFlat )
+                        lFlat := .T.
+                     ELSE
+                        lFlat := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lFlat := .T.
+                     EXIT
+                  ENDIF
+               ELSEIF At( " RAISED ", cLine ) == 1
+                  lRaised := RTrim( SubStr( ::aLine[i], 9 ) )
+                  i ++
+                  IF Right( lRaised, 1 ) == ";"
+                     lRaised := AllTrim( SubStr( lRaised, 1, Len( lRaised ) - 1 ) )
+                     IF Empty( lRaised )
+                        lRaised := .T.
+                     ELSE
+                        lRaised := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lRaised := .T.
+                     EXIT
+                  ENDIF
+               ELSEIF At( " TOOLTIP ", cLine ) == 1
+                  cToolTip := RTrim( SubStr( ::aLine[i], 10 ) )
+                  i ++
+                  IF Right( cToolTip, 1 ) == ";"
+                     cToolTip := AllTrim( SubStr( cToolTip, 1, Len( cToolTip ) - 1 ) )
+                  ELSE
+                     cToolTip := AllTrim( cToolTip )
+                     EXIT
+                  ENDIF
+               ELSEIF At( " CENTER ", cLine ) == 1
+                  lCenter := RTrim( SubStr( ::aLine[i], 9 ) )
+                  i ++
+                  IF Right( lCenter, 1 ) == ";"
+                     lCenter := AllTrim( SubStr( lCenter, 1, Len( lCenter ) - 1 ) )
+                     IF Empty( lCenter )
+                        lCenter := .T.
+                     ELSE
+                        lCenter := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lCenter := .T.
+                     EXIT
+                  ENDIF
+               ELSEIF At( " LEFT ", cLine ) == 1
+                  lLeft := RTrim( SubStr( ::aLine[i], 7 ) )
+                  i ++
+                  IF Right( lLeft, 1 ) == ";"
+                     lLeft := AllTrim( SubStr( lLeft, 1, Len( lLeft ) - 1 ) )
+                     IF Empty( lLeft )
+                        lLeft := .T.
+                     ELSE
+                        lLeft := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lLeft := .T.
+                     EXIT
+                  ENDIF
+               ELSEIF At( " RIGHT ", cLine ) == 1
+                  lRight := RTrim( SubStr( ::aLine[i], 8 ) )
+                  i ++
+                  IF Right( lRight, 1 ) == ";"
+                     lRight := AllTrim( SubStr( lRight, 1, Len( lRight ) - 1 ) )
+                     IF Empty( lRight )
+                        lRight := .T.
+                     ELSE
+                        lRight := .T.
+                        EXIT
+                     ENDIF
+                  ELSE
+                     lRight := .T.
+                     EXIT
+                  ENDIF
+               ELSE
+                  i ++
+                  EXIT
+               ENDIF
+            ENDDO
+         ELSE
+            cCaption := AllTrim( cCaption )
+            i ++
+         ENDIF
+
+         IF nProcess == 1          /* STATUSITEM */
+            ::cSCaption += iif( Empty( cCaption ), SQM( " " ), cCaption ) + ", "
+            ::cSWidth   += iif( nWidth > 0, LTrim( Str( nWidth ) ), "0" ) + ", "
+            ::cSAction  += iif( Empty( cAction ), SQM( "" ), StrToStr( cAction ) ) + ", "
+            ::cSIcon    += iif( Empty( cIcon ), SQM( "" ), cIcon ) + ", "
+            ::cSStyle   += iif( lFlat, SQM( "FLAT" ), iif( lRaised, SQM( "RAISED" ), SQM( "" ) ) ) + ", "
+            ::cSToolTip += iif( Empty( cToolTip ), SQM( "" ), cToolTip ) + ", "
+            ::cSAlign   += iif( lLeft, SQM( "LEFT" ), iif( lRight, SQM( "RIGHT" ), iif( lCenter, SQM( "CENTER" ), SQM( "" ) ) ) ) + ", "
+         ELSEIF nProcess == 2      /* KEYBOARD */
+            ::nSKWidth   := nWidth
+            ::cSKAction  := cAction
+            ::cSKToolTip := cToolTip
+            ::cSKImage   := cIcon
+            ::cSKStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
+            ::cSKAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
+         ELSEIF nProcess == 3      /* DATE */
+            ::nSDWidth   := nWidth
+            ::cSDAction  := cAction
+            ::cSDToolTip := cToolTip
+            ::cSDStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
+            ::cSDAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
+         ELSE                      /* CLOCK */
+            ::nSCWidth   := nWidth
+            ::cSCAction  := cAction
+            ::cSCToolTip := cToolTip
+            ::lSCAmPm    := lAmPm
+            ::cSCImage   := cIcon
+            ::cSCStyle   := iif( lFlat, "FLAT", iif( lRaised, "RAISED", "" ) )
+            ::cSCAlign   := iif( lLeft, "LEFT", iif( lRight, "RIGHT", iif( lCenter, "CENTER", "" ) ) )
+         ENDIF
+      ELSE
+         i ++
+      ENDIF
+   ENDDO
+
+   IF ! lItem
+      ::cSCaption += "' ' }"
+      ::cSWidth   += "'' }"
+      ::cSAction  += "'' }"
+      ::cSIcon    += "'' }"
+      ::cSStyle   += "'' }"
+      ::cSToolTip += "'' }"
+      ::cSAlign   += "'' }"
+   ELSE
+      ::cSCaption := SubStr( ::cSCaption, 1, Len( ::cSCaption ) - 2 ) + " }"
+      ::cSWidth   := SubStr( ::cSWidth, 1, Len( ::cSWidth ) - 2 ) + " }"
+      ::cSAction  := SubStr( ::cSAction, 1, Len( ::cSAction ) - 2 ) + " }"
+      ::cSIcon    := SubStr( ::cSIcon, 1, Len( ::cSIcon ) - 2 ) + " }"
+      ::cSStyle   := SubStr( ::cSStyle, 1, Len( ::cSStyle ) - 2 ) + " }"
+      ::cSToolTip := SubStr( ::cSToolTip, 1, Len( ::cSToolTip ) - 2 ) + " }"
+      ::cSAlign   := SubStr( ::cSAlign, 1, Len( ::cSAlign ) - 2 ) + " }"
+   ENDIF
 
    RETURN NIL
 
