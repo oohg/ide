@@ -8229,8 +8229,8 @@ METHOD pEditbox( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cCargo, cField, cFocusedPos, cFontName, cHelpID, cInsertType, cMaxLength, cObj, cOnChange
    LOCAL cOnGotFocus, cOnHScroll, cOnLostFocus, cOnVScroll, cParent, cSubClass, cToolTip, cVal, cValue, lBold, lBreak, lEnabled
-   LOCAL lItalic, lNoBorder, lNoHScroll, lNoTabStop, lNoVScroll, lReadonly, lRTL, lStrikeout, lUnderline, lUndo, lVisible, nCol
-   LOCAL nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lItalic, lNoBorder, lNoContext, lNoHScroll, lNoTabStop, lNoVScroll, lReadonly, lRTL, lStrikeout, lUnderline, lUndo
+   LOCAL lVisible, nCol, nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8296,6 +8296,7 @@ METHOD pEditbox( i ) CLASS TFormEditor
    lUndo               := ( ::ReadLogicalData( i, "UNDO", "F" ) == "T" )
    cParent             := ::ReadStringData( i, "PARENT", "" )
    cParent             := ::ReadStringData( i, "OF", cParent )
+   lNoContext          := ( ::ReadLogicalData( i, "NOCONTEXTMENU", "F" ) == "T" )
    cCargo              := ::ReadCargo( i, "LASTFORM.LASTCONTROL.CARGO" )
 
    /* Save properties */
@@ -8335,6 +8336,7 @@ METHOD pEditbox( i ) CLASS TFormEditor
    ::aBreak[i]         := lBreak
    ::aParent[i]        := cParent
    ::aUndo[i]          := lUndo
+   ::aNoContext[i]     := lNoContext
    ::aCargo[i]         := cCargo
 
    /* Create control */
@@ -10810,8 +10812,9 @@ METHOD pSlider( i ) CLASS TFormEditor
 METHOD pSpinner( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cCargo, cCue, cFontName, cHelpId, cIncrement, cObj, cOnChange, cOnGotfocus, cOnLostfocus, cParent
-   LOCAL cRange, cSubClass, cToolTip, cVal, cValue, lBold, lBoundText, lEnabled, lItalic, lNoBorder, lNoTabStop, lReadOnly, lRTL
-   LOCAL lStrikeout, lUnderline, lVisible, lWrap, nCol,nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL cRange, cSubClass, cToolTip, cVal, cValue, lBold, lBoundText, lEnabled, lItalic, lNoBorder, lNoContext, lNoTabStop
+   LOCAL lReadOnly, lRTL, lStrikeout, lUnderline, lVisible, lWrap, nCol,nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName
+   LOCAL uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -10871,6 +10874,7 @@ METHOD pSpinner( i ) CLASS TFormEditor
    cParent             := ::ReadStringData( i, "OF", cParent )
    cCue                := ::ReadStringData( i, "CUEBANNER", "" )
    cCue                := ::ReadStringData( i, "PLACEHOLDER", cCue )
+   lNoContext          := ( ::ReadLogicalData( i, "NOCONTEXTMENU", "F" ) == "T" )
    cCargo              := ::ReadCargo( i, "LASTFORM.LASTCONTROL.CARGO" )
 
    /* Save properties */
@@ -10905,6 +10909,7 @@ METHOD pSpinner( i ) CLASS TFormEditor
    ::aSubClass[i]      := cSubClass
    ::aCue[i]           := cCue
    ::aParent[i]        := cParent
+   ::aNoContext[i]     := lNoContext
    ::aCargo[i]         := cCargo
 
    /* Create control */
@@ -14308,6 +14313,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aBreak[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BREAK"
          ENDIF
+         IF ::aNoContext[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOCONTEXTMENU"
+         ENDIF
          IF NOTEMPTY( ::aCargo[j] )
             Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
@@ -16373,13 +16381,16 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
          ENDIF
          IF ::aBoundText[j]
-           Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BOUNDTEXT" 
+           Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "BOUNDTEXT"
          ENDIF
          IF NOTEMPTY( ::aSubClass[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "SUBCLASS " + AllTrim( ::aSubClass[j] )
          ENDIF
          IF NOTEMPTY( ::aCue[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CUEBANNER " + AllTrim( ::aCue[j] )
+         ENDIF
+         IF ::aNoContext[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "NOCONTEXTMENU"
          ENDIF
          IF NOTEMPTY( ::aCargo[j] )
             Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
@@ -18261,6 +18272,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Invisible",          ::aInvisible[j],                                                               .F.  }, ;
                        { "MaxLength",          ::aMaxLength[j],                                                               1000 }, ;
                        { "NoBorder",           ::aNoBorder[j],                                                                .F.  }, ;
+                       { "NoContextMenu",      ::aNoContext[j],                                                               .F.  }, ;
                        { "NoHScroll",          ::aNoHScroll[j],                                                               .F.  }, ;
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
                        { "NoVScroll",          ::aNoVScroll[j],                                                               .F.  }, ;
@@ -18294,6 +18306,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aInvisible[j]        := aResults[ ++k ]
       ::aMaxLength[j]        := aResults[ ++k ]
       ::aNoBorder[j]         := aResults[ ++k ]
+      ::aNoContext[j]        := aResults[ ++k ]
       ::aNoHScroll[j]        := aResults[ ++k ]
       ::aNoTabStop[j]        := aResults[ ++k ]
       ::aNoVScroll[j]        := aResults[ ++k ]
@@ -19475,6 +19488,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "Increment",          ::aIncrement[j],                                                               1000 }, ;
                        { "Invisible",          ::aInvisible[j],                                                               .F.  }, ;
                        { "NoBorder",           ::aNoBorder[j],,                                                               .F.  }, ;
+                       { "NoContextMenu",      ::aNoContext[j],                                                               .F.  }, ;
                        { "NoTabStop",          ::aNoTabStop[j],                                                               .F.  }, ;
                        { "Parent",             ::aParent[j],                                                                  1000 }, ;
                        { "Range",              ::aRange[j],                                                                   1000 }, ;
@@ -19505,6 +19519,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aIncrement[j]        := aResults[ ++k ]
       ::aInvisible[j]        := aResults[ ++k ]
       ::aNoBorder[j]         := aResults[ ++k ]
+      ::aNoContext[j]        := aResults[ ++k ]
       ::aNoTabStop[j]        := aResults[ ++k ]
       ::aParent[j]           := aResults[ ++k ]
       ::aRange[j]            := aResults[ ++k ]
