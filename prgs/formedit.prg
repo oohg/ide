@@ -401,6 +401,7 @@
                               { "aTrailFontClr",  "NIL" }, ;
                               { "aTransparent",   .F. }, ;
                               { "aTxtMrgn",       "" }, ;
+                              { "aUndo",          .F. }, ;
                               { "aUpdate",        .F. }, ;
                               { "aUpdateColors",  .F. }, ;
                               { "aUpDown",        .F. }, ;
@@ -8228,8 +8229,8 @@ METHOD pEditbox( i ) CLASS TFormEditor
 
    LOCAL aBackColor, aFontColor, cCargo, cField, cFocusedPos, cFontName, cHelpID, cInsertType, cMaxLength, cObj, cOnChange
    LOCAL cOnGotFocus, cOnHScroll, cOnLostFocus, cOnVScroll, cParent, cSubClass, cToolTip, cVal, cValue, lBold, lBreak, lEnabled
-   LOCAL lItalic, lNoBorder, lNoHScroll, lNoTabStop, lNoVScroll, lReadonly, lRTL, lStrikeout, lUnderline, lVisible, nCol, nFontSize
-   LOCAL nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lItalic, lNoBorder, lNoHScroll, lNoTabStop, lNoVScroll, lReadonly, lRTL, lStrikeout, lUnderline, lUndo, lVisible, nCol
+   LOCAL nFontSize, nHeight, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -8292,6 +8293,7 @@ METHOD pEditbox( i ) CLASS TFormEditor
    cInsertType         := ::ReadStringData( i, "INSERTTYPE", "" )
    cSubClass           := ::ReadStringData( i, "SUBCLASS", "" )
    lBreak              := ( ::ReadLogicalData( i, "BREAK", "F" ) == "T" )
+   lUndo               := ( ::ReadLogicalData( i, "UNDO", "F" ) == "T" )
    cParent             := ::ReadStringData( i, "PARENT", "" )
    cParent             := ::ReadStringData( i, "OF", cParent )
    cCargo              := ::ReadCargo( i, "LASTFORM.LASTCONTROL.CARGO" )
@@ -8332,6 +8334,7 @@ METHOD pEditbox( i ) CLASS TFormEditor
    ::aSubClass[i]      := cSubClass
    ::aBreak[i]         := lBreak
    ::aParent[i]        := cParent
+   ::aUndo[i]          := lUndo
    ::aCargo[i]         := cCargo
 
    /* Create control */
@@ -11269,8 +11272,8 @@ METHOD pTextBox( i ) CLASS TFormEditor
    LOCAL cFormat, cHelpID, cImage, cInputMask, cInsertType, cMaxLength, cObj, cOnChange, cOnEnter, cOnGotFocus, cOnLostFocus
    LOCAL cOnTextFill, cParent, cSubClass, cToolTip, cToolTipA1, cToolTipA2, cVal, cValid, cValue, cWhen, lAutoSkip, lBold
    LOCAL lCenterAlign, lCtrlsLeft, lDate, lEnabled, lItalic, lLowerCase, lNoBorder, lNoContext, lNoTabStop, lNumeric, lPassword
-   LOCAL lReadonly, lRightAlign, lRTL, lStrikeout, lUnderline, lUpperCase, lVisible, nCol, nFontSize, nHeight, nLinC, nLin1, nLin2
-   LOCAL nRow, nWidth, oCtrl, uFontName, uFontSize
+   LOCAL lReadonly, lRightAlign, lRTL, lStrikeout, lUnderline, lUndo, lUpperCase, lVisible, nCol, nFontSize, nHeight, nLinC, nLin1
+   LOCAL nLin2, nRow, nWidth, oCtrl, uFontName, uFontSize
 
    /* Load properties */
    nRow                := Val( ::ReadCtrlRow( i ) )
@@ -11341,6 +11344,7 @@ METHOD pTextBox( i ) CLASS TFormEditor
    lDate               := ( ::ReadLogicalData( i, "DATE", "F" ) == "T" )
    cDefaultYear        := ::ReadStringData( i, "DEFAULTYEAR", "" )
    lNumeric            := ( ::ReadLogicalData( i, "NUMERIC", "F" ) == "T" )
+   lUndo               := ( ::ReadLogicalData( i, "UNDO", "F" ) == "T" )
    cInputMask          := ::ReadStringData( i, "INPUTMASK", "" )
    cInputMask          := ::ReadStringData( i, "PICTURE", cInputMask )
    cFormat             := ::ReadStringData( i, "FORMAT", "" )
@@ -11437,6 +11441,7 @@ METHOD pTextBox( i ) CLASS TFormEditor
    ::aNoContext[i]     := lNoContext
    ::aCue[i]           := cCue
    ::aParent[i]        := cParent
+   ::aUndo[i]          := lUndo
    ::aCargo[i]         := cCargo
 
    /* Create control */
@@ -11782,7 +11787,7 @@ METHOD pXBrowse( i ) CLASS TFormEditor
    cObj                := ::ReadStringData( i, "OBJECT", cObj )
    nWidth              := Val( ::ReadStringData( i, "WIDTH", LTrim( Str( TXBrowse():nWidth ) ) ) )
    nHeight             := Val( ::ReadStringData( i, "HEIGHT", LTrim( Str( TXBrowse():nHeight ) ) ) )
-   cHdrs            := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
+   cHdrs               := ::ReadStringData( i, "HEADERS", "{ '', '' } ")
    cWidths             := ::ReadStringData( i, "WIDTHS", "{ 100, 60 }")
    cWorkArea           := ::ReadStringData( i, "WORKAREA", "ALIAS()" )
    cFields             := ::ReadStringData( i, "FIELDS", "{ 'field1', 'field2' }" )
@@ -14291,6 +14296,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF ::aDisabled[j]
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "DISABLED"
          ENDIF
+         IF ::aUndo[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "UNDO"
+         ENDIF
          IF NOTZERO( ::aInsertType[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "INSERTTYPE " + AllTrim( ::aInsertType[j] )
          ENDIF
@@ -16790,6 +16798,9 @@ METHOD MakeControls( j, Output, nRow, nCol, nWidth, nHeight, nSpacing, nLevel ) 
          IF NOTEMPTY( ::aCue[j] )
             Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "CUEBANNER " + AllTrim( ::aCue[j] )
          ENDIF
+         IF ::aUndo[j]
+            Output += " ;" + CRLF + Space( nSpacing * ( nLevel + 1 ) ) + "UNDO"
+         ENDIF
          IF NOTEMPTY( ::aCargo[j] )
             Output += CRLF + CRLF + Space( nSpacing * nLevel ) + "LastForm.LastControl.Cargo := " + AllTrim( ::aCargo[j] )
          ENDIF
@@ -18258,6 +18269,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SubClass",           ::aSubClass[j],                                                                1000 }, ;
                        { "ToolTip",            ::aToolTip[j],                                                                 1000 }, ;
+                       { "Undo",               ::aUndo[j],                                                                    .F.  }, ;
                        { "Value",              ::aValue[j],                                                                   1000 } }
       aLabels     := Array( Len( aData ) )
       aInitValues := Array( Len( aData ) )
@@ -18290,6 +18302,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aRTL[j]              := aResults[ ++k ]
       ::aSubClass[j]         := aResults[ ++k ]
       ::aToolTip[j]          := aResults[ ++k ]
+      ::aUndo[j]             := aResults[ ++k ]
       ::aValue[j]            := aResults[ ++k ]
       EXIT
 
@@ -19592,6 +19605,7 @@ METHOD PropertiesClick() CLASS TFormEditor
                        { "RTL",                ::aRTL[j],                                                                     .F.  }, ;
                        { "SubClass",           ::aSubClass[j],                                                                1000 }, ;
                        { "ToolTip",            ::aToolTip[j],                                                                 1000 }, ;
+                       { "Undo",               ::aUndo[j],                                                                    .F.  }, ;
                        { "UpperCase",          ::aUpperCase[j],                                                               .F.  }, ;
                        { "Valid",              ::aValid[j],                                                                   1000 }, ;
                        { "Value",              ::aValue[j],                                                                   1000 }, ;
@@ -19639,6 +19653,7 @@ METHOD PropertiesClick() CLASS TFormEditor
       ::aRTL[j]              := aResults[ ++k ]
       ::aSubClass[j]         := aResults[ ++k ]
       ::aToolTip[j]          := aResults[ ++k ]
+      ::aUndo[j]             := aResults[ ++k ]
       ::aUpperCase[j]        := aResults[ ++k ]
       ::aValid[j]            := aResults[ ++k ]
       ::aValue[j]            := aResults[ ++k ]
