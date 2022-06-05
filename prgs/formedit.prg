@@ -2668,27 +2668,32 @@ METHOD SetFontTypeIDE( si ) CLASS TFormEditor
 METHOD SetFontTypeOOHG( si ) CLASS TFormEditor
 
    LOCAL ia, oControl, cName
+   ::lFormDefFontBold      := _OOHG_DefaultFontBold
+   ::lFormDefFontItalic    := _OOHG_DefaultFontItalic
+   ::lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
+   ::lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
+   ::nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
 
    IF si == 0
-      ::cFFontName  := ::myIde:a_OOHG_DefaultFont[1]
-      ::cFFontSize  := ::myIde:a_OOHG_DefaultFont[2]
-      ::cFFontColor := ::myIde:a_OOHG_DefaultFont[3]
-      ::oDesignForm:cFontName := ::myIde:a_OOHG_DefaultFont[1]
-      ::oDesignForm:nFontSize := ::myIde:a_OOHG_DefaultFont[2]
-      ::oDesignForm:FontColor := ::myIde:a_OOHG_DefaultFont[3]
+      ::cFFontName  := ::myIde:cFormDefFontName
+      ::cFFontSize  := ::myIde:nFormDefFontSize
+      ::cFFontColor := ::myIde:cFormDefFontColor
+      ::oDesignForm:cFontName := ::myIde:cFormDefFontName
+      ::oDesignForm:nFontSize := ::myIde:nFormDefFontSize
+      ::oDesignForm:FontColor := ::myIde:cFormDefFontColor
    ELSEIF si == -1
       ::SetFontTypeIDE( -1 )
-      ::cSFontName    := ::myIde:a_OOHG_DefaultFont[1]
-      ::cSFontNameFrm := ::myIde:a_OOHG_DefaultFont[1]
-      ::nSFontSize    := ::myIde:a_OOHG_DefaultFont[2]
-      ::cSFontSizeFrm := LTrim( Str( ::myIde:a_OOHG_DefaultFont[2] ) )
+      ::cSFontName    := ::myIde:cFormDefFontName
+      ::cSFontNameFrm := ::myIde:cFormDefFontName
+      ::nSFontSize    := ::myIde:nFormDefFontSize
+      ::cSFontSizeFrm := LTrim( Str( ::myIde:nFormDefFontSize ) )
       // TODO: statusbar default fontcolor
       ::lSBold      := .F.
       ::lSItalic    := .F.
       ::lSUnderline := .F.
       ::lSStrikeout := .F.
-      ::oDesignForm:StatusBar:FontName      := ::myIde:a_OOHG_DefaultFont[1]
-      ::oDesignForm:StatusBar:FontSize      := ::myIde:a_OOHG_DefaultFont[2]
+      ::oDesignForm:StatusBar:FontName      := ::myIde:cFormDefFontName
+      ::oDesignForm:StatusBar:FontSize      := ::myIde:nFormDefFontSize
       ::oDesignForm:StatusBar:FontBold      := .F.
       ::oDesignForm:StatusBar:FontItalic    := .F.
       ::oDesignForm:StatusBar:FontUnderline := .F.
@@ -2701,11 +2706,11 @@ METHOD SetFontTypeOOHG( si ) CLASS TFormEditor
          RETURN NIL
       ENDIF
       oControl := ::oDesignForm:aControls[ia]
-      ::aFontName[si]      := ::myIde:a_OOHG_DefaultFont[1]
-      ::aFontNameFrm[si]   := ::myIde:a_OOHG_DefaultFont[1]
-      ::aFontSize[si]      := ::myIde:a_OOHG_DefaultFont[2]
-      ::aFontSizeFrm[si]   := ::myIde:a_OOHG_DefaultFont[2]
-      ::aFontColor[si]     := ::myIde:a_OOHG_DefaultFont[3]
+      ::aFontName[si]      := ::myIde:cFormDefFontName
+      ::aFontNameFrm[si]   := ::myIde:cFormDefFontName
+      ::aFontSize[si]      := ::myIde:nFormDefFontSize
+      ::aFontSizeFrm[si]   := ::myIde:nFormDefFontSize
+      ::aFontColor[si]     := ::myIde:cFormDefFontColor
       ::aFontBold[si]      := .F.
       ::aFontItalic[si]    := .F.
       ::aFontUnderline[si] := .F.
@@ -6516,10 +6521,10 @@ METHOD pForm() CLASS TFormEditor
    nFRowForShow   := ::StrToValueForm( "ROW", ::cFPosition[1], "N", 120, 0, GetDesktopRealHeight() - ::myIDE:nRowBorder )
    nFColForShow   := ::StrToValueForm( "COL", ::cFPosition[2], "N", 120, 0, GetDesktopRealWidth() - ::myIDE:nColBorder )
    cFTitleForShow := ::StrToValueForm( "TITLE", ::cFTitle, "C", "Form's title" )
-   cFFontForShow  := iif( ! NOTEMPTY( ::cFFontName ), ::myIde:a_OOHG_DefaultFont[1], ::StrToValueForm( "FONT", ::cFFontName, "C", ::myIde:cFormDefFontName ) )
-   uFColorForShow := iif( ! NOTEMPTY( ::cFFontColor ), ::myIde:a_OOHG_DefaultFont[3], ::StrToValueForm( "FONTCOLOR", ::cFFontColor, "X", ::myIde:cFormDefFontColor ) )
+   cFFontForShow  := iif( ! NOTEMPTY( ::cFFontName ), ::myIde:cFormDefFontName, ::StrToValueForm( "FONT", ::cFFontName, "C", ::myIde:cFormDefFontName ) )
+   uFColorForShow := iif( ! NOTEMPTY( ::cFFontColor ), ::myIde:cFormDefFontColor, ::StrToValueForm( "FONTCOLOR", ::cFFontColor, "X", ::myIde:cFormDefFontColor ) )
    uFBkClrForShow := iif( ! NOTEMPTY( ::cFBackColor ), NIL, ::StrToValueForm( "BACKCOLOR", ::cFBackColor, "X", ::myIde:aSystemColor ) )
-   nFSizeForShow  := iif( ! NOTEMPTY( ::cFFontSize ), ::myIde:a_OOHG_DefaultFont[2], ::StrToValueForm( "SIZE", ::cFFontSize, "N", ::myIde:nFormDefFontSize, 0, 0 ) )
+   nFSizeForShow  := iif( ! NOTEMPTY( ::cFFontSize ), ::myIde:nFormDefFontSize, ::StrToValueForm( "SIZE", ::cFFontSize, "N", ::myIde:nFormDefFontSize, 0, 0 ) )
    nFWidth        := ::StrToValueForm( "WIDTH", ::cFWidth, "N", 700, GetSystemMetrics( SM_CXMIN ), 0 )
    nFHeight       := ::StrToValueForm( "HEIGHT", ::cFHeight, "N", 480, GetSystemMetrics( SM_CYMIN ), 0 )
    nFVirtualW     := ::StrToValueForm( "VIRTUAL WIDTH", ::cFVirtualW, "N", 0, 0, 0 )
@@ -21422,10 +21427,10 @@ METHOD FrmProperties() CLASS TFormEditor
    nFRowForShow   := ::StrToValueForm( "ROW", ::cFPosition[1], "N", 120, 0, GetDesktopRealHeight() - 50 )      // TODO: add a parameter
    nFColForShow   := ::StrToValueForm( "COL", ::cFPosition[2], "N", 120, 0, GetDesktopRealWidth() - 50 )       // TODO: add a parameter
    cFTitleForShow := ::StrToValueForm( "TITLE", ::cFTitle, "C", "Form's title" )
-   cFFontForShow  := iif( ! NOTEMPTY( ::cFFontName ), ::myIde:a_OOHG_DefaultFont[1], ::StrToValueForm( "FONT", ::cFFontName, "C", ::myIde:cFormDefFontName ) )
-   cFColorForShow := iif( ! NOTEMPTY( ::cFFontColor ), ::myIde:a_OOHG_DefaultFont[3], ::StrToValueForm( "FONTCOLOR", ::cFFontColor, "X", ::myIde:cFormDefFontColor ) )
+   cFFontForShow  := iif( ! NOTEMPTY( ::cFFontName ), ::myIde:cFormDefFontName, ::StrToValueForm( "FONT", ::cFFontName, "C", ::myIde:cFormDefFontName ) )
+   cFColorForShow := iif( ! NOTEMPTY( ::cFFontColor ), ::myIde:cFormDefFontColor, ::StrToValueForm( "FONTCOLOR", ::cFFontColor, "X", ::myIde:cFormDefFontColor ) )
    cFBkClrForShow := iif( ! NOTEMPTY( ::cFBackColor ), NIL, ::StrToValueForm( "BACKCOLOR", ::cFBackColor, "X", ::myIde:aSystemColor ) )
-   nFSizeForShow  := iif( ! NOTEMPTY( ::cFFontSize ), ::myIde:a_OOHG_DefaultFont[2], ::StrToValueForm( "SIZE", ::cFFontSize, "N", ::myIde:nFormDefFontSize, 0, 0 ) )
+   nFSizeForShow  := iif( ! NOTEMPTY( ::cFFontSize ), ::myIde:nFormDefFontSize, ::StrToValueForm( "SIZE", ::cFFontSize, "N", ::myIde:nFormDefFontSize, 0, 0 ) )
    nFWidth        := ::StrToValueForm( "WIDTH", ::cFWidth, "N", 640, GetSystemMetrics( SM_CXMIN ), 0 )
    nFHeight       := ::StrToValueForm( "HEIGHT", ::cFHeight, "N", 480, GetSystemMetrics( SM_CYMIN ), 0 )
    nFVirtualW     := ::StrToValueForm( "VIRTUAL WIDTH", ::cFVirtualW, "N", 0, 0, 0 )

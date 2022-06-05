@@ -106,7 +106,6 @@ RETURN NIL
 CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    DATA aClrDefs                  INIT {}
-   DATA a_OOHG_DefaultFont        INIT NIL
    DATA aClrXtrs                  INIT {}
    DATA aEditors                  INIT {}
    DATA aLineR                    INIT {}
@@ -295,24 +294,22 @@ METHOD NewIde( cParameter ) CLASS THMI
 LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, cvcy, cName, cExt
 
    // Preserve OOHG's default font before changing it
-   cFormDefFontName      := _OOHG_DefaultFontName
-   nFormDefFontSize      := _OOHG_DefaultFontSize
-   lFormDefFontBold      := _OOHG_DefaultFontBold
-   lFormDefFontItalic    := _OOHG_DefaultFontItalic
-   cFormDefFontColor     := ::ColorToStr( _OOHG_DefaultFontColor )
-   lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
-   lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
-   nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
+   ::cFormDefFontName      := _OOHG_DefaultFontName
+   ::nFormDefFontSize      := _OOHG_DefaultFontSize
+   ::lFormDefFontBold      := _OOHG_DefaultFontBold
+   ::lFormDefFontItalic    := _OOHG_DefaultFontItalic
+   ::cFormDefFontColor     := ::ColorToStr( _OOHG_DefaultFontColor )
+   ::lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
+   ::lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
+   ::nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
 
    SET CENTURY ON
    SET EXACT ON
+   SET FONT TO "Verdana", 9
    SET INTERACTIVECLOSE OFF
    SET NAVIGATION EXTENDED
    SET BROWSESYNC ON
    SET TOOLTIPSTYLE BALLOON
-
-   ::a_OOHG_DefaultFont := { _OOHG_DefaultFontName, _OOHG_DefaultFontSize, _OOHG_DefaultFontColor }
-   SET FONT TO "Verdana", 9
 
    ::cProjFolder := GetCurrentFolder()
    ::cIDE_Folder := GetStartupFolder()
@@ -1626,12 +1623,12 @@ METHOD Preferences() CLASS THMI
 LOCAL Folder
 LOCAL aFont := { ::cFormDefFontName, ;
                  ::nFormDefFontSize, ;
-                 .F., ;
-                 .F., ;
+                 ::lFormDefFontBold, ;
+                 ::lFormDefFontItalic, ;
                  ::StrToColor( ::cFormDefFontColor ), ;
-                 .F., ;
-                 .F., ;
-                 0 }
+                 ::lFormDefFontUnderLine, ;
+                 ::lFormDefFontStrikeOut, ;
+                 ::nFormDefFontCharSet }
 
    LOAD WINDOW form_prefer
 
@@ -1712,10 +1709,10 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:text_24:value      := ::nPxSize
    ::Form_Prefer:text_25:value      := ::nTabSize
    ::Form_Prefer:text_1:value       := ::cExtEditor
-   ::Form_Prefer:text_font:value    := iif( Empty( ::cFormDefFontName ), ::a_OOHG_DefaultFont[1], ::cFormDefFontName ) + " " + ;
-                                       LTrim( Str( iif( ::nFormDefFontSize > 0, ::nFormDefFontSize, ::a_OOHG_DefaultFont[2] ), 2, 0 ) ) + ;
+   ::Form_Prefer:text_font:value    := iif( Empty( ::cFormDefFontName ), ::_OOHG_DefaultFontName, ::cFormDefFontName ) + " " + ;
+                                       LTrim( Str( iif( ::nFormDefFontSize > 0, ::nFormDefFontSize, ::_OOHG_DefaultFontSize ), 2, 0 ) ) + ;
                                        iif( ::cFormDefFontColor # "NIL", ", Color " + ::cFormDefFontColor, ;
-                                       iif( ::a_OOHG_DefaultFont[3] # NIL, ", Color " + ::ColorToStr( ::a_OOHG_DefaultFont[3] ), "" ) )
+                                       iif( ::_OOHG_DefaultFontColor # NIL, ", Color " + ::ColorToStr( ::_OOHG_DefaultFontColor ), "" ) )
    IF ::Form_Prefer:radiogroup_1:value == 1
       // Harbour
       ::Form_Prefer:radiogroup_4:value := ::lTBuild
@@ -1957,17 +1954,18 @@ METHOD GetPreferredFont( aFont )
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    aFont := GetFont( aFont[1], aFont[2], aFont[3], aFont[4], aFont[5], aFont[6], aFont[7], aFont[8] )
    ::Form_prefer:text_font:value := ;
-      iif( Empty( aFont[1] ), ::a_OOHG_DefaultFont[1], aFont[1] ) + " " + ;
-      LTrim( Str( iif( aFont[2] > 0, aFont[2], ::a_OOHG_DefaultFont[2] ) ) ) + ;
+      iif( Empty( aFont[1] ), ::_OOHG_DefaultFontName, aFont[1] ) + " " + ;
+      LTrim( Str( iif( aFont[2] > 0, aFont[2], ::_OOHG_DefaultFontSize ) ) ) + ;
       iif( aFont[3], " Bold", "" ) + ;
       iif( aFont[4], " Italic", "" ) + ;
       iif( aFont[6], " Underline", "" ) + ;
       iif( aFont[7], " Strikeout", "" ) + ;
-      iif( Empty(aFont[5] ), "", ;
+      iif( Empty( aFont[5] ), "", ;
            iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, ;
-                iif( ::a_OOHG_DefaultFont[3] == NIL, "", ;
-                     ", Color " + ::ColorToStr( ::a_OOHG_DefaultFont[3] ) ), ;
-                ", Color " + ::ColorToStr( aFont[5] ) ) )
+                iif( ::_OOHG_DefaultFontColor == NIL, "", ;
+                     ", Color " + ::ColorToStr( ::_OOHG_DefaultFontColor ) ), ;
+                ", Color " + ::ColorToStr( aFont[5] ) ) ) + ;
+      ", CharSet " + LTrim( Str( aFont[8] ) )
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
