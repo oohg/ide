@@ -2668,11 +2668,6 @@ METHOD SetFontTypeIDE( si ) CLASS TFormEditor
 METHOD SetFontTypeOOHG( si ) CLASS TFormEditor
 
    LOCAL ia, oControl, cName
-   ::lFormDefFontBold      := _OOHG_DefaultFontBold
-   ::lFormDefFontItalic    := _OOHG_DefaultFontItalic
-   ::lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
-   ::lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
-   ::nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
 
    IF si == 0
       ::cFFontName  := ::myIde:cFormDefFontName
