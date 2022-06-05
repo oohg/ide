@@ -117,11 +117,11 @@ CLASS THMI
    DATA cBCCFolderB               INIT ''
    DATA cBCCFolderI               INIT ''
    DATA cBCCFolderL               INIT ''
-   DATA cExtEditor                INIT ''
    DATA cExe                      INIT ''
+   DATA cExtEditor                INIT ''
    DATA cFile                     INIT ''
-   DATA cFormDefFontColor         INIT 'NIL'
-   DATA cFormDefFontName          INIT 'MS Sans Serif'
+   DATA cFormDefFontColor         INIT ''
+   DATA cFormDefFontName          INIT ''
    DATA cGuiHbBCC                 INIT ''
    DATA cGuiHbBCCI                INIT ''
    DATA cGuiHbBCCL                INIT ''
@@ -160,9 +160,9 @@ CLASS THMI
    DATA cHbPellFolderL            INIT ''
    DATA cIDE_Folder               INIT ''
    DATA cItemFile                 INIT ''
-   DATA cLibCC                    INIT ""
-   DATA cLibXH                    INIT ""
-   DATA cMakeTool                 INIT ""
+   DATA cLibCC                    INIT ''
+   DATA cLibXH                    INIT ''
+   DATA cMakeTool                 INIT ''
    DATA cMinGWFolder              INIT ''
    DATA cMinGWFolderB             INIT ''
    DATA cMinGWFolderI             INIT ''
@@ -194,6 +194,10 @@ CLASS THMI
    DATA Form_Wait                 INIT NIL
    DATA lCloseOnFormExit          INIT .F.
    DATA lCtrlSizes                INIT .T.
+   DATA lFormDefFontBold          INIT .F.
+   DATA lFormDefFontItalic        INIT .F.
+   DATA lFormDefFontStrikeOut     INIT .F.
+   DATA lFormDefFontUnderLine     INIT .F.
    DATA lHideTT                   INIT .F.
    DATA lMultiDelete              INIT .F.
    DATA lPsave                    INIT .T.
@@ -206,10 +210,13 @@ CLASS THMI
    DATA MainHeight                INIT NIL
    DATA nActiveEditor             INIT 0
    DATA nCaretPos                 INIT 0
+   DATA nColBorder                INIT 50
    DATA nCompilerC                INIT 2
    DATA nCompxBase                INIT 1
-   DATA nFormDefFontSize          INIT 10
-   DATA nColBorder                INIT 50
+   DATA nDPIh                     INIT 0
+   DATA nDPIw                     INIT 0
+   DATA nFormDefFontCharSet       INIT 0
+   DATA nFormDefFontSize          INIT 0
    DATA nLabelHeight              INIT 0
    DATA nLineSkip                 INIT 5
    DATA nPosText                  INIT 0
@@ -221,8 +228,6 @@ CLASS THMI
    DATA nSyntax                   INIT 1
    DATA nTabSize                  INIT 8
    DATA nTextBoxHeight            INIT 0
-   DATA nDPIw                     INIT NIL
-   DATA nDPIh                     INIT NIL
 
    METHOD About
    METHOD AjustaFrame
@@ -288,6 +293,16 @@ ENDCLASS
 METHOD NewIde( cParameter ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, cvcy, cName, cExt
+
+   // Preserve OOHG's default font before changing it
+   cFormDefFontName      := _OOHG_DefaultFontName
+   nFormDefFontSize      := _OOHG_DefaultFontSize
+   lFormDefFontBold      := _OOHG_DefaultFontBold
+   lFormDefFontItalic    := _OOHG_DefaultFontItalic
+   cFormDefFontColor     := ::ColorToStr( _OOHG_DefaultFontColor )
+   lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
+   lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
+   nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
 
    SET CENTURY ON
    SET EXACT ON
