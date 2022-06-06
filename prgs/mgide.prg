@@ -109,6 +109,7 @@ CLASS THMI
    DATA aClrXtrs                  INIT {}
    DATA aEditors                  INIT {}
    DATA aLineR                    INIT {}
+   DATA aOriginalFont             INIT Array( 8 )
    DATA aPositions                INIT { {0, 0}, {120, 0}, {120, GetDeskTopRealWidth() - 380} }
    DATA aSystemColor              INIT { 215, 231, 244 }
    DATA aSystemColorAux           INIT  {}
@@ -205,7 +206,6 @@ CLASS THMI
    DATA lSavePosOnDrag            INIT .T.
    DATA lSaveSizeonRed            INIT .T.
    DATA lSnap                     INIT .F.
-   DATA lTBuild                   INIT 1
    DATA MainHeight                INIT NIL
    DATA nActiveEditor             INIT 0
    DATA nCaretPos                 INIT 0
@@ -226,6 +226,7 @@ CLASS THMI
    DATA nStdVertGap               INIT 24
    DATA nSyntax                   INIT 1
    DATA nTabSize                  INIT 8
+   DATA nTBuild                   INIT 1
    DATA nTextBoxHeight            INIT 0
 
    METHOD About
@@ -294,14 +295,14 @@ METHOD NewIde( cParameter ) CLASS THMI
 LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, cvcy, cName, cExt
 
    // Preserve OOHG's default font before changing it
-   ::cFormDefFontName      := _OOHG_DefaultFontName
-   ::nFormDefFontSize      := _OOHG_DefaultFontSize
-   ::lFormDefFontBold      := _OOHG_DefaultFontBold
-   ::lFormDefFontItalic    := _OOHG_DefaultFontItalic
-   ::cFormDefFontColor     := ::ColorToStr( _OOHG_DefaultFontColor )
-   ::lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
-   ::lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
-   ::nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
+   ::aOriginalFont[1] := ::cFormDefFontName      := _OOHG_DefaultFontName
+   ::aOriginalFont[2] := ::nFormDefFontSize      := _OOHG_DefaultFontSize
+   ::aOriginalFont[3] := ::lFormDefFontBold      := _OOHG_DefaultFontBold
+   ::aOriginalFont[4] := ::lFormDefFontItalic    := _OOHG_DefaultFontItalic
+   ::aOriginalFont[5] := ::cFormDefFontColor     := ::ColorToStr( _OOHG_DefaultFontColor )
+   ::aOriginalFont[6] := ::lFormDefFontUnderLine := _OOHG_DefaultFontUnderLine
+   ::aOriginalFont[7] := ::lFormDefFontStrikeOut := _OOHG_DefaultFontStrikeOut
+   ::aOriginalFont[8] := ::nFormDefFontCharSet   := _OOHG_DefaultFontCharSet
 
    SET CENTURY ON
    SET EXACT ON
@@ -1025,8 +1026,8 @@ RETURN uRet
 /*--------------------------------------------------------------------------------------------------------------------------------*/
 METHOD ReadINI( cFile ) CLASS THMI
 /*--------------------------------------------------------------------------------------------------------------------------------*/
-LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := ""
-LOCAL lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1, lMultiDelete := 0
+LOCAL lSnap := 0, nPos := 0, lHideTT := 0, cColor := "", cFontName := "", nFontSize := 0, lBold := 2, lItalic := 2, lUnderline := 2
+LOCAL lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1, lMultiDelete := 0, lStrikeOut := 2
 
    IF Left( cFile, 1 ) == "\"
       cFile := SubStr( cFile, 2 )
@@ -1038,169 +1039,191 @@ LOCAL lSaveDefaultValues := 1, lSavePosOnDrag := 1, lSaveSizeonRed := 1, lMultiD
 
    BEGIN INI FILE cFile
       // PROJECT
-      GET ::cOutFile          SECTION 'PROJECT'     ENTRY "OUTFILE"       DEFAULT ''
+      GET ::cOutFile              SECTION 'PROJECT'     ENTRY "OUTFILE"       DEFAULT ''
       // EDITOR
-      GET ::cExtEditor        SECTION 'EDITOR'      ENTRY "EXTERNAL"      DEFAULT ''
-      GET ::nTabSize          SECTION "EDITOR"      ENTRY "TABSIZE"       DEFAULT 8
+      GET ::cExtEditor            SECTION 'EDITOR'      ENTRY "EXTERNAL"      DEFAULT ''
+      GET ::nTabSize              SECTION "EDITOR"      ENTRY "TABSIZE"       DEFAULT 8
       IF ::nTabSize < 1 .OR. ::nTabSize > 99
          ::nTabSize := 8
       ENDIF
       // FORM'S FONT
-      GET ::cFormDefFontName   SECTION "FORMFONT"   ENTRY "FONT"          DEFAULT ::cFormDefFontName
-      IF ::cFormDefFontName == 'NIL'
-         ::cFormDefFontName := ::a_OOHG_DefaultFont[1]
+      GET cFontName               SECTION "FORMFONT"    ENTRY "FONT"          DEFAULT ''
+      IF ! Empty( cFontName ) .AND. cFontName # 'NIL'
+         ::cFormDefFontName := cFontName
       ENDIF
-      GET ::nFormDefFontSize   SECTION "FORMFONT"   ENTRY "SIZE"          DEFAULT ::nFormDefFontSize
-      ::nFormDefFontSize := Int( ::nFormDefFontSize )
-      IF ::nFormDefFontSize < 1
-         ::nFormDefFontSize := ::a_OOHG_DefaultFont[2]
+      GET nFontSize               SECTION "FORMFONT"    ENTRY "SIZE"          DEFAULT 0
+      IF nFontSize > 0
+         ::nFormDefFontSize := nFontSize
       ENDIF
-      GET cColor               SECTION "FORMFONT"   ENTRY "COLOR"         DEFAULT ::cFormDefFontColor
-      IF ::StrToColor( cColor ) == NIL
-         ::cFormDefFontColor := ::ColorToStr( ::a_OOHG_DefaultFont[3] )
-      ELSE
+      GET lBold                   SECTION 'FORMFONT'    ENTRY "BOLD"          DEFAULT 2
+      IF lBold == 0
+         ::lFormDefFontBold := .F.
+      ELSEIF lBold == 1
+         ::lFormDefFontBold := .T.
+      ENDIF
+      GET lItalic                 SECTION 'FORMFONT'    ENTRY "ITALIC"        DEFAULT 2
+      IF lItalic == 0
+         ::lFormDefFontItalic := .F.
+      ELSEIF lItalic == 1
+         ::lFormDefFontItalic := .T.
+      ENDIF
+      GET cColor                  SECTION "FORMFONT"    ENTRY "COLOR"         DEFAULT ''
+      IF ::StrToColor( cColor ) # NIL
          ::cFormDefFontColor := cColor
       ENDIF
+      GET lUnderline              SECTION 'FORMFONT'    ENTRY "UNDERLINE"     DEFAULT 2
+      IF lUnderline == 0
+         ::lFormDefFontUnderLine := .F.
+      ELSEIF lUnderline == 1
+         ::lFormDefFontUnderLine := .T.
+      ENDIF
+      GET lStrikeOut              SECTION 'FORMFONT'    ENTRY "STRIKEOUT"     DEFAULT 2
+      IF lStrikeOut == 0
+         ::lFormDefFontStrikeOut := .F.
+      ELSEIF lItalic == 1
+         ::lFormDefFontStrikeOut := .T.
+      ENDIF
+      GET ::nFormDefFontCharSet   SECTION "FORMFONT"    ENTRY "CHARSET"       DEFAULT ::nFormDefFontCharSet
       // FORM'S METRICS
-      GET ::nColBorder        SECTION "FORMMETRICS" ENTRY "COLBORDER"     DEFAULT 50
-      GET ::nRowBorder        SECTION "FORMMETRICS" ENTRY "ROWBORDER"     DEFAULT 50
-      GET ::nLabelHeight      SECTION "FORMMETRICS" ENTRY "LABELHEIGHT"   DEFAULT 0
+      GET ::nColBorder            SECTION "FORMMETRICS" ENTRY "COLBORDER"     DEFAULT 50
+      GET ::nRowBorder            SECTION "FORMMETRICS" ENTRY "ROWBORDER"     DEFAULT 50
+      GET ::nLabelHeight          SECTION "FORMMETRICS" ENTRY "LABELHEIGHT"   DEFAULT 0
       IF ::nLabelHeight < 0
          ::nLabelHeight := 0
       ENDIF
-      GET ::nTextBoxHeight    SECTION "FORMMETRICS" ENTRY "TEXTBOXHEIGHT" DEFAULT 0
+      GET ::nTextBoxHeight        SECTION "FORMMETRICS" ENTRY "TEXTBOXHEIGHT" DEFAULT 0
       IF ::nTextBoxHeight < 0
          ::nTextBoxHeight := 0
       ENDIF
-      GET ::nStdVertGap       SECTION "FORMMETRICS" ENTRY "STDVERTGAP"    DEFAULT 24
+      GET ::nStdVertGap           SECTION "FORMMETRICS" ENTRY "STDVERTGAP"    DEFAULT 24
       IF ::nStdVertGap < 1
          ::nStdVertGap := 24
       ENDIF
-      GET ::nPxMove           SECTION "FORMMETRICS" ENTRY "PXMOVE"        DEFAULT 5
+      GET ::nPxMove               SECTION "FORMMETRICS" ENTRY "PXMOVE"        DEFAULT 5
       IF ::nPxMove < 1 .OR. ::nPxMove > 99
          ::nPxMove := 5
       ENDIF
-      GET ::nPxJump           SECTION "FORMMETRICS" ENTRY "PXJUMP"        DEFAULT 10
+      GET ::nPxJump               SECTION "FORMMETRICS" ENTRY "PXJUMP"        DEFAULT 10
       IF ::nPxJump < 1 .OR. ::nPxJump > 99
          ::nPxJump := 10
       ENDIF
-      GET ::nPxSize           SECTION "FORMMETRICS" ENTRY "PXSIZE"        DEFAULT 1
+      GET ::nPxSize               SECTION "FORMMETRICS" ENTRY "PXSIZE"        DEFAULT 1
       IF ::nPxSize < 1 .OR. ::nPxSize > 99
          ::nPxSize := 1
       ENDIF
       // OOHG
-      GET ::cGuiHbMinGW       SECTION 'GUILIB'      ENTRY "GUIHBMINGW"    DEFAULT 'c:\oohg'
-      GET ::cGuiHbBCC         SECTION 'GUILIB'      ENTRY "GUIHBBCC"      DEFAULT 'c:\oohg'
-      GET ::cGuiHbPelles      SECTION 'GUILIB'      ENTRY "GUIHBPELL"     DEFAULT 'c:\oohg'
-      GET ::cGuixHbMinGW      SECTION 'GUILIB'      ENTRY "GUIXHBMINGW"   DEFAULT 'c:\oohg'
-      GET ::cGuixHbBCC        SECTION 'GUILIB'      ENTRY "GUIXHBBCC"     DEFAULT 'c:\oohg'
-      GET ::cGuixHbPelles     SECTION 'GUILIB'      ENTRY "GUIXHBPELL"    DEFAULT 'c:\oohg'
-      GET ::cGuiHbBCCI        SECTION 'GUIHBBCC'    ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuiHbBCCL        SECTION 'GUIHBBCC'    ENTRY "LIB"           DEFAULT 'lib\hb\bcc'
-      GET ::cGuiHbBCCR        SECTION 'GUIHBBCC'    ENTRY "RESOURCES"     DEFAULT 'resources'
-      GET ::cGuiHbMinGWI      SECTION 'GUIHBMINGW'  ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuiHbMinGWL      SECTION 'GUIHBMINGW'  ENTRY "LIB"           DEFAULT 'lib\hb\mingw'
-      GET ::cGuiHbMinGWR      SECTION 'GUIHBMINGW'  ENTRY "RESOURCES"     DEFAULT 'resources'
-      GET ::cGuiHbPellesI     SECTION 'GUIHBPELL'   ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuiHbPellesL     SECTION 'GUIHBPELL'   ENTRY "LIB"           DEFAULT 'lib\hb\pcc'
-      GET ::cGuiHbPellesR     SECTION 'GUIHBPELL'   ENTRY "RESOURCES"     DEFAULT 'resources'
-      GET ::cGuixHbBCCI       SECTION 'GUIXHBBCC'   ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuixHbBCCL       SECTION 'GUIXHBBCC'   ENTRY "LIB"           DEFAULT 'lib\xhb\bcc'
-      GET ::cGuixHbBCCR       SECTION 'GUIXHBBCC'   ENTRY "RESOURCES"     DEFAULT 'resources'
-      GET ::cGuixHbMinGWI     SECTION 'GUIXHBMINGW' ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuixHbMinGWL     SECTION 'GUIXHBMINGW' ENTRY "LIB"           DEFAULT 'lib\xhb\mingw'
-      GET ::cGuixHbMinGWR     SECTION 'GUIXHBMINGW' ENTRY "RESOURCES"     DEFAULT 'resources'
-      GET ::cGuixHbPellesI    SECTION 'GUIXHBPELL'  ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cGuixHbPellesL    SECTION 'GUIXHBPELL'  ENTRY "LIB"           DEFAULT 'lib\xhb\pcc'
-      GET ::cGuixHbPellesR    SECTION 'GUIXHBPELL'  ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuiHbMinGW           SECTION 'GUILIB'      ENTRY "GUIHBMINGW"    DEFAULT 'c:\oohg'
+      GET ::cGuiHbBCC             SECTION 'GUILIB'      ENTRY "GUIHBBCC"      DEFAULT 'c:\oohg'
+      GET ::cGuiHbPelles          SECTION 'GUILIB'      ENTRY "GUIHBPELL"     DEFAULT 'c:\oohg'
+      GET ::cGuixHbMinGW          SECTION 'GUILIB'      ENTRY "GUIXHBMINGW"   DEFAULT 'c:\oohg'
+      GET ::cGuixHbBCC            SECTION 'GUILIB'      ENTRY "GUIXHBBCC"     DEFAULT 'c:\oohg'
+      GET ::cGuixHbPelles         SECTION 'GUILIB'      ENTRY "GUIXHBPELL"    DEFAULT 'c:\oohg'
+      GET ::cGuiHbBCCI            SECTION 'GUIHBBCC'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbBCCL            SECTION 'GUIHBBCC'    ENTRY "LIB"           DEFAULT 'lib\hb\bcc'
+      GET ::cGuiHbBCCR            SECTION 'GUIHBBCC'    ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuiHbMinGWI          SECTION 'GUIHBMINGW'  ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbMinGWL          SECTION 'GUIHBMINGW'  ENTRY "LIB"           DEFAULT 'lib\hb\mingw'
+      GET ::cGuiHbMinGWR          SECTION 'GUIHBMINGW'  ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuiHbPellesI         SECTION 'GUIHBPELL'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuiHbPellesL         SECTION 'GUIHBPELL'   ENTRY "LIB"           DEFAULT 'lib\hb\pcc'
+      GET ::cGuiHbPellesR         SECTION 'GUIHBPELL'   ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbBCCI           SECTION 'GUIXHBBCC'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbBCCL           SECTION 'GUIXHBBCC'   ENTRY "LIB"           DEFAULT 'lib\xhb\bcc'
+      GET ::cGuixHbBCCR           SECTION 'GUIXHBBCC'   ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbMinGWI         SECTION 'GUIXHBMINGW' ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbMinGWL         SECTION 'GUIXHBMINGW' ENTRY "LIB"           DEFAULT 'lib\xhb\mingw'
+      GET ::cGuixHbMinGWR         SECTION 'GUIXHBMINGW' ENTRY "RESOURCES"     DEFAULT 'resources'
+      GET ::cGuixHbPellesI        SECTION 'GUIXHBPELL'  ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cGuixHbPellesL        SECTION 'GUIXHBPELL'  ENTRY "LIB"           DEFAULT 'lib\xhb\pcc'
+      GET ::cGuixHbPellesR        SECTION 'GUIXHBPELL'  ENTRY "RESOURCES"     DEFAULT 'resources'
       // HARBOUR
-      GET ::cHbMinGWFolder    SECTION 'HARBOUR'     ENTRY "HBMINGW"       DEFAULT 'c:\harbourm'
-      GET ::cHbBCCFolder      SECTION 'HARBOUR'     ENTRY "HBBCC"         DEFAULT 'c:\harbourb'
-      GET ::cHbPellFolder     SECTION 'HARBOUR'     ENTRY "HBPELLES"      DEFAULT 'c:\harbourp'
-      GET ::cHbMinGWFolderB   SECTION 'HBMINGW'     ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cHbMinGWFolderI   SECTION 'HBMINGW'     ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cHbMinGWFolderL   SECTION 'HBMINGW'     ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cHbBCCFolderB     SECTION 'HBBCC'       ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cHbBCCFolderI     SECTION 'HBBCC'       ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cHbBCCFolderL     SECTION 'HBBCC'       ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cHbPellFolderB    SECTION 'HBPELLES'    ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cHbPellFolderI    SECTION 'HBPELLES'    ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cHbPellFolderL    SECTION 'HBPELLES'    ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cHbMinGWFolder        SECTION 'HARBOUR'     ENTRY "HBMINGW"       DEFAULT 'c:\harbourm'
+      GET ::cHbBCCFolder          SECTION 'HARBOUR'     ENTRY "HBBCC"         DEFAULT 'c:\harbourb'
+      GET ::cHbPellFolder         SECTION 'HARBOUR'     ENTRY "HBPELLES"      DEFAULT 'c:\harbourp'
+      GET ::cHbMinGWFolderB       SECTION 'HBMINGW'     ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbMinGWFolderI       SECTION 'HBMINGW'     ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbMinGWFolderL       SECTION 'HBMINGW'     ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cHbBCCFolderB         SECTION 'HBBCC'       ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbBCCFolderI         SECTION 'HBBCC'       ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbBCCFolderL         SECTION 'HBBCC'       ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cHbPellFolderB        SECTION 'HBPELLES'    ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cHbPellFolderI        SECTION 'HBPELLES'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cHbPellFolderL        SECTION 'HBPELLES'    ENTRY "LIB"           DEFAULT 'lib'
       // XHARBOUR
-      GET ::cxHbMinGWFolder   SECTION 'HARBOUR'     ENTRY "XHBMINGW"      DEFAULT 'c:\xharbourm'
-      GET ::cxHbBCCFolder     SECTION 'HARBOUR'     ENTRY "XHBBCC"        DEFAULT 'c:\xharbourb'
-      GET ::cxHbPellFolder    SECTION 'HARBOUR'     ENTRY "XHBPELLES"     DEFAULT 'c:\xharbourp'
-      GET ::cxHbMinGWFolderB  SECTION 'XHBMINGW'    ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cxHbMinGWFolderI  SECTION 'XHBMINGW'    ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cxHbMinGWFolderL  SECTION 'XHBMINGW'    ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cxHbBCCFolderB    SECTION 'XHBBCC'      ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cxHbBCCFolderI    SECTION 'XHBBCC'      ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cxHbBCCFolderL    SECTION 'XHBBCC'      ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cxHbPellFolderB   SECTION 'XHBPELLES'   ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cxHbPellFolderI   SECTION 'XHBPELLES'   ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cxHbPellFolderL   SECTION 'XHBPELLES'   ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cxHbMinGWFolder       SECTION 'HARBOUR'     ENTRY "XHBMINGW"      DEFAULT 'c:\xharbourm'
+      GET ::cxHbBCCFolder         SECTION 'HARBOUR'     ENTRY "XHBBCC"        DEFAULT 'c:\xharbourb'
+      GET ::cxHbPellFolder        SECTION 'HARBOUR'     ENTRY "XHBPELLES"     DEFAULT 'c:\xharbourp'
+      GET ::cxHbMinGWFolderB      SECTION 'XHBMINGW'    ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbMinGWFolderI      SECTION 'XHBMINGW'    ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbMinGWFolderL      SECTION 'XHBMINGW'    ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cxHbBCCFolderB        SECTION 'XHBBCC'      ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbBCCFolderI        SECTION 'XHBBCC'      ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbBCCFolderL        SECTION 'XHBBCC'      ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cxHbPellFolderB       SECTION 'XHBPELLES'   ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cxHbPellFolderI       SECTION 'XHBPELLES'   ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cxHbPellFolderL       SECTION 'XHBPELLES'   ENTRY "LIB"           DEFAULT 'lib'
       // C COMPILER
-      GET ::cMinGWFolder      SECTION 'COMPILER'    ENTRY "MINGWFOLDER"   DEFAULT 'c:\MinGW'
-      GET ::cMinGWFolderB     SECTION 'MINGW'       ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cMinGWFolderI     SECTION 'MINGW'       ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cMinGWFolderL     SECTION 'MINGW'       ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cBCCFolder        SECTION 'COMPILER'    ENTRY "BCCFOLDER"     DEFAULT 'c:\Borland\BCC55'
-      GET ::cBCCFolderB       SECTION 'BCC'         ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cBCCFolderI       SECTION 'BCC'         ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cBCCFolderL       SECTION 'BCC'         ENTRY "LIB"           DEFAULT 'lib'
-      GET ::cPellFolder       SECTION 'COMPILER'    ENTRY "PELLESFOLDER"  DEFAULT 'c:\PellesC'
-      GET ::cPellFolderB      SECTION 'PELLES'      ENTRY "BIN"           DEFAULT 'bin'
-      GET ::cPellFolderI      SECTION 'PELLES'      ENTRY "INCLUDE"       DEFAULT 'include'
-      GET ::cPellFolderL      SECTION 'PELLES'      ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cMinGWFolder          SECTION 'COMPILER'    ENTRY "MINGWFOLDER"   DEFAULT 'c:\MinGW'
+      GET ::cMinGWFolderB         SECTION 'MINGW'       ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cMinGWFolderI         SECTION 'MINGW'       ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cMinGWFolderL         SECTION 'MINGW'       ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cBCCFolder            SECTION 'COMPILER'    ENTRY "BCCFOLDER"     DEFAULT 'c:\Borland\BCC55'
+      GET ::cBCCFolderB           SECTION 'BCC'         ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cBCCFolderI           SECTION 'BCC'         ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cBCCFolderL           SECTION 'BCC'         ENTRY "LIB"           DEFAULT 'lib'
+      GET ::cPellFolder           SECTION 'COMPILER'    ENTRY "PELLESFOLDER"  DEFAULT 'c:\PellesC'
+      GET ::cPellFolderB          SECTION 'PELLES'      ENTRY "BIN"           DEFAULT 'bin'
+      GET ::cPellFolderI          SECTION 'PELLES'      ENTRY "INCLUDE"       DEFAULT 'include'
+      GET ::cPellFolderL          SECTION 'PELLES'      ENTRY "LIB"           DEFAULT 'lib'
       // MODE
-      GET ::nCompxBase        SECTION 'WHATCOMP'    ENTRY "XBASECOMP"     DEFAULT 1  // 1 Harbour  2 xHarbour
-      GET ::nCompilerC        SECTION 'WHATCOMP'    ENTRY "CCOMPILER"     DEFAULT 1  // 1 MinGW    2 BCC   3 Pelles C
+      GET ::nCompxBase            SECTION 'WHATCOMP'    ENTRY "XBASECOMP"     DEFAULT 1  // 1 Harbour  2 xHarbour
+      GET ::nCompilerC            SECTION 'WHATCOMP'    ENTRY "CCOMPILER"     DEFAULT 1  // 1 MinGW    2 BCC   3 Pelles C
       // POSITION
-      GET nPos                SECTION 'POSITION'    ENTRY "FORM_MAIN_ROW" DEFAULT ::aPositions[1, 1]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "FORM_MAIN_ROW" DEFAULT ::aPositions[1, 1]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[1, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'    ENTRY "FORM_MAIN_COL" DEFAULT ::aPositions[1, 2]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "FORM_MAIN_COL" DEFAULT ::aPositions[1, 2]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[1, 2] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'    ENTRY "CVCCNTRLS_ROW" DEFAULT ::aPositions[2, 1]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "CVCCNTRLS_ROW" DEFAULT ::aPositions[2, 1]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[2, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'    ENTRY "CVCCNTRLS_COL" DEFAULT ::aPositions[2, 2]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "CVCCNTRLS_COL" DEFAULT ::aPositions[2, 2]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[2, 2] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'    ENTRY "FORM_LIST_ROW" DEFAULT ::aPositions[3, 1]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "FORM_LIST_ROW" DEFAULT ::aPositions[3, 1]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[3, 1] := nPos
       ENDIF
-      GET nPos                SECTION 'POSITION'    ENTRY "FORM_LIST_COL" DEFAULT ::aPositions[3, 2]
-      IF HB_IsNumeric( nPos ) .AND. nPos >= 0
+      GET nPos                    SECTION 'POSITION'    ENTRY "FORM_LIST_COL" DEFAULT ::aPositions[3, 2]
+      IF HB_ISNUMERIC( nPos ) .AND. nPos >= 0
          ::aPositions[3, 2] := nPos
       ENDIF
       // IDE
-      GET ::nLineSkip         SECTION 'SETTINGS'    ENTRY "LINESKIP"      DEFAULT 5
-      GET ::lTBuild           SECTION 'SETTINGS'    ENTRY "BUILD"         DEFAULT 2  // 1=Compile.bat 2=Own Make 3=HbMk2
-      IF ::lTBuild < 1 .OR. ( ::lTBuild > 2 .AND. ::nCompxBase == 2 ) .OR. ( ::lTBuild > 3 .AND. ::nCompilerC == 1 )
-         ::lTBuild := 2
+      GET ::nLineSkip             SECTION 'SETTINGS'    ENTRY "LINESKIP"      DEFAULT 5
+      GET ::nTBuild               SECTION 'SETTINGS'    ENTRY "BUILD"         DEFAULT 2  // 1=Compile.bat 2=Own Make 3=HbMk2
+      IF ::nTBuild < 1 .OR. ( ::nTBuild > 2 .AND. ::nCompxBase == 2 ) .OR. ( ::nTBuild > 3 .AND. ::nCompilerC == 1 )
+         ::nTBuild := 2
       ENDIF
-      GET lSaveDefaultValues  SECTION 'SETTINGS'    ENTRY "SAVEDEFAULTS"  DEFAULT 1
+      GET lSaveDefaultValues      SECTION 'SETTINGS'    ENTRY "SAVEDEFAULTS"  DEFAULT 1
       ::lSaveDefaultValues := ( lSaveDefaultValues == 1 )
-      GET lSavePosOnDrag      SECTION 'SETTINGS'    ENTRY "SAVEPOSONDRAG" DEFAULT 1
+      GET lSavePosOnDrag          SECTION 'SETTINGS'    ENTRY "SAVEPOSONDRAG" DEFAULT 1
       ::lSavePosOnDrag := ( lSavePosOnDrag == 1 )
-      GET lSaveSizeonRed      SECTION 'SETTINGS'    ENTRY "SAVESIZEONRED" DEFAULT 1
+      GET lSaveSizeonRed          SECTION 'SETTINGS'    ENTRY "SAVESIZEONRED" DEFAULT 1
       ::lSaveSizeonRed := ( lSaveSizeonRed == 1 )
-      GET lMultiDelete        SECTION 'SETTINGS'    ENTRY "MULTIDELETE"   DEFAULT 0
+      GET lMultiDelete            SECTION 'SETTINGS'    ENTRY "MULTIDELETE"   DEFAULT 0
       ::lMultiDelete := ( lMultiDelete == 1 )
-      GET lSnap               SECTION 'SETTINGS'    ENTRY "SNAP"          DEFAULT 0
+      GET lSnap                   SECTION 'SETTINGS'    ENTRY "SNAP"          DEFAULT 0
       ::lSnap := ( lSnap == 1 )
-      GET ::cLibCC            SECTION 'SETTINGS'    ENTRY "ADDLIBCC"      DEFAULT ''
-      GET ::cLibXH            SECTION 'SETTINGS'    ENTRY "ADDLIBXH"      DEFAULT ''
-      GET ::cMakeTool         SECTION 'SETTINGS'    ENTRY "MAKETOOL"      DEFAULT ''
-      GET ::nSyntax           SECTION 'SETTINGS'    ENTRY "SYNTAX"        DEFAULT 1
-      GET lHideTT             SECTION 'SETTINGS'    ENTRY "HIDETT"        DEFAULT 0
+      GET ::cLibCC                SECTION 'SETTINGS'    ENTRY "ADDLIBCC"      DEFAULT ''
+      GET ::cLibXH                SECTION 'SETTINGS'    ENTRY "ADDLIBXH"      DEFAULT ''
+      GET ::cMakeTool             SECTION 'SETTINGS'    ENTRY "MAKETOOL"      DEFAULT ''
+      GET ::nSyntax               SECTION 'SETTINGS'    ENTRY "SYNTAX"        DEFAULT 1
+      GET lHideTT                 SECTION 'SETTINGS'    ENTRY "HIDETT"        DEFAULT 0
       ::lHideTT := ( lHideTT == 1 )
    END INI
 RETURN NIL
@@ -1221,9 +1244,42 @@ METHOD SaveINI( cFile ) CLASS THMI
       SET SECTION "EDITOR"      ENTRY "EXTERNAL"      TO ::cExtEditor
       SET SECTION "EDITOR"      ENTRY "TABSIZE"       TO LTrim( Str( ::nTabSize, 2, 0 ) )
       // FORM'S FONT
-      SET SECTION "FORMFONT"    ENTRY "FONT"          TO iif( Empty( ::cFormDefFontName ), 'NIL', ::cFormDefFontName )
+      SET SECTION "FORMFONT"    ENTRY "FONT"          TO ::cFormDefFontName
       SET SECTION "FORMFONT"    ENTRY "SIZE"          TO LTrim( Str( ::nFormDefFontSize, 2, 0 ) )
-      SET SECTION "FORMFONT"    ENTRY "COLOR"         TO iif( Empty( ::cFormDefFontColor ), 'NIL', ::cFormDefFontColor )
+      SET SECTION "FORMFONT"    ENTRY "BOLD"          TO iif( ::lFormDefFontBold, 1, 0 )
+      SET SECTION "FORMFONT"    ENTRY "ITALIC"        TO iif( ::lFormDefFontItalic, 1, 0 )
+      SET SECTION "FORMFONT"    ENTRY "COLOR"         TO ::cFormDefFontColor
+      SET SECTION "FORMFONT"    ENTRY "UNDERLINE"     TO iif( ::lFormDefFontUnderLine, 1, 0 )
+      SET SECTION "FORMFONT"    ENTRY "STRIKEOUT"     TO iif( ::lFormDefFontStrikeOut, 1, 0 )
+      SET SECTION "FORMFONT"    ENTRY "CHARSET"       TO ::nFormDefFontCharSet
+      // FORM'S METRICS
+      GET ::nColBorder            SECTION "FORMMETRICS" ENTRY "COLBORDER"     DEFAULT 50
+      GET ::nRowBorder            SECTION "FORMMETRICS" ENTRY "ROWBORDER"     DEFAULT 50
+      GET ::nLabelHeight          SECTION "FORMMETRICS" ENTRY "LABELHEIGHT"   DEFAULT 0
+      IF ::nLabelHeight < 0
+         ::nLabelHeight := 0
+      ENDIF
+      GET ::nTextBoxHeight        SECTION "FORMMETRICS" ENTRY "TEXTBOXHEIGHT" DEFAULT 0
+      IF ::nTextBoxHeight < 0
+         ::nTextBoxHeight := 0
+      ENDIF
+      GET ::nStdVertGap           SECTION "FORMMETRICS" ENTRY "STDVERTGAP"    DEFAULT 24
+      IF ::nStdVertGap < 1
+         ::nStdVertGap := 24
+      ENDIF
+      GET ::nPxMove               SECTION "FORMMETRICS" ENTRY "PXMOVE"        DEFAULT 5
+      IF ::nPxMove < 1 .OR. ::nPxMove > 99
+         ::nPxMove := 5
+      ENDIF
+      GET ::nPxJump               SECTION "FORMMETRICS" ENTRY "PXJUMP"        DEFAULT 10
+      IF ::nPxJump < 1 .OR. ::nPxJump > 99
+         ::nPxJump := 10
+      ENDIF
+      GET ::nPxSize               SECTION "FORMMETRICS" ENTRY "PXSIZE"        DEFAULT 1
+      IF ::nPxSize < 1 .OR. ::nPxSize > 99
+         ::nPxSize := 1
+      ENDIF
+
       // FORM'S METRICS
       SET SECTION "FORMMETRICS" ENTRY "COLBORDER"     TO LTrim( Str( ::nColBorder, 6, 0) )
       SET SECTION "FORMMETRICS" ENTRY "ROWBORDER"     TO LTrim( Str( ::nRowBorder, 6, 0) )
@@ -1312,10 +1368,10 @@ METHOD SaveINI( cFile ) CLASS THMI
       SET SECTION "SETTINGS"    ENTRY "ADDLIBXH"      TO ::cLibXH
       SET SECTION "SETTINGS"    ENTRY "MAKETOOL"      TO ::cMakeTool
       SET SECTION 'SETTINGS'    ENTRY "LINESKIP"      TO LTrim( Str( ::nLineSkip, 2, 0 ) )
-      IF ::lTBuild < 1 .OR. ( ::lTBuild > 2 .AND. ::nCompxBase == 2 ) .OR. ( ::lTBuild > 3 .AND. ::nCompilerC == 1 )
-         ::lTBuild := 2
+      IF ::nTBuild < 1 .OR. ( ::nTBuild > 2 .AND. ::nCompxBase == 2 ) .OR. ( ::nTBuild > 3 .AND. ::nCompilerC == 1 )
+         ::nTBuild := 2
       ENDIF
-      SET SECTION "SETTINGS"    ENTRY "BUILD"         TO LTrim( Str( ::lTBuild, 1, 0 ) )
+      SET SECTION "SETTINGS"    ENTRY "BUILD"         TO LTrim( Str( ::nTBuild, 1, 0 ) )
       SET SECTION "SETTINGS"    ENTRY "MULTIDELETE"   TO iif( ::lMultiDelete, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SAVEDEFAULTS"  TO iif( ::lSaveDefaultValues, "1", "0" )
       SET SECTION "SETTINGS"    ENTRY "SAVEPOSONDRAG" TO iif( ::lSavePosOnDrag, "1", "0" )
@@ -1711,14 +1767,14 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:text_1:value       := ::cExtEditor
    ::Form_Prefer:text_font:value    := iif( Empty( ::cFormDefFontName ), ::_OOHG_DefaultFontName, ::cFormDefFontName ) + " " + ;
                                        LTrim( Str( iif( ::nFormDefFontSize > 0, ::nFormDefFontSize, ::_OOHG_DefaultFontSize ), 2, 0 ) ) + ;
-                                       iif( ::cFormDefFontColor # "NIL", ", Color " + ::cFormDefFontColor, ;
+                                       ", Color " + ::cFormDefFontColor + ;
                                        iif( ::_OOHG_DefaultFontColor # NIL, ", Color " + ::ColorToStr( ::_OOHG_DefaultFontColor ), "" ) )
    IF ::Form_Prefer:radiogroup_1:value == 1
       // Harbour
-      ::Form_Prefer:radiogroup_4:value := ::lTBuild
+      ::Form_Prefer:radiogroup_4:value := ::nTBuild
    ELSE
       // xHarbour
-      ::Form_Prefer:radiogroup_3:value := ::lTBuild
+      ::Form_Prefer:radiogroup_3:value := ::nTBuild
    ENDIF
    ::Form_Prefer:text_make:value     := ::cMakeTool
    ::Form_Prefer:text_libCC:value    := ::cLibCC
@@ -2111,19 +2167,35 @@ METHOD OkPrefer( aFont ) CLASS THMI
    ::nCompilerC         := ::Form_Prefer:radiogroup_2:Value
    IF ::Form_Prefer:radiogroup_1:value == 1
       // Harbour
-      ::lTBuild := ::Form_Prefer:radiogroup_4:value
+      ::nTBuild := ::Form_Prefer:radiogroup_4:value
    ELSE
       // xHarbour
-      ::lTBuild := ::Form_Prefer:radiogroup_3:Value
+      ::nTBuild := ::Form_Prefer:radiogroup_3:Value
    ENDIF
    ::lHideTT            := ::Form_Prefer:chk_HideTT:Value
    ::lSnap              := ::Form_Prefer:chk_Snap:Value
    ::cLibCC             := AllTrim( ::Form_Prefer:text_libCC:Value )
    ::cLibXH             := AllTrim( ::Form_Prefer:text_libXH:Value )
    ::cMakeTool          := AllTrim( ::Form_Prefer:text_make:Value )
-   ::cFormDefFontName   := iif( Empty( aFont[1] ), '', aFont[1] )
-   ::nFormDefFontSize   := iif( aFont[2] > 0, Int( aFont[2] ), 0 )
-   ::cFormDefFontColor  := iif( Empty( aFont[5] ), "NIL", iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, "NIL", ::ColorToStr( aFont[5] ) ) )
+   IF Empty( aFont[1] )
+      ::cFormDefFontName      := ::aOriginalFont[1]
+      ::nFormDefFontSize      := ::aOriginalFont[2]
+      ::lFormDefFontBold      := ::aOriginalFont[3]
+      ::lFormDefFontItalic    := ::aOriginalFont[4]
+      ::cFormDefFontColor     := ::aOriginalFont[5]
+      ::lFormDefFontUnderLine := ::aOriginalFont[6]
+      ::lFormDefFontStrikeOut := ::aOriginalFont[7]
+      ::nFormDefFontCharSet   := ::aOriginalFont[8]
+   ELSE
+      ::cFormDefFontName      := aFont[1]
+      ::nFormDefFontSize      := iif( aFont[2] > 0, Int( aFont[2] ), aOriginalFont[2] )
+      ::lFormDefFontBold      := aFont[3]
+      ::lFormDefFontItalic    := aFont[4]
+      ::cFormDefFontColor     := iif( Empty( aFont[5] ) .OR. iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, aOriginalFont[5], ::ColorToStr( aFont[5] ) ) )
+      ::lFormDefFontUnderLine := aFont[6]
+      ::lFormDefFontStrikeOut := aFont[7]
+      ::nFormDefFontCharSet   := aFont[8]
+   ENDIF
    ::nLabelHeight       := ::Form_Prefer:text_19:Value
    ::nTextBoxHeight     := ::Form_Prefer:text_21:Value
    ::nStdVertGap        := ::Form_Prefer:text_22:Value
@@ -2220,7 +2292,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -2279,7 +2351,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
       BorraTemp( cFolder )
 
       DO CASE
-      CASE ::lTBuild == 3    // HBMK2
+      CASE ::nTBuild == 3    // HBMK2
          // Check for hbp file
          cHBP := StrTran( AllTrim( DelExt( DelPath( ::cProjectName ) ) ), " ", "_" ) + '.hbp'
          IF ! File( cHBP )
@@ -2356,7 +2428,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
 
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -2475,7 +2547,7 @@ METHOD BuildWithHarbourAndMinGW( nOption ) CLASS THMI
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
 
-      CASE ::lTBuild == 1 // Compile.bat
+      CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
@@ -2629,7 +2701,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -2708,7 +2780,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
       ENDIF
 
       DO CASE
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -2813,7 +2885,7 @@ METHOD BuildWithxHarbourAndMinGW( nOption ) CLASS THMI
          CreateFolder( cFolder + 'OBJ' )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
-      CASE ::lTBuild == 1 // Compile.bat
+      CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
@@ -2952,7 +3024,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -3021,7 +3093,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
       ENDIF
 
       DO CASE
-      CASE ::lTBuild == 3    // HBMK2
+      CASE ::nTBuild == 3    // HBMK2
          // Check for hbp file
          cHBP := cPrgName + '.hbp'
          IF ! File( cHBP )
@@ -3051,7 +3123,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -3210,7 +3282,7 @@ METHOD BuildWithHarbourAndBCC( nOption ) CLASS THMI
          CreateFolder( cFolder + 'OBJ' )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
-      CASE ::lTBuild == 1 // Compile.bat
+      CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
@@ -3341,7 +3413,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -3410,7 +3482,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
       ENDIF
 
       DO CASE
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -3571,7 +3643,7 @@ METHOD BuildWithxHarbourAndBCC( nOption ) CLASS THMI
          CreateFolder( cFolder + 'OBJ' )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
-      CASE ::lTBuild == 1 // Compile.bat
+      CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
@@ -3704,7 +3776,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -3773,7 +3845,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
       ENDIF
 
       DO CASE
-      CASE ::lTBuild == 3    // HBMK2
+      CASE ::nTBuild == 3    // HBMK2
          // Check for hbp file
          cHBP := cPrgName + '.hbp'
          IF ! File( cHBP )
@@ -3803,7 +3875,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          hb_MemoWrit( '_build.bat', cOut )
          // Compile and link
          EXECUTE FILE '_build.bat' WAIT HIDE
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -3977,7 +4049,7 @@ METHOD BuildWithHarbourAndPellesC(nOption) CLASS THMI
          CreateFolder( cFolder + 'OBJ' )
          // Build
          EXECUTE FILE '_build.bat' WAIT HIDE
-   CASE ::lTBuild == 1 // Compile.bat
+   CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
@@ -4108,7 +4180,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          Break
       ENDIF
 
-      IF ::lTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
+      IF ::nTBuild == 2 .AND. ! File( ::cMakeTool ) .AND. ! IsFileInPath( ::cMakeTool )
          ::Form_Wait:Hide()
          MsgStop( i18n( "Make tool " + ::cMakeTool + " was not found." ), 'OOHG IDE+' )
          Break
@@ -4177,7 +4249,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
       ENDIF
 
       DO CASE
-      CASE ::lTBuild == 2    // Own Make
+      CASE ::nTBuild == 2    // Own Make
          // Build list of source files
          nItems := ::Form_Tree:Tree_1:ItemCount
          aPrgFiles := {}
@@ -4345,7 +4417,7 @@ METHOD BuildWithxHarbourAndPellesC( nOption ) CLASS THMI
          CreateFolder( cFolder + 'OBJ' )
          // Build
          EXECUTE FILE '_build.bat' WAIT HIDE
-   CASE ::lTBuild == 1 // Compile.bat
+   CASE ::nTBuild == 1 // Compile.bat
          // Check for compile file
          IF ! File( 'compile.bat' ) .AND. ! IsFileInPath( 'compile.bat' )
             ::Form_Wait:Hide()
