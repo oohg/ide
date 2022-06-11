@@ -12,6 +12,105 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-06-06 18:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     + Support for saving/retrieving the preferred font to/from
+       the project's INI file. It defaults to OOHG's default font.
+     * A data was renamed properly.
+     * Some format.
+   #45
+
+2022-06-05 20:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     - Unwanted leftover code.
+   #44
+
+2022-06-05 20:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+   * ide\fmgs\formedit.prg
+     * Replace hardwired font attributes with variables.
+     * Use OOHG's default font variables instead of a copy.
+     + Charset attribute to GetPreferredFont's return value.
+   #43
+
+2022-06-05 19:57 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     * The font for newly designed forms, and its attributes, will
+       now default to OOHG's default font instead of MS Sans Serif.
+       To continue using the old font, you must set it in the
+       Preferences menu.
+   #42
+
+2022-06-05 18:58 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     * Some spacing.
+
+2022-05-29 20:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     + Support for POSTPARENT to FRAME controls.
+   #27
+
+2022-05-29 19:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     + Support for NOCONTEXTMENU to EditBox and Spinner controls.
+   #27
+
+2022-05-29 19:04 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     + Support for UNDO to EditBox and TextBox controls.
+   #27
+
+2022-05-28 22:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     + Method pStatusBar to load the StatusBar control.
+     ! RTE "index out of range" when loading the CARGO clause
+       of a StatusBar.
+     ! Default value of subclause WIDTH of StatusBar's DATE clause.
+     ! RTE "Argument error" when a new value is assigned to subclause
+       WIDTH of StatusBar's DATE clause.
+     ! Values assigned to the StatusBar clauses are ignored.
+     ! The value entered for the StatusBar's OBJ clause is assigned
+       to the CARGO clause.
+     ! The value entered for the StatusBar's CARGO clause is assigned
+       to the OBJ clause.
+   #41
+
+2022-05-28 22:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     - Unneeded DATAs.
+     * Method VerifyBar was renamed to VerifyStatusBar.
+     * Some var names.
+     * Some comments.
+     * Some format.
+
+2022-05-28 15:08 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\formedit.prg
+     ! CheckBox's FILLRECT is set but ignored by the IDE's preview.
+   #40
+
+2022-05-27 19:49 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+     ! Compile error: missing ResetPreferredFont function.
+   #36
+
+2022-05-27 19:25 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! IDE's default font is not being honored.
+       It's always set to IDE's font (verdana 9).
+   #38
+
+2022-05-27 19:15 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     ! OOHG's default font is not being honored by IDE's options.
+       It's always set to IDE's font (verdana 9).
+   #36
+
+2022-05-27 19:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     ! OOHG's default font is not being honored by IDE's options.
+       It's always set to IDE's font (verdana 9).
+   #36
+
 2022-05-25 19:23 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\formedit.prg
      + Support for AUTOWIDTH and AUTOHEIGHT to Label control.
