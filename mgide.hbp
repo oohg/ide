@@ -5,8 +5,8 @@
 # name of output file
 -ooide
 
-# compilation is incremental (hidden .hmk folder is created)
--inc
+# can't use incremental compilation because .fmg files
+-inc-
 
 # check all errors
 -w3
