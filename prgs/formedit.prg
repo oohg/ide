@@ -2429,7 +2429,7 @@ METHOD FrmFontColors() CLASS TFormEditor
    SET INTERACTIVECLOSE ON
    LOAD WINDOW fontclrs AS ( cName )
    FormFontColor := GetFormObject( cName )
-   FormFontColor:lbl_Object:Value := DQM( ::cFName + ".fmg" ) + i18n( " - Colors of Form" )
+   FormFontColor:Title := i18n( "Font/Colors for Form: " ) + ::cFName + ".fmg"
    ACTIVATE WINDOW ( cName )
    SET INTERACTIVECLOSE OFF
    ::oDesignForm:SetFocus()
@@ -2453,7 +2453,7 @@ METHOD CtrlFontColors() CLASS TFormEditor
          SET INTERACTIVECLOSE ON
          LOAD WINDOW fontclrs AS ( cName )
          FormFontColor := GetFormObject( cName )
-         FormFontColor:lbl_Object:Value := "Control: " + ::aName[si]
+         FormFontColor:Title := i18n( "Font/Colors for Control: " ) + ::aName[si]
          /* Enable or disable controls according to object's type */
          IF ( " " + ::aCtrlType[si] + " " ) $ " PROGRESSBAR PROGRESSMETER "
             FormFontColor:StatusBar:Item( 1, "FontColor will be used in FORECOLOR clause." )
@@ -2493,7 +2493,7 @@ METHOD SetFontColor( si ) CLASS TFormEditor
    ENDIF
    cCode := ::myIde:ColorToStr( aColor )
    IF si == 0
-      ::cFFontcolor := cCode
+      ::cFFontColor := cCode
       ::oDesignForm:FontColor := aColor
       ::oDesignForm:Hide()
       FOR i := 2 to ::nControlW
