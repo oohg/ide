@@ -1246,40 +1246,12 @@ METHOD SaveINI( cFile ) CLASS THMI
       // FORM'S FONT
       SET SECTION "FORMFONT"    ENTRY "FONT"          TO ::cFormDefFontName
       SET SECTION "FORMFONT"    ENTRY "SIZE"          TO LTrim( Str( ::nFormDefFontSize, 2, 0 ) )
-      SET SECTION "FORMFONT"    ENTRY "BOLD"          TO iif( ::lFormDefFontBold, 1, 0 )
-      SET SECTION "FORMFONT"    ENTRY "ITALIC"        TO iif( ::lFormDefFontItalic, 1, 0 )
+      SET SECTION "FORMFONT"    ENTRY "BOLD"          TO iif( ::lFormDefFontBold, "1", "0" )
+      SET SECTION "FORMFONT"    ENTRY "ITALIC"        TO iif( ::lFormDefFontItalic, "1", "0" )
       SET SECTION "FORMFONT"    ENTRY "COLOR"         TO ::cFormDefFontColor
-      SET SECTION "FORMFONT"    ENTRY "UNDERLINE"     TO iif( ::lFormDefFontUnderLine, 1, 0 )
-      SET SECTION "FORMFONT"    ENTRY "STRIKEOUT"     TO iif( ::lFormDefFontStrikeOut, 1, 0 )
-      SET SECTION "FORMFONT"    ENTRY "CHARSET"       TO ::nFormDefFontCharSet
-      // FORM'S METRICS
-      GET ::nColBorder            SECTION "FORMMETRICS" ENTRY "COLBORDER"     DEFAULT 50
-      GET ::nRowBorder            SECTION "FORMMETRICS" ENTRY "ROWBORDER"     DEFAULT 50
-      GET ::nLabelHeight          SECTION "FORMMETRICS" ENTRY "LABELHEIGHT"   DEFAULT 0
-      IF ::nLabelHeight < 0
-         ::nLabelHeight := 0
-      ENDIF
-      GET ::nTextBoxHeight        SECTION "FORMMETRICS" ENTRY "TEXTBOXHEIGHT" DEFAULT 0
-      IF ::nTextBoxHeight < 0
-         ::nTextBoxHeight := 0
-      ENDIF
-      GET ::nStdVertGap           SECTION "FORMMETRICS" ENTRY "STDVERTGAP"    DEFAULT 24
-      IF ::nStdVertGap < 1
-         ::nStdVertGap := 24
-      ENDIF
-      GET ::nPxMove               SECTION "FORMMETRICS" ENTRY "PXMOVE"        DEFAULT 5
-      IF ::nPxMove < 1 .OR. ::nPxMove > 99
-         ::nPxMove := 5
-      ENDIF
-      GET ::nPxJump               SECTION "FORMMETRICS" ENTRY "PXJUMP"        DEFAULT 10
-      IF ::nPxJump < 1 .OR. ::nPxJump > 99
-         ::nPxJump := 10
-      ENDIF
-      GET ::nPxSize               SECTION "FORMMETRICS" ENTRY "PXSIZE"        DEFAULT 1
-      IF ::nPxSize < 1 .OR. ::nPxSize > 99
-         ::nPxSize := 1
-      ENDIF
-
+      SET SECTION "FORMFONT"    ENTRY "UNDERLINE"     TO iif( ::lFormDefFontUnderLine, "1", "0" )
+      SET SECTION "FORMFONT"    ENTRY "STRIKEOUT"     TO iif( ::lFormDefFontStrikeOut, "1", "0" )
+      SET SECTION "FORMFONT"    ENTRY "CHARSET"       TO LTrim( Str( ::nFormDefFontCharSet ) )
       // FORM'S METRICS
       SET SECTION "FORMMETRICS" ENTRY "COLBORDER"     TO LTrim( Str( ::nColBorder, 6, 0) )
       SET SECTION "FORMMETRICS" ENTRY "ROWBORDER"     TO LTrim( Str( ::nRowBorder, 6, 0) )
@@ -1765,10 +1737,14 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer:text_24:value      := ::nPxSize
    ::Form_Prefer:text_25:value      := ::nTabSize
    ::Form_Prefer:text_1:value       := ::cExtEditor
-   ::Form_Prefer:text_font:value    := iif( Empty( ::cFormDefFontName ), ::_OOHG_DefaultFontName, ::cFormDefFontName ) + " " + ;
-                                       LTrim( Str( iif( ::nFormDefFontSize > 0, ::nFormDefFontSize, ::_OOHG_DefaultFontSize ), 2, 0 ) ) + ;
+   ::Form_Prefer:text_font:value    := ::cFormDefFontName + " " + ;
+                                       LTrim( Str( ::nFormDefFontSize, 2, 0 ) ) + ;
+                                       iif( ::lFormDefFontBold, " Bold", "" ) + ;
+                                       iif( ::lFormDefFontItalic, " Italic", "" ) + ;
+                                       iif( ::lFormDefFontUnderLine, " Underline", "" ) + ;
+                                       iif( ::lFormDefFontStrikeOut, " Strikeout", "" ) + ;
                                        ", Color " + ::cFormDefFontColor + ;
-                                       iif( ::_OOHG_DefaultFontColor # NIL, ", Color " + ::ColorToStr( ::_OOHG_DefaultFontColor ), "" ) )
+                                       ", CharSet " + LTrim( Str( ::nFormDefFontCharSet, 3, 0 ) )
    IF ::Form_Prefer:radiogroup_1:value == 1
       // Harbour
       ::Form_Prefer:radiogroup_4:value := ::nTBuild
@@ -2009,19 +1985,42 @@ RETURN NIL
 METHOD GetPreferredFont( aFont )
 /*--------------------------------------------------------------------------------------------------------------------------------*/
    aFont := GetFont( aFont[1], aFont[2], aFont[3], aFont[4], aFont[5], aFont[6], aFont[7], aFont[8] )
+   IF Empty( aFont[1] )
+      aFont[1] := ::aOriginalFont[1]
+   ENDIF
+   IF ! aFont[2] > 0
+      aFont[2] := ::aOriginalFont[2]
+   ENDIF
+   IF ! HB_ISLOGICAL( aFont[3] )
+      aFont[3] := ::aOriginalFont[3]
+   ENDIF
+   IF ! HB_ISLOGICAL( aFont[4] )
+      aFont[4] := ::aOriginalFont[4]
+   ENDIF
+   IF Empty( aFont[5] ) .OR. ! HB_ISARRAY( aFont[5] ) .OR. Len( aFont[5] ) < 3 .OR. ;
+      ! HB_ISNUMERIC( aFont[5, 1] ) .OR. aFont[5, 1] < 0 .OR. aFont[5, 1] > 255 .OR. ;
+      ! HB_ISNUMERIC( aFont[5, 2] ) .OR. aFont[5, 2] < 0 .OR. aFont[5, 2] > 255 .OR. ;
+      ! HB_ISNUMERIC( aFont[5, 3] ) .OR. aFont[5, 3] < 0 .OR. aFont[5, 3] > 255
+      aFont[5] := ::StrToColor( ::aOriginalFont[5] )
+   ENDIF
+   IF ! HB_ISLOGICAL( aFont[6] )
+      aFont[6] := ::aOriginalFont[6]
+   ENDIF
+   IF ! HB_ISLOGICAL( aFont[7] )
+      aFont[7] := ::aOriginalFont[7]
+   ENDIF
+   IF ! HB_ISNUMERIC( aFont[8] )
+      aFont[8] := ::aOriginalFont[8]
+   ENDIF
    ::Form_prefer:text_font:value := ;
-      iif( Empty( aFont[1] ), ::_OOHG_DefaultFontName, aFont[1] ) + " " + ;
-      LTrim( Str( iif( aFont[2] > 0, aFont[2], ::_OOHG_DefaultFontSize ) ) ) + ;
+      aFont[1] + " " + ;
+      LTrim( Str( aFont[2] ) ) + ;
       iif( aFont[3], " Bold", "" ) + ;
       iif( aFont[4], " Italic", "" ) + ;
       iif( aFont[6], " Underline", "" ) + ;
       iif( aFont[7], " Strikeout", "" ) + ;
-      iif( Empty( aFont[5] ), "", ;
-           iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, ;
-                iif( ::_OOHG_DefaultFontColor == NIL, "", ;
-                     ", Color " + ::ColorToStr( ::_OOHG_DefaultFontColor ) ), ;
-                ", Color " + ::ColorToStr( aFont[5] ) ) ) + ;
-      ", CharSet " + LTrim( Str( aFont[8] ) )
+      ", Color " + ::ColorToStr( aFont[5] ) + ;
+      ", CharSet " + LTrim( Str( aFont[8], 3, 0 ) )
 RETURN NIL
 
 /*--------------------------------------------------------------------------------------------------------------------------------*/
@@ -2188,13 +2187,15 @@ METHOD OkPrefer( aFont ) CLASS THMI
       ::nFormDefFontCharSet   := ::aOriginalFont[8]
    ELSE
       ::cFormDefFontName      := aFont[1]
-      ::nFormDefFontSize      := iif( aFont[2] > 0, Int( aFont[2] ), aOriginalFont[2] )
+      ::nFormDefFontSize      := iif( aFont[2] > 0, Int( aFont[2] ), ::aOriginalFont[2] )
       ::lFormDefFontBold      := aFont[3]
       ::lFormDefFontItalic    := aFont[4]
-      ::cFormDefFontColor     := iif( Empty( aFont[5] ) .OR. iif( aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, aOriginalFont[5], ::ColorToStr( aFont[5] ) ) )
+      ::cFormDefFontColor     := iif( Empty( aFont[5] ) .OR. ! HB_ISARRAY( aFont[5] ) .OR. Len( aFont[5] ) < 3 .OR. ;
+                                      aFont[5, 1] == NIL .OR. aFont[5, 2] == NIL .OR. aFont[5, 3] == NIL, ;
+                                      ::aOriginalFont[5], ::ColorToStr( aFont[5] ) )
       ::lFormDefFontUnderLine := aFont[6]
       ::lFormDefFontStrikeOut := aFont[7]
-      ::nFormDefFontCharSet   := aFont[8]
+      ::nFormDefFontCharSet   := iif( aFont[8] >= 0, aFont[8], 0 )
    ENDIF
    ::nLabelHeight       := ::Form_Prefer:text_19:Value
    ::nTextBoxHeight     := ::Form_Prefer:text_21:Value
