@@ -12,6 +12,12 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-06-06 19:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\mgide.hbp
+     ! IDE is not rebuild after a change to an .fmg file.
+     ; Note that incremental build mode must always be disabled.
+   #46
+
 2022-06-06 18:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\mgide.prg
      + Support for saving/retrieving the preferred font to/from
