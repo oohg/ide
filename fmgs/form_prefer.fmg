@@ -180,9 +180,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_11 ;
+         @ 85, 530 BUTTON button_11 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_8.Value := folder, NIL )
 
@@ -236,9 +236,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_3 ;
+         @ 85, 530 BUTTON button_3 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_2.Value := Folder, NIL )
 
@@ -292,9 +292,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_2 ;
+         @ 85, 530 BUTTON button_2 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_7.Value := Folder, NIL )
 
@@ -348,9 +348,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_8 ;
+         @ 85, 530 BUTTON button_8 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_13.Value := Folder, NIL )
 
@@ -404,9 +404,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_12 ;
+         @ 85, 530 BUTTON button_12 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_14.Value := Folder, NIL )
 
@@ -460,9 +460,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_13 ;
+         @ 85, 530 BUTTON button_13 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_15.Value := Folder, NIL )
 
@@ -532,9 +532,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_10 ;
+         @ 85, 530 BUTTON button_10 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_10.Value := folder, NIL )
 
@@ -588,9 +588,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_4 ;
+         @ 85, 530 BUTTON button_4 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_5.Value := folder, NIL )
 
@@ -644,9 +644,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_5 ;
+         @ 85, 530 BUTTON button_5 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_6.Value := folder, NIL )
 
@@ -707,9 +707,9 @@ DEFINE WINDOW TEMPLATE ;
             TOOLTIP i18n( "Tool to build the project when Own Make option is selected at Project's Build Type list." ) ;
             MAXLENGTH 30
 
-         @ 257, 530 BUTTON button_18 ;
+         @ 260, 530 BUTTON button_18 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFile() ), form_prefer.text_make.Value := folder, NIL )
 
@@ -734,9 +734,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_9 ;
+         @ 85, 530 BUTTON button_9 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_12.Value := folder, NIL )
 
@@ -790,9 +790,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_6 ;
+         @ 85, 530 BUTTON button_6 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_9.Value := folder, NIL )
 
@@ -846,9 +846,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_7 ;
+         @ 85, 530 BUTTON button_7 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_11.Value := folder, NIL )
 
@@ -902,9 +902,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_14 ;
+         @ 85, 530 BUTTON button_14 ;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_16.Value := folder, NIL )
 
@@ -958,9 +958,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_15;
+         @ 85, 530 BUTTON button_15;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_17.Value := folder, NIL )
 
@@ -1014,9 +1014,9 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-         @ 82, 530 BUTTON button_16;
+         @ 85, 530 BUTTON button_16;
             WIDTH 30 ;
-            HEIGHT 28 ;
+            HEIGHT 24 ;
             CAPTION "..." ;
             ACTION iif( ! Empty( Folder := GetFolder() ), form_prefer.text_18.Value := folder, NIL )
 
@@ -1078,30 +1078,37 @@ DEFINE WINDOW TEMPLATE ;
          @ 85, 20 LABEL label_20 ;
             WIDTH 140 ;
             HEIGHT 24 ;
-            VALUE i18n( "Form's Default Font" ) ;
+            VALUE i18n( "Default Design Font" ) ;
             TRANSPARENT ;
             VCENTERALIGN
 
          @ 85, 180 TEXTBOX text_font ;
-            WIDTH 250 ;
+            WIDTH 300 ;
             HEIGHT 24 ;
             READONLY ;
             MAXLENGTH 30
 
-         @ 85, 440 BUTTON button_newfont ;
+         @ 85, 490 BUTTON button_newfont ;
             WIDTH 30 ;
             HEIGHT 24 ;
             CAPTION "..." ;
             ACTION ::GetPreferredFont( @aFont ) ;
-            TOOLTIP i18n( "Select a font to use as default for newly created forms." )
+            TOOLTIP i18n( "Select a font to draw forms and controls that do not have their own font defined." )
 
-         @ 85, 480 BUTTON button_deffont ;
+         @ 85, 530 BUTTON button_deffont ;
             WIDTH 30 ;
             HEIGHT 24 ;
             CAPTION "..." ;
-            ACTION ( aFont := { '', 0, .F., .F., NIL, .F., .F., 0 }, ;
-                     ::Form_prefer:text_font:value := ::a_OOHG_DefaultFont[1] + " " + LTrim( Str( ::a_OOHG_DefaultFont[2] ) ) ) ;
-            TOOLTIP i18n( "Set OOHG's default font as default for newly created forms." )
+            ACTION ( ::Form_prefer:text_font:value := ;
+                        ::aOriginalFont[1] + " " + ;
+                        LTrim( Str( ::aOriginalFont[2], 2, 0 ) ) + ;
+                        iif( ::aOriginalFont[3], " Bold", "" ) + ;
+                        iif( ::aOriginalFont[4], " Italic", "" ) + ;
+                        iif( ::aOriginalFont[6], " Underline", "" ) + ;
+                        iif( ::aOriginalFont[7], " Strikeout", "" ) + ;
+                        ", Color " + ::aOriginalFont[5] + ;
+                        ", CharSet " + LTrim( Str( ::aOriginalFont[8], 3, 0 ) ) ) ;
+            TOOLTIP i18n( "Use OOHG's default font to draw forms and controls that do not have their own font defined." )
 
          @ 120, 20 LABEL label_21 ;
             WIDTH 140 ;
