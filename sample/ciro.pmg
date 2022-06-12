@@ -1,19 +1,19 @@
-Project
-Form module
+[PROJECT]
+[FMG]
 cvc
 fp
 newform
 qwerty
 tbarsamp
-Prg module
+test2
+[PRG]
 Main
 p1
 p2
 prgspi
-CH module
+[CH]
 newch
-Rpt module
+[RPT]
 repdemo
-RC module
+[RC]
 ciro
-
