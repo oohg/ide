@@ -1663,7 +1663,7 @@ LOCAL aFont := { ::cFormDefFontName, ;
    ::Form_Prefer := GetFormObject( "Form_prefer" )
 
    ::Form_Prefer:Backcolor          := ::aSystemColor
-   ::Form_Prefer:Title              := "Preferences from " + ::cProjFolder + '\hmi.ini'
+   ::Form_Prefer:Title              := i18n( "Preferences from file " ) + ::cProjFolder + '\hmi.ini'
    ::Form_Prefer:text_3:value       := ::cProjFolder
    ::Form_Prefer:text_4:value       := ::cOutFile
    ::Form_Prefer:text_12:value      := ::cGuiHbMinGW
