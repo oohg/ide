@@ -315,8 +315,8 @@ LOCAL nPos, nRed, nGreen, nBlue, lIsProject := .F., pmgFolder, nEsquema, cvcx, c
    ::cProjFolder := GetCurrentFolder()
    ::cIDE_Folder := GetStartupFolder()
 
-   ::nDPIw := ( PIXELSPERINCHX() / 96 )
-   ::nDPIh := ( PIXELSPERINCHY() / 96 )
+   ::nDPIw := ( PixelsPerInchX() / 96 )
+   ::nDPIh := ( PixelsPerInchY() / 96 )
 
    ::MainHeight := Int( 50 * ::nDPIh ) + GetTitleHeight() + GetBorderHeight()
 
