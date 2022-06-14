@@ -12,6 +12,34 @@
  *   '-' Removed: ...           ';' Comment
  */
 
+2022-06-14 19:33 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     * "LOAD WINDOW form_prefer" was replace by its translation
+       to enable incremental compilation.
+
+2022-06-12 19:38 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\formedit.prg
+     * The title of the Font/Colors dialog was improved.
+
+2022-06-12 19:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\prgs\mgide.prg
+     ! Some font attributes are not displayed by Preferences dialog.
+   #49
+     ! Some properties are not saved to the INI file.
+     ! Some properties are read from the INI file
+       instead of being saved.
+   #50
+     ! RTE when selecting a new font in Preferences dialog.
+   #51
+
+2022-06-12 19:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
+   * ide\fmgs\form_prefer.fmg
+     ! Some font attributes are not displayed when font is changed
+       to OOHG's default.
+     * Some buttons size was changed.
+     * Some tooltips were changed.
+   #48
+
 2022-06-06 19:18 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\mgide.hbp
      ! IDE is not rebuild after a change to an .fmg file.
@@ -27,13 +55,13 @@
    #45
 
 2022-06-05 20:47 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      - Unwanted leftover code.
    #44
 
 2022-06-05 20:41 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
    * ide\prgs\mgide.prg
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      * Replace hardwired font attributes with variables.
      * Use OOHG's default font variables instead of a copy.
      + Charset attribute to GetPreferredFont's return value.
@@ -52,22 +80,22 @@
      * Some spacing.
 
 2022-05-29 20:53 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      + Support for POSTPARENT to FRAME controls.
    #27
 
 2022-05-29 19:16 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      + Support for NOCONTEXTMENU to EditBox and Spinner controls.
    #27
 
 2022-05-29 19:04 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      + Support for UNDO to EditBox and TextBox controls.
    #27
 
 2022-05-28 22:30 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      + Method pStatusBar to load the StatusBar control.
      ! RTE "index out of range" when loading the CARGO clause
        of a StatusBar.
@@ -82,7 +110,7 @@
    #41
 
 2022-05-28 22:00 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      - Unneeded DATAs.
      * Method VerifyBar was renamed to VerifyStatusBar.
      * Some var names.
@@ -90,7 +118,7 @@
      * Some format.
 
 2022-05-28 15:08 UTC-0300 Fernando Yurisich <fyurisich@oohg.org>
-   * ide\fmgs\formedit.prg
+   * ide\prgs\formedit.prg
      ! CheckBox's FILLRECT is set but ignored by the IDE's preview.
    #40
 
