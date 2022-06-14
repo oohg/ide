@@ -1658,7 +1658,9 @@ LOCAL aFont := { ::cFormDefFontName, ;
                  ::lFormDefFontStrikeOut, ;
                  ::nFormDefFontCharSet }
 
-   LOAD WINDOW form_prefer
+   _OOHG_TempWindowName := "form_prefer"
+   DECLARE WINDOW form_prefer
+   #include "form_prefer.fmg"
 
    ::Form_Prefer := GetFormObject( "Form_prefer" )
 
