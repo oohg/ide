@@ -109,7 +109,7 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             READONLY ;
             MAXLENGTH 30 ;
-            NOTABSTOP 
+            NOTABSTOP
 
          @ 85, 20 LABEL label_2 ;
             WIDTH 100 ;
@@ -1053,7 +1053,7 @@ DEFINE WINDOW TEMPLATE ;
             HEIGHT 24 ;
             MAXLENGTH 30
 
-      END PAGE 
+      END PAGE
 
       DEFINE PAGE i18n( "IDE 1" )
 
